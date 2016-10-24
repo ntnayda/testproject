@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SecureFileShare Login</title>
+</head>
+<body>
+    <h1>Login to your SecureFileShare account</h1>
+
+    <form id="user_form" method="post" action="/fileshare/register/login"
+                enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <input type="submit" name="submit" value="Login" />
+        </form>
+
+</body>
+</html>

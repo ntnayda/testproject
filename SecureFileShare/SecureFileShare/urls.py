@@ -12,6 +12,7 @@ urlpatterns = [
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^fileshare/',include('fileshare.urls')),
-    url(r'^',include('django.contrib.auth.urls')),
+    url(r'^',include('fileshare.urls')),
+    #url(r'^',include('django.contrib.auth.urls')),
 
 ]
