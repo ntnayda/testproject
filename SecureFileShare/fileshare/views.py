@@ -15,3 +15,6 @@ def index(request):
 
 def register_success(request):
     return render(request,'fileshare/register_success.html')
+
+def profile(request):
+	return
