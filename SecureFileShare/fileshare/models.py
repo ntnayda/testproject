@@ -18,3 +18,17 @@ class User(models.Model):
 
 
 # Create Reports model
+class Report(models.Model):
+
+	owned_by = models.ForeignKey('User')
+	created = models.DateTimeField(auto_now_add=True)
+	short_desc = models.CharField(max_length=128)
+	long_desc = models.TextField()
+	file_attached = models.CharField(max_length=128) # will eventually be a field that holds any file type
+	
+	'''ACCESSIBILITY_CHOICES = [
+		('Public', 'Can be seen by any user of the system.')
+		('Private', 'Can only be seen by those given access.')
+	]
+
+	accessibilty = models.CharField(choices=ACCESSIBILITY_CHOICES, default="Public")'''
