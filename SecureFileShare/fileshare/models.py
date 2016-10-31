@@ -9,8 +9,9 @@ class User(models.Model):
     lastName = models.CharField(max_length=50)
     userName = models.CharField(max_length=50)
     password = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    group = models.CharField(max_length=128, default=None)
+    email = models.CharField(max_length=100, blank=True)
+    group = models.CharField(max_length=128, default=None, blank=True)
+    reports_owned = models.ManyToManyField('Report', blank=True)
     
 
     def __str__(self):
