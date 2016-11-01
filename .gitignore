@@ -1,0 +1,4 @@
+__pychache__/
+migrations/
+*.DS_Store
+*.idea
