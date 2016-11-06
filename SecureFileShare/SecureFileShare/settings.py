@@ -107,3 +107,6 @@ USE_TZ = True
 STATIC_URL = '/fileshare/static/'
 
 LOGIN_REDIRECT_URL = 'main'
+
+# Specifying User profile
+AUTH_PROFILE_MODULE = 'fileshare.Profile'

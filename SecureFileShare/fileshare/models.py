@@ -1,27 +1,31 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
-class User(models.Model):
+class Profile(models.Model):
     
     # Django automatically creates a primary key ID... No need to create one here
 
-    firstName = models.CharField(max_length=50)
-    lastName = models.CharField(max_length=50)
-    userName = models.CharField(max_length=50)
-    password = models.CharField(max_length=100)
-    email = models.CharField(max_length=100, blank=True)
-    group = models.CharField(max_length=128, default=None, blank=True)
+    user = models.OneToOneField(User)
+    group = models.CharField(max_length=128, default=None, null=True, blank=True)
     reports_owned = models.ManyToManyField('Report', blank=True)
     
 
     def __str__(self):
     	return self.firstName + " " + self.lastName
 
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
 
 # Create Reports model
 class Report(models.Model):
 
-	owned_by = models.ForeignKey('User')
+	owned_by = models.ForeignKey('Profile')
 	created = models.DateTimeField(auto_now_add=True)
 	short_desc = models.CharField(max_length=128)
 	long_desc = models.TextField()
