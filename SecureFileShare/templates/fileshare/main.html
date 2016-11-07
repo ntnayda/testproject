@@ -2,12 +2,24 @@
 
 {% block content %}
 <div class="container">
-<div class="row">
+	<div class="row">
+		<div class="jumbotron">
+			<h1>Hello {{ user.username }}</h1>
+			<p>You are on your Dashboard</p>
+		</div>
 
-<div class="jumbotron">
-  <h1>Hello {{ user.username }}</h1>
-  <p>You are on your Dashboard</p>
-</div>
-</div>
+
+		<div class="jumbotron">
+			<h2><b>Create a Report</b></h2>
+			<form method="POST" action="">
+				{% csrf_token %}
+				<table>
+					{{ report_form }}
+				</table>
+				<input type="submit" value="Create Report" /> 
+			</form>
+		</div>
+	</div>
+
 </div>
 {% endblock %}

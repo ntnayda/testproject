@@ -1,4 +1,6 @@
 from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.conf import settings
 from . import views
 from django.contrib.auth import forms
 from django.contrib.auth import views as auth_views
@@ -21,4 +23,4 @@ urlpatterns = [
     url('^test', CreateView.as_view(template_name='fileshare/test.html',form_class=signup_form,success_url='/fileshare/register/success')),
     #url(r'^test',views.signin,name='signin'),
     #url(r'^',include('django.contrib.auth.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

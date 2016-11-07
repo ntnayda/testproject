@@ -9,12 +9,10 @@ class Profile(models.Model):
     # Django automatically creates a primary key ID... No need to create one here
 
     user = models.OneToOneField(User)
-    group = models.CharField(max_length=128, default=None, null=True, blank=True)
+    #group_member_of = models.ManyToManyField('Group', blank=True)
     reports_owned = models.ManyToManyField('Report', blank=True)
     
 
-    def __str__(self):
-    	return self.firstName + " " + self.lastName
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -25,11 +23,13 @@ post_save.connect(create_user_profile, sender=User)
 # Create Reports model
 class Report(models.Model):
 
-	owned_by = models.ForeignKey('Profile')
+	owned_by = models.OneToOneField(User)
 	created = models.DateTimeField(auto_now_add=True)
 	short_desc = models.CharField(max_length=128)
 	long_desc = models.TextField()
-	file_attached = models.CharField(max_length=128) # will eventually be a field that holds any file type
+	private = models.BooleanField(default=False)
+	file_attached = models.FileField(upload_to='documents/%Y/%m/%d', blank=True)
+	#group = models.ForeignKey('ProfileGroup', blank=True)	
 	
 	'''ACCESSIBILITY_CHOICES = [
 		('Public', 'Can be seen by any user of the system.')
@@ -37,3 +37,8 @@ class Report(models.Model):
 	]
 
 	accessibilty = models.CharField(choices=ACCESSIBILITY_CHOICES, default="Public")'''
+
+class ProfileGroup(models.Model):
+
+	name = models.CharField(max_length=128, unique=True)
+	members = models.ManyToManyField('Profile', null=True, blank=True)
