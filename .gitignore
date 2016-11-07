@@ -2,3 +2,5 @@ __pycache__/
 migrations/
 *.DS_Store
 *.idea
+admin_*
+.admin*

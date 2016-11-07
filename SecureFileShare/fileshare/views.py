@@ -27,7 +27,6 @@ def profile(request):
 
 @login_required(login_url='login')
 def main(request):
-
 	if request.method == 'POST':
 		report_form = ReportForm(request.POST)
 
@@ -41,7 +40,6 @@ def main(request):
 		report_form = ReportForm()
 	
 	return render(request, 'fileshare/main.html', {'report_form': report_form})
-
 
 @login_required(login_url='login')
 def account_update_success(request):
@@ -91,4 +89,3 @@ def password_change(request):
         "form": form
     }
     return render(request,"fileshare/changepassword.html",context)
-

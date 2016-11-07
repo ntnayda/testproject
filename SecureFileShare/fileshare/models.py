@@ -43,6 +43,7 @@ class ProfileGroup(models.Model):
 	name = models.CharField(max_length=128, unique=True)
 	members = models.ManyToManyField('Profile', null=True, blank=True)
 
+
 class Conversation(models.Model):
 
     sender = models.ForeignKey(User, related_name="sender")
