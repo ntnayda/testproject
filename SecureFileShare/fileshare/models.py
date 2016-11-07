@@ -37,3 +37,24 @@ class Report(models.Model):
 	]
 
 	accessibilty = models.CharField(choices=ACCESSIBILITY_CHOICES, default="Public")'''
+
+
+class Conversation(models.Model):
+
+    sender = models.ForeignKey(User, related_name="sender")
+    reciever = models.ForeignKey(User,related_name="reciever")
+    reciever_name = models.CharField(max_length=128)
+    recently_used = models.DateTimeField(auto_now_add=True)
+    messages = models.ManyToManyField('Message',blank=True)
+
+    def __str__(self):
+        return self.reciever_name
+
+class Message(models.Model):
+    owned_by = models.ForeignKey('Conversation')
+    sender = models.ForeignKey(User)
+    time = models.DateTimeField(auto_now_add=True)
+    content = models.CharField(max_length = 1000)
+
+    def __str__(self):
+        return self.content

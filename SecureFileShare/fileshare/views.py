@@ -14,6 +14,7 @@ from django.http import HttpResponseRedirect, QueryDict
 from . import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import update_session_auth_hash
+from . import models
 
 # Create your views here.
 
@@ -35,6 +36,9 @@ def account_update_success(request):
 def account(request):
     return render(request,'fileshare/account.html')
 
+def messages(request):
+    conversation_list = models.Conversation.objects.all()
+    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list})
 
 def update_profile(request):
 
@@ -74,45 +78,3 @@ def password_change(request):
     return render(request,"fileshare/changepassword.html",context)
 
 
-"""
-@sensitive_post_parameters()
-@csrf_protect
-@login_required
-def password_change(request):
-
-    if request.method == "POST":
-        form = auth_forms.password_change_form(user=request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            # Updating the password logs out all other sessions for the user
-            # except the current one if
-            # django.contrib.auth.middleware.SessionAuthenticationMiddleware
-            # is enabled.
-            update_session_auth_hash(request, form.user)
-            return HttpResponseRedirect('/login')
-    else:
-        form = auth_forms.password_change_form(user=request.user)
-    context = {
-        'form': form,
-        'title': ('Password change'),
-    }
-
-    return TemplateResponse(request, template_name, request.context)
-
-
-
-@login_required
-[docs]def password_change_done(request,
-                         template_name='registration/password_change_done.html',
-                         current_app=None, extra_context=None):
-    context = {
-        'title': _('Password change successful'),
-    }
-    if extra_context is not None:
-        context.update(extra_context)
-
-    if current_app is not None:
-        request.current_app = current_app
-
-    return TemplateResponse(request, template_name, context)
-"""

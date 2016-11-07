@@ -20,6 +20,7 @@ urlpatterns = [
     url('^account/view',views.account,name='account'),
     url('^account/update',views.update_profile,name='accountupdate'),
     url('^account/changepassword',views.password_change,name='password_change'),
+    url('^messages',views.messages,name='messages'),
     #url('^account/changepassword',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     #url('^account/changepassworddone',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
