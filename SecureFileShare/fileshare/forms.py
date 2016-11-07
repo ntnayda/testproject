@@ -60,3 +60,13 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
         fields = ['short_desc', 'long_desc', 'private', 'file_attached']
+
+class UpdateProfile(forms.ModelForm):
+
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ( 'first_name', 'last_name','email',)
