@@ -1,8 +1,10 @@
-from django.conf.urls import include, url
+from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -18,4 +20,4 @@ urlpatterns = [
     url(r'^accounts/profile',RedirectView.as_view(url='/main')),
     #url(r'^',include('django.contrib.auth.urls')),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -30,5 +30,4 @@ urlpatterns = [
     #url(r'^test',views.signin,name='signin'),
     #url(r'^',include('django.contrib.auth.urls')),
     url('^test', views.update_profile,name='updateprofile'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+]

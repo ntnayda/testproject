@@ -16,6 +16,9 @@ from . import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import update_session_auth_hash
 from . import models
+from django.core.files.storage import FileSystemStorage
+import datetime
+
 
 # Create your views here.
 
@@ -28,13 +31,20 @@ def profile(request):
 @login_required(login_url='login')
 def main(request):
 	if request.method == 'POST':
-		report_form = ReportForm(request.POST)
+		report_form = ReportForm(request.POST, request.FILES)
 
 		if report_form.is_valid():
-			report = report_form.save(commit=False)
-			report.owned_by = request.user
-			#report.group = None
-			report.save()
+			#newdoc = models.Report(request.FILES.get('file_attached', False))
+			newdoc = models.Report.objects.create(
+				owned_by = request.user,
+				created = datetime.datetime.now(),
+				file_attached = request.FILES.get('file_attached'),
+				short_desc = report_form.cleaned_data['short_desc'],
+				long_desc = report_form.cleaned_data['long_desc']
+			)
+			
+			newdoc.save()
+
 			return redirect('main')
 	else:
 		report_form = ReportForm()

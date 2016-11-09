@@ -23,12 +23,15 @@ post_save.connect(create_user_profile, sender=User)
 # Create Reports model
 class Report(models.Model):
 
+	datetime = '%Y/%m/%d'
+
 	owned_by = models.ForeignKey(User)
 	created = models.DateTimeField(auto_now_add=True)
-	short_desc = models.CharField(max_length=128)
-	long_desc = models.TextField()
-	private = models.BooleanField(default=False)
-	file_attached = models.FileField(upload_to='documents/%Y/%m/%d', blank=True)
+	short_desc = models.CharField("Title", max_length=128)
+	long_desc = models.TextField("Description")
+	private = models.BooleanField("Restrict access to this file?", default=False)
+	file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
+	#file_link = models.URLField()
 	#group = models.ForeignKey('ProfileGroup', blank=True)	
 	
 	'''ACCESSIBILITY_CHOICES = [
