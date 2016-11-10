@@ -11,6 +11,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     #group_member_of = models.ManyToManyField('Group', blank=True)
     reports_owned = models.ManyToManyField('Report', blank=True)
+
+    def get_reports(self):
+        return "\n".join([report.short_desc for report in self.reports_owned.all()])
     
 
 
@@ -27,19 +30,14 @@ class Report(models.Model):
 
 	owned_by = models.ForeignKey(User)
 	created = models.DateTimeField(auto_now_add=True)
-	short_desc = models.CharField("Title", max_length=128)
+	short_desc = models.CharField("Title", max_length=128, unique=True)
 	long_desc = models.TextField("Description")
 	private = models.BooleanField("Restrict access to this file?", default=False)
 	file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
 	#file_link = models.URLField()
-	#group = models.ForeignKey('ProfileGroup', blank=True)	
-	
-	'''ACCESSIBILITY_CHOICES = [
-		('Public', 'Can be seen by any user of the system.')
-		('Private', 'Can only be seen by those given access.')
-	]
+	#group = models.ForeignKey('ProfileGroup', blank=True)
 
-	accessibilty = models.CharField(choices=ACCESSIBILITY_CHOICES, default="Public")'''
+    
 
 class ProfileGroup(models.Model):
 

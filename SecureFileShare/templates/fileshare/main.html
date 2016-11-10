@@ -19,6 +19,18 @@
 				<input type="submit" value="Create Report" /> 
 			</form>
 		</div>
+
+		<div class="jumbotron">
+			<h2><b>Your Reports<b></h2>
+			
+			{% if num_reports == 0 %}
+				You have no reports.
+			{% else %}
+				{% for r in reports %}
+					<li>{{ r.short_desc }}</li>
+				{% endfor %}
+			{% endif %}
+		</div>
 	</div>
 
 </div>
