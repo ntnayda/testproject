@@ -1,4 +1,6 @@
 from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.conf import settings
 from . import views
 from django.contrib.auth import forms
 from django.contrib.auth import views as auth_views
@@ -24,5 +26,8 @@ urlpatterns = [
     #url('^account/changepassword',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     #url('^account/changepassworddone',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),
+    url('^test', CreateView.as_view(template_name='fileshare/test.html',form_class=signup_form,success_url='/fileshare/register/success')),
+    #url(r'^test',views.signin,name='signin'),
+    #url(r'^',include('django.contrib.auth.urls')),
     url('^test', views.update_profile,name='updateprofile'),
 ]

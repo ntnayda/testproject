@@ -9,12 +9,13 @@ class Profile(models.Model):
     # Django automatically creates a primary key ID... No need to create one here
 
     user = models.OneToOneField(User)
-    group = models.CharField(max_length=128, default=None, null=True, blank=True)
+    #group_member_of = models.ManyToManyField('Group', blank=True)
     reports_owned = models.ManyToManyField('Report', blank=True)
+
+    def get_reports(self):
+        return "\n".join([report.short_desc for report in self.reports_owned.all()])
     
 
-    def __str__(self):
-    	return self.firstName + " " + self.lastName
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -25,18 +26,23 @@ post_save.connect(create_user_profile, sender=User)
 # Create Reports model
 class Report(models.Model):
 
-	owned_by = models.ForeignKey('Profile')
-	created = models.DateTimeField(auto_now_add=True)
-	short_desc = models.CharField(max_length=128)
-	long_desc = models.TextField()
-	file_attached = models.CharField(max_length=128) # will eventually be a field that holds any file type
-	
-	'''ACCESSIBILITY_CHOICES = [
-		('Public', 'Can be seen by any user of the system.')
-		('Private', 'Can only be seen by those given access.')
-	]
+	datetime = '%Y/%m/%d'
 
-	accessibilty = models.CharField(choices=ACCESSIBILITY_CHOICES, default="Public")'''
+	owned_by = models.ForeignKey(User)
+	created = models.DateTimeField(auto_now_add=True)
+	short_desc = models.CharField("Title", max_length=128, unique=True)
+	long_desc = models.TextField("Description")
+	private = models.BooleanField("Restrict access to this file?", default=False)
+	file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
+	#file_link = models.URLField()
+	#group = models.ForeignKey('ProfileGroup', blank=True)
+
+    
+
+class ProfileGroup(models.Model):
+
+	name = models.CharField(max_length=128, unique=True)
+	members = models.ManyToManyField('Profile', null=True, blank=True)
 
 
 class Conversation(models.Model):
@@ -58,3 +64,4 @@ class Message(models.Model):
 
     def __str__(self):
         return self.messagecontent
+

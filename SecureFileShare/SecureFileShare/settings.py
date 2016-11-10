@@ -110,3 +110,7 @@ LOGIN_REDIRECT_URL = 'main'
 
 # Specifying User profile
 AUTH_PROFILE_MODULE = 'fileshare.Profile'
+
+# Filesystem path to the directory that will hold user-uploaded files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

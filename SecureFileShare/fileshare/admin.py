@@ -15,5 +15,6 @@ class UserAdmin(BaseUserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Report)
+admin.site.register(ProfileGroup)
 admin.site.register(Conversation)
 admin.site.register(Message)

@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from .forms import ReportForm
 from django.shortcuts import resolve_url
 from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url, urlsafe_base64_decode
@@ -15,6 +16,9 @@ from . import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import update_session_auth_hash
 from . import models
+from django.core.files.storage import FileSystemStorage
+import datetime
+
 
 # Create your views here.
 
@@ -26,7 +30,33 @@ def profile(request):
 
 @login_required(login_url='login')
 def main(request):
-    return render(request,'fileshare/main.html')
+	
+    reports = models.Report.objects.filter(owned_by=request.user)
+    num_reports = len(reports)
+
+    if request.method == 'POST':
+        report_form = ReportForm(request.POST, request.FILES)
+
+        if report_form.is_valid():
+			#newdoc = models.Report(request.FILES.get('file_attached', False))
+            newdoc = models.Report.objects.create(
+				owned_by = request.user,
+				created = datetime.datetime.now(),
+				file_attached = request.FILES.get('file_attached'),
+				short_desc = report_form.cleaned_data['short_desc'],
+				long_desc = report_form.cleaned_data['long_desc']
+			)
+            newdoc.save()
+
+            return redirect('main')
+	
+    else:
+        report_form = ReportForm()
+
+
+
+
+    return render(request, 'fileshare/main.html', {'report_form': report_form, 'reports': reports, 'num_reports': num_reports})
 
 @login_required(login_url='login')
 def account_update_success(request):
@@ -81,5 +111,3 @@ def password_change(request):
         "form": form
     }
     return render(request,"fileshare/changepassword.html",context)
-
-

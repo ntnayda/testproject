@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
+from fileshare.models import *
 
 from django import forms
 
@@ -55,6 +56,10 @@ class signup_form(forms.ModelForm):
             user.save()
         return user
 
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['short_desc', 'long_desc', 'private', 'file_attached']
 
 class UpdateProfile(forms.ModelForm):
 
