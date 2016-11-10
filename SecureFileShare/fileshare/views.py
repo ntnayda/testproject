@@ -37,8 +37,13 @@ def account(request):
     return render(request,'fileshare/account.html')
 
 def messages(request):
-    conversation_list = models.Conversation.objects.all()
-    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list})
+    user = request.user
+    conversation_list = models.Conversation.objects.all().filter(sender=user) | models.Conversation.objects.all().filter(reciever=user)
+    message_list = []
+    for convo in conversation_list:
+        message_list.append(models.Message.objects.all().filter(owned_by=convo))
+
+    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list})
 
 def update_profile(request):
 

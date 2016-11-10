@@ -6,12 +6,11 @@
 {% block content %}
 {% load staticfiles %}
 <link href="{% static 'css/messagescss.css' %}" rel="stylesheet">
-<div class="container">
-<div class="row">
 
-<div >
+
+<div align="left">
   <script src="https://use.fontawesome.com/45e03a14ce.js"></script>
-<div class="main_section">
+<div class="pull-left" id="themasterdiv">
    <div class="container">
       <div class="chat_container">
          <div class="col-sm-3 chat_sidebar">
@@ -44,22 +43,23 @@
                </ul>
             </div>
             <div class="member_list">
-               <ul class="list-unstyled">
-                  <li class="left clearfix">
-                    {% if conversation_list %}
+               <ul class="list-unstyled" id="conversationlist">
+                  {% if conversation_list %}
                     {% for conversation in conversation_list %}
-
+                 <li class="left clearfix" onclick="loadMessages(this)">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
                            <strong class="primary-font">{{conversation.reciever_name}}</strong> <strong class="pull-right">
-                           {{conversation.recently_used}}</strong>
+                           {{conversation.recently_used.time}}</strong>
                         </div>
                         <div class="contact_sec">
-                           <strong class="primary-font">(123) 123-456</strong> <span class="badge pull-right">3</span>
+                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.count}}</span>
                         </div>
                      </div>
+                  </li>
                     {% endfor %}
                     {% else %}
+                 <li class="left clearfix">
                     <div class="chat-body clearfix">
                         <div class="header_sec">
                            <strong class="primary-font">No Conversations Available.</strong> <strong class="pull-right">
@@ -69,8 +69,9 @@
                            <strong class="primary-font"></strong> <span class="badge pull-right"></span>
                         </div>
                      </div>
+                 </li>
                     {% endif %}
-                  </li>
+
                </ul>
             </div></div>
          </div>
@@ -94,40 +95,7 @@
 		 </div><!--new_message_head-->
 
 		 <div class="chat_area">
-		 <ul class="list-unstyled">
-		 <li class="left clearfix">
-
-                     <div class="chat-body2 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-						<div class="chat_time pull-right">09:40PM</div>
-                     </div>
-                  </li>
-				   <li class="left clearfix">
-                     <div class="chat-body2 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-						<div class="chat_time pull-right">09:40PM</div>
-                     </div>
-                  </li>
-                     <li class="left clearfix">
-                     <div class="chat-body2 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-    					<div class="chat_time pull-right">09:40PM</div>
-                     </div>
-                  </li>
-				  <li class="left clearfix admin_chat">
-                     <div class="chat-body1 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-						<div class="chat_time pull-left">09:40PM</div>
-                     </div>
-                  </li>
-                  <li class="left clearfix admin_chat">
-                     <div class="chat-body1 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-    					<div class="chat_time pull-left">09:40PM</div>
-                     </div>
-                  </li>
-
-
+		 <ul class="list-unstyled" id="messagelist">
 
 
 		 </ul>
@@ -146,6 +114,85 @@
    </div>
 </div>
 </div>
-</div>
-</div>
+
+<script>
+
+   var messagestoload = [];
+    {% if message_list %}
+      {% for m in message_list %}
+        var currentconvo = [];
+          {% for cm in m %}
+              var currentmessage = ["{{cm.messagecontent}}","{{cm.time}}",false];
+              {% if cm.sender == user %}
+                currentmessage[2]=true;
+              {% endif %}
+            currentconvo.push(currentmessage);
+          {% endfor %}
+        messagestoload.push(currentconvo);
+      {% endfor %}
+    {% endif %}
+
+
+
+  function loadMessages(elmnt) {
+    var convos = document.getElementById("conversationlist").children;
+    elmnt.style.backgroundColor = '#2E86C1';
+    elmnt.style.color = 'white';
+
+    var convocount = document.getElementById("conversationlist").childElementCount;
+    var convo = 0;
+    while (elmnt != convos.item(convo) && convo < convocount ) {
+      convo++
+    }
+
+    var table = document.getElementById("messagelist");
+    table.innerHTML = '';
+    if(messagestoload) {
+      var i = messagestoload[convo].length - 1;
+      for (i; i >= 0; i--) {
+        var item = document.createElement("li");
+        if (messagestoload[convo][i][2]) {
+          item.setAttribute("class", "left clearfix");
+        }
+        else {
+          item.setAttribute("class", "left clearfix admin_chat");
+        }
+
+        item.appendChild(document.createElement("div"));
+        if (messagestoload[convo][i][2]) {
+          item.firstElementChild.setAttribute("class", "chat-body2 clearfix");
+        }
+        else {
+          item.firstElementChild.setAttribute("class", "chat-body1 clearfix");
+        }
+
+        item.firstElementChild.appendChild(document.createElement("p"));
+        item.firstElementChild.firstElementChild.innerText = messagestoload[convo][i][0];
+        item.firstElementChild.appendChild(document.createElement("div"));
+        if (messagestoload[convo][i][2]) {
+          item.firstElementChild.children[1].setAttribute("class", "chat_time pull-right");
+        }
+        else {
+          item.firstElementChild.children[1].setAttribute("class", "chat_time pull-left");
+        }
+
+        item.firstElementChild.children[1].innerText = messagestoload[convo][i][1];
+        table.appendChild(item);
+      }
+    }
+    else {
+
+
+    }
+  }
+
+</script>
+
+
+
+
+{% endblock %}
+
+{% block javascript %}
+
 {% endblock %}

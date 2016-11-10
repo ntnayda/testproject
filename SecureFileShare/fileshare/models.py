@@ -54,7 +54,7 @@ class Message(models.Model):
     owned_by = models.ForeignKey('Conversation')
     sender = models.ForeignKey(User)
     time = models.DateTimeField(auto_now_add=True)
-    content = models.CharField(max_length = 1000)
+    messagecontent = models.CharField(max_length = 1000)
 
     def __str__(self):
-        return self.content
+        return self.messagecontent
