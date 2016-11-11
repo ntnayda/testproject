@@ -14,9 +14,15 @@
 			{% if num_reports == 0 %}
 				You have no reports.
 			{% else %}
+				<table border="1" width="50%">
+				<tr>
+					<th>Created</th>
+					<th>Title</th>
+				</tr>
 				{% for r in reports %}
-					<li>{{ r.short_desc }}</li>
+					<tr><td>{{ r.created }}</td><td>{{ r.short_desc }}</td></tr>
 				{% endfor %}
+			</table>
 			{% endif %}
 		</div>
 	</div>
