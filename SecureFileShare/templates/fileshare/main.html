@@ -8,18 +8,6 @@
 			<p>You are on your Dashboard</p>
 		</div>
 
-
-		<div class="jumbotron">
-			<h2><b>Create a Report</b></h2>
-			<form method="POST" action="" enctype="multipart/form-data">
-				{% csrf_token %}
-				<table>
-					{{ report_form.as_p }}
-				</table>
-				<input type="submit" value="Create Report" /> 
-			</form>
-		</div>
-
 		<div class="jumbotron">
 			<h2><b>Your Reports<b></h2>
 			
@@ -33,5 +21,4 @@
 		</div>
 	</div>
 
-</div>
 {% endblock %}

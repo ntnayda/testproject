@@ -34,29 +34,30 @@ def main(request):
     reports = models.Report.objects.filter(owned_by=request.user)
     num_reports = len(reports)
 
+    return render(request, 'fileshare/main.html', {'reports': reports, 'num_reports': num_reports})
+
+def create_report(request):
+    
     if request.method == 'POST':
         report_form = ReportForm(request.POST, request.FILES)
 
         if report_form.is_valid():
-			#newdoc = models.Report(request.FILES.get('file_attached', False))
+            #newdoc = models.Report(request.FILES.get('file_attached', False))
             newdoc = models.Report.objects.create(
-				owned_by = request.user,
-				created = datetime.datetime.now(),
-				file_attached = request.FILES.get('file_attached'),
-				short_desc = report_form.cleaned_data['short_desc'],
-				long_desc = report_form.cleaned_data['long_desc']
-			)
+                owned_by = request.user,
+                created = datetime.datetime.now(),
+                file_attached = request.FILES.get('file_attached'),
+                short_desc = report_form.cleaned_data['short_desc'],
+                long_desc = report_form.cleaned_data['long_desc']
+            )
             newdoc.save()
 
             return redirect('main')
-	
+    
     else:
         report_form = ReportForm()
 
-
-
-
-    return render(request, 'fileshare/main.html', {'report_form': report_form, 'reports': reports, 'num_reports': num_reports})
+    return render(request, 'fileshare/create_report.html', {'report_form': report_form})
 
 @login_required(login_url='login')
 def account_update_success(request):
