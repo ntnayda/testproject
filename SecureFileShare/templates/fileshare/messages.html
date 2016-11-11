@@ -33,17 +33,13 @@
                  <li class="left clearfix" onclick="loadMessages(this)" ">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
-                          {% if conversation.sender == user %}
                            <strong class="primary-font">{{conversation.reciever}}</strong>
-                          {% else %}
-                          <strong class="primary-font">{{conversation.sender}}</strong>
-                          {% endif %}
                           <strong class="pull-right">
                            {{conversation.recently_used}}</strong><p class="hidden" id="convoname">{{conversation.reciever_name}}</p>
 
                         </div>
                         <div class="contact_sec">
-                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.count}}</span>
+                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.length}}</span>
                         </div>
                      </div>
                   </li>
@@ -129,6 +125,7 @@
    var isnewmessage = false;
 
   function loadMessages(elmnt) {
+
     var convos = document.getElementById("conversationlist").children;
     if(isnewmessage) {
         document.getElementById("newmessagerecepient").setAttribute("class","hidden");
@@ -165,6 +162,7 @@
         item.appendChild(document.createElement("div"));
         if (messagestoload[convo][i][2]) {
           item.firstElementChild.setAttribute("class", "chat-body2 clearfix");
+            item.firstElementChild.style.color = 'white';
         }
         else {
           item.firstElementChild.setAttribute("class", "chat-body1 clearfix");
@@ -181,6 +179,9 @@
         }
 
         item.firstElementChild.children[1].innerText = messagestoload[convo][i][1];
+          item.firstElementChild.children[1].style.color = 'black';
+
+
         table.appendChild(item);
       }
       var scrolldiv = document.getElementById("themessagearea");
@@ -273,8 +274,9 @@
 
   function pageload() {
       //load messages
+      {% if conversation_list %}
       loadMessages(document.getElementById("conversationlist").children[0]);
-
+      {% endif %}
       //load recepient list
       var recepientlistinit = document.getElementById("id_sender");
       var recepientlist = recepientlistinit.cloneNode(true);
