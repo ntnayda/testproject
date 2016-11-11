@@ -70,3 +70,11 @@ class UpdateProfile(forms.ModelForm):
     class Meta:
         model = User
         fields = ( 'first_name', 'last_name','email',)
+
+
+class messageForm(forms.ModelForm):
+    messagecontent = forms.CharField(required=True)
+    class Meta:
+        model = Message
+        fields = ('owned_by','sender','messagecontent',)
+

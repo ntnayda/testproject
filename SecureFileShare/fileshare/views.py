@@ -18,7 +18,7 @@ from django.contrib.auth import update_session_auth_hash
 from . import models
 from django.core.files.storage import FileSystemStorage
 import datetime
-
+from django import forms as djangoforms
 
 # Create your views here.
 
@@ -68,12 +68,35 @@ def account(request):
 
 def messages(request):
     user = request.user
-    conversation_list = models.Conversation.objects.all().filter(sender=user) | models.Conversation.objects.all().filter(reciever=user)
+    form = forms.messageForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
+                                                       sender=user,
+                                                       messagecontent=request.POST['messagecontent'],
+                                                       time=datetime.datetime.now())
+            newmessage.save()
+            convo = form.cleaned_data['owned_by']
+            convo.recently_used = newmessage.time
+            convo.save()
+            conversation_list = (models.Conversation.objects.all().filter(
+                sender=user) | models.Conversation.objects.all().filter(reciever=user)).order_by('recently_used').reverse()
+            message_list = []
+            for convo in conversation_list:
+                message_list.append(models.Message.objects.all().filter(owned_by=convo))
+
+            return redirect("/messages")
+            #return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list,'form':forms.messageForm(),'send_pressed':True})
+
+
+    conversation_list = (models.Conversation.objects.all().filter(sender=user) | models.Conversation.objects.all().filter(reciever=user)).order_by('recently_used').reverse()
     message_list = []
     for convo in conversation_list:
         message_list.append(models.Message.objects.all().filter(owned_by=convo))
 
-    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list})
+    forms.messageForm.base_fields['owned_by'] = djangoforms.ModelChoiceField(queryset=conversation_list)
+    form = forms.messageForm()
+    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list,'form':form})
 
 def update_profile(request):
 

@@ -50,7 +50,7 @@ class Conversation(models.Model):
     sender = models.ForeignKey(User, related_name="sender")
     reciever = models.ForeignKey(User,related_name="reciever")
     reciever_name = models.CharField(max_length=128)
-    recently_used = models.DateTimeField(auto_now_add=True)
+    recently_used = models.DateTimeField()
     messages = models.ManyToManyField('Message',blank=True)
 
     def __str__(self):

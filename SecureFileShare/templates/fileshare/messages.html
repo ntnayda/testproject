@@ -24,33 +24,23 @@
                </div>
             </div>
             <div class="dropdown all_conversation">
-               <button class="dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-               <i class="fa fa-weixin" aria-hidden="true"></i>
-               All Conversations
-               <span class="caret pull-right"></span>
-               </button>
-               <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                  <li><a href="#"> All Conversation </a>  <ul class="sub_menu_ list-unstyled">
-                  <li><a href="#"> All Conversation </a> </li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li><a href="#">Separated link</a></li>
-               </ul>
-			   </li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li><a href="#">Separated link</a></li>
-               </ul>
+
             </div>
             <div class="member_list">
                <ul class="list-unstyled" id="conversationlist">
                   {% if conversation_list %}
                     {% for conversation in conversation_list %}
-                 <li class="left clearfix" onclick="loadMessages(this)">
+                 <li class="left clearfix" onclick="loadMessages(this)" ">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
-                           <strong class="primary-font">{{conversation.reciever_name}}</strong> <strong class="pull-right">
-                           {{conversation.recently_used.time}}</strong>
+                          {% if conversation.sender == user %}
+                           <strong class="primary-font">{{conversation.reciever}}</strong>
+                          {% else %}
+                          <strong class="primary-font">{{conversation.sender}}</strong>
+                          {% endif %}
+                          <strong class="pull-right">
+                           {{conversation.recently_used}}</strong><p class="hidden" id="convoname">{{conversation.reciever_name}}</p>
+
                         </div>
                         <div class="contact_sec">
                            <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.count}}</span>
@@ -82,39 +72,40 @@
 		 <div class="row">
 		 <div class="new_message_head">
 		 <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button></div><div class="pull-right"><div class="dropdown">
-  <button class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fa fa-cogs" aria-hidden="true"></i>  Setting
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Profile</a></li>
-    <li><a href="#">Logout</a></li>
-  </ul>
+
+
 </div></div>
 		 </div><!--new_message_head-->
 
-		 <div class="chat_area">
+		 <div class="chat_area" id="themessagearea">
 		 <ul class="list-unstyled" id="messagelist">
 
 
 		 </ul>
 		 </div><!--chat_area-->
           <div class="message_write">
-    	 <textarea class="form-control" placeholder="type a message"></textarea>
+    	 <textarea class="form-control" placeholder="type a message" id="typedtext"></textarea>
 		 <div class="clearfix"></div>
-		 <div class="chat_bottom"><a href="#" class="pull-left upload_btn"><i class="fa fa-cloud-upload" aria-hidden="true"></i>
- Add Files</a>
- <a href="#" class="pull-right btn btn-success">
- Send</a></div>
+		 <div class="chat_bottom">
+ <button onclick="sendMessage()" class="pull-right btn btn-success">
+ Send</button></div>
 		 </div>
 		 </div>
          </div> <!--message_section-->
       </div>
    </div>
 </div>
-</div>
 
+
+</div>
+<form  class="hidden" id="hiddenmessageform" method="post" action="/messages">
+{% csrf_token %}
+
+{{ form.as_p }}
+
+<input id="thesubmitbutton" class="btn btn-success btn-sm" type="submit" value="HiddenSubmit" />
+
+</form>
 <script>
 
    var messagestoload = [];
@@ -132,19 +123,25 @@
       {% endfor %}
     {% endif %}
 
-
+  var sendee = -1;
 
   function loadMessages(elmnt) {
     var convos = document.getElementById("conversationlist").children;
+
     elmnt.style.backgroundColor = '#2E86C1';
     elmnt.style.color = 'white';
+    if (sendee != -1) {
 
+    var lastconvo = convos.item(sendee);
+      lastconvo.style.backgroundColor = '';
+      lastconvo.style.color = 'black';
+    }
     var convocount = document.getElementById("conversationlist").childElementCount;
     var convo = 0;
     while (elmnt != convos.item(convo) && convo < convocount ) {
       convo++
     }
-
+    sendee = convo;
     var table = document.getElementById("messagelist");
     table.innerHTML = '';
     if(messagestoload) {
@@ -179,12 +176,47 @@
         item.firstElementChild.children[1].innerText = messagestoload[convo][i][1];
         table.appendChild(item);
       }
+      var scrolldiv = document.getElementById("themessagearea");
+      scrolldiv.scrollTop = scrolldiv.scrollHeight;
     }
     else {
 
 
     }
   }
+
+  function sendMessage() {
+
+    var text = document.getElementById("typedtext").value;
+
+    if (sendee != -1 && text) {
+      var convolist = document.getElementById("conversationlist");
+      var convoitem = convolist.children[sendee];
+      var convoselect = document.getElementById("id_owned_by");
+
+      var convoname = convoitem.firstElementChild.firstElementChild.children[2];
+
+      for (i = 0; i < convoselect.childElementCount; i++) {
+
+        if (convoname.innerText.valueOf() == convoselect.children[i].innerText.valueOf()) {
+          convoselect.value = convoselect.children[i].getAttribute("value");
+          break;
+        }
+      }
+      document.getElementById("id_messagecontent").value = text;
+      document.getElementById("id_sender").value = 1;
+      document.getElementById("hiddenmessageform").submit();
+    }
+    else {
+      alert("failure!");
+    }
+
+
+  }
+
+    document.onload = loadMessages(document.getElementById("conversationlist").children[0]);
+
+
 
 </script>
 
