@@ -71,11 +71,13 @@
          <div class="col-sm-9 message_section">
 		 <div class="row">
 		 <div class="new_message_head">
-		 <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button></div><div class="pull-right"><div class="dropdown">
+             <button onclick="newMessage()"><i  class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button><span padding="50px" display="inline-block" id="newmessagebar"  ></span>
+		 <span id="cancelbutton" class="hidden"><button onclick="cancelPressed()" type="button" class="btn btn-default btn-md">
+  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+</button></span>
+         </div>
+		 <!--new_message_head-->
 
-
-</div></div>
-		 </div><!--new_message_head-->
 
 		 <div class="chat_area" id="themessagearea">
 		 <ul class="list-unstyled" id="messagelist">
@@ -98,7 +100,7 @@
 
 
 </div>
-<form  class="hidden" id="hiddenmessageform" method="post" action="/messages">
+<form class="hidden"  id="hiddenmessageform" method="post" action="/messages">
 {% csrf_token %}
 
 {{ form.as_p }}
@@ -124,10 +126,15 @@
     {% endif %}
 
   var sendee = -1;
+   var isnewmessage = false;
 
   function loadMessages(elmnt) {
     var convos = document.getElementById("conversationlist").children;
-
+    if(isnewmessage) {
+        document.getElementById("newmessagerecepient").setAttribute("class","hidden");
+        document.getElementById("cancelbutton").setAttribute("class","hidden");
+      isnewmessage=false;
+    }
     elmnt.style.backgroundColor = '#2E86C1';
     elmnt.style.color = 'white';
     if (sendee != -1) {
@@ -203,9 +210,34 @@
           break;
         }
       }
+
       document.getElementById("id_messagecontent").value = text;
       document.getElementById("id_sender").value = 1;
       document.getElementById("hiddenmessageform").submit();
+
+    }
+
+    else if(isnewmessage && text) {
+        var convolist = document.getElementById("conversationlist").children;
+        var convoselect = document.getElementById("id_owned_by");
+        var username = document.getElementById("newmessagerecepient").options[document.getElementById("newmessagerecepient").selectedIndex].text;
+        document.getElementById("id_newmessagefield").value = "Yes";
+        for (i=0;i<convolist.length;i++){
+            if (convolist[i].firstElementChild.firstElementChild.children[0].innerText == username) {
+                sendee = i;
+                document.getElementById("id_newmessagefield").value = "";
+                cancelPressed();
+                sendMessage();
+                break;
+            }
+        }
+
+        convoselect.value = 1;
+        var sendselect = document.getElementById("id_sender");
+        sendselect.value = document.getElementById("newmessagerecepient").value;
+        document.getElementById("id_messagecontent").value = text;
+        document.getElementById("hiddenmessageform").submit();
+
     }
     else {
       alert("failure!");
@@ -214,7 +246,48 @@
 
   }
 
-    document.onload = loadMessages(document.getElementById("conversationlist").children[0]);
+  function newMessage() {
+    if (sendee != -1) {
+    var convos = document.getElementById("conversationlist").children;
+    var lastconvo = convos.item(sendee);
+      lastconvo.style.backgroundColor = '';
+      lastconvo.style.color = 'black';
+    }
+    sendee = -1;
+
+    isnewmessage = true;
+    var recepientlist = document.getElementById("newmessagerecepient");
+      recepientlist.setAttribute("class","");
+    var table = document.getElementById("messagelist");
+    table.innerHTML = '';
+      document.getElementById("cancelbutton").setAttribute("class","");
+
+
+  }
+  function cancelPressed() {
+      document.getElementById("newmessagerecepient").setAttribute("class","hidden");
+        document.getElementById("cancelbutton").setAttribute("class","hidden");
+      isnewmessage=false;
+  }
+
+
+  function pageload() {
+      //load messages
+      loadMessages(document.getElementById("conversationlist").children[0]);
+
+      //load recepient list
+      var recepientlistinit = document.getElementById("id_sender");
+      var recepientlist = recepientlistinit.cloneNode(true);
+      var messagebar = document.getElementById("newmessagebar");
+      recepientlist.setAttribute("id","newmessagerecepient");
+      //recepientlist.setAttribute("margin","50px");
+      //recepientlist.setAttribute("padding","50px");
+      recepientlist.setAttribute("class","hidden");
+      messagebar.insertBefore(recepientlist,messagebar.firstElementChild);
+
+
+  }
+    document.onload = pageload();
 
 
 

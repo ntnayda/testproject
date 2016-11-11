@@ -70,7 +70,22 @@ def messages(request):
     user = request.user
     form = forms.messageForm(request.POST or None)
     if request.method == 'POST':
-        if form.is_valid():
+        if (request.POST['newmessagefield']=="Yes"):
+            newconvo = models.Conversation.objects.create(sender=user,
+                                                          reciever=models.User.objects.get(id=request.POST['sender']),
+                                                          reciever_name=user.username + "-" + models.User.objects.get(id=request.POST[
+                                                              'sender']).username,
+                                                          recently_used=datetime.datetime.now()
+                                                          )
+            newconvo.save()
+            newmessage = models.Message.objects.create(owned_by=newconvo,
+                                                       sender=user,
+                                                       messagecontent=request.POST['messagecontent'],
+                                                       time=datetime.datetime.now())
+            newmessage.save()
+            return redirect("/messages")
+
+        elif form.is_valid():
             newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
                                                        sender=user,
                                                        messagecontent=request.POST['messagecontent'],
@@ -79,22 +94,18 @@ def messages(request):
             convo = form.cleaned_data['owned_by']
             convo.recently_used = newmessage.time
             convo.save()
-            conversation_list = (models.Conversation.objects.all().filter(
-                sender=user) | models.Conversation.objects.all().filter(reciever=user)).order_by('recently_used').reverse()
-            message_list = []
-            for convo in conversation_list:
-                message_list.append(models.Message.objects.all().filter(owned_by=convo))
-
             return redirect("/messages")
-            #return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list,'form':forms.messageForm(),'send_pressed':True})
+
+
+
 
 
     conversation_list = (models.Conversation.objects.all().filter(sender=user) | models.Conversation.objects.all().filter(reciever=user)).order_by('recently_used').reverse()
     message_list = []
     for convo in conversation_list:
-        message_list.append(models.Message.objects.all().filter(owned_by=convo))
+        message_list.append(models.Message.objects.all().filter(owned_by=convo).order_by('time').reverse)
 
-    forms.messageForm.base_fields['owned_by'] = djangoforms.ModelChoiceField(queryset=conversation_list)
+    forms.messageForm.base_fields['owned_by'] = djangoforms.ModelChoiceField(queryset=conversation_list,required=False)
     form = forms.messageForm()
     return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list,'form':form})
 
@@ -134,3 +145,5 @@ def password_change(request):
         "form": form
     }
     return render(request,"fileshare/changepassword.html",context)
+
+
