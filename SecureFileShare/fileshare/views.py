@@ -83,7 +83,7 @@ def messages(request):
             newmessage = models.Message.objects.create(owned_by=newconvo,
                                                        sender=user,
                                                        messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now())
+                                                       time=datetime.datetime.now(),key=request.POST['thekey'])
             newmessage.save()
 
 
@@ -99,7 +99,7 @@ def messages(request):
             newmessage2 = models.Message.objects.create(owned_by=newconvo2,
                                                        sender=user,
                                                        messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now())
+                                                       time=datetime.datetime.now(),key=request.POST['thekey'])
             newmessage2.save()
             return redirect("/messages")
 
@@ -109,7 +109,7 @@ def messages(request):
             newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
                                                        sender=user,
                                                        messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now())
+                                                       time=datetime.datetime.now(),key=request.POST['thekey'])
             newmessage.save()
             convo = form.cleaned_data['owned_by']
             convo.recently_used = newmessage.time
@@ -120,7 +120,7 @@ def messages(request):
             newmessage2 = models.Message.objects.create(owned_by=convo2,
                                                        sender=user,
                                                        messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now())
+                                                       time=datetime.datetime.now(),key=request.POST['thekey'])
             newmessage2.save()
 
             convo2.recently_used = newmessage.time
@@ -178,3 +178,7 @@ def password_change(request):
     return render(request,"fileshare/changepassword.html",context)
 
 
+def deletemessage(request,message_pk):
+    query = models.Message.objects.get(pk=message_pk)
+    query.delete()
+    return redirect("/messages")

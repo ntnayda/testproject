@@ -31,4 +31,5 @@ urlpatterns = [
     #url(r'^test',views.signin,name='signin'),
     #url(r'^',include('django.contrib.auth.urls')),
     url('^test', views.update_profile,name='updateprofile'),
+    url('^deletemessage/(?P<message_pk>.*)$',views.deletemessage,name="delete_message"),
 ]
