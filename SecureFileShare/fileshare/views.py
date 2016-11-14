@@ -65,9 +65,17 @@ def view_report(request, report_id):
 
     report = get_object_or_404(models.Report, pk=report_id)
 
+    if request.method == "POST":
+        update_form = ReportForm(request.POST, request.FILES, instance=report)
+
+        if update_form.is_valid(): update_form.save()
+
+    else:
+        update_form = ReportForm(instance=report)
 
 
-    return render(request, 'fileshare/view_report.html', {'report': report})
+
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})
 
 @login_required(login_url='login')
 def account_update_success(request):
