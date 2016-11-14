@@ -22,7 +22,7 @@ urlpatterns = [
     url('^account/view',views.account,name='account'),
     url('^account/update',views.update_profile,name='accountupdate'),
     url('^account/changepassword',views.password_change,name='password_change'),
-    url('^messages',views.messages,name='messages'),
+    url('^messages',views.messages, name='messages'),
     url('^create_report',views.create_report,name='create_report'),
     #url('^account/changepassword',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     #url('^account/changepassworddone',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
@@ -30,5 +30,7 @@ urlpatterns = [
     url('^test', CreateView.as_view(template_name='fileshare/test.html',form_class=signup_form,success_url='/fileshare/register/success')),
     #url(r'^test',views.signin,name='signin'),
     #url(r'^',include('django.contrib.auth.urls')),
-    url('^test', views.update_profile,name='updateprofile'),
+    url('^test', views.update_profile, name='updateprofile'),
+    #url('^view_report', views.view_report, name='view_report'),
+    url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report')
 ]

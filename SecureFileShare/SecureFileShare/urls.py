@@ -15,7 +15,7 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^fileshare/',include('fileshare.urls')),
+    url(r'^fileshare/',include('fileshare.urls', namespace="fileshare")),
     url(r'^',include('fileshare.urls')),
     url(r'^accounts/profile',RedirectView.as_view(url='/main')),
     #url(r'^',include('django.contrib.auth.urls')),

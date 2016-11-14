@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.http import HttpResponse
@@ -19,6 +19,8 @@ from . import models
 from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
+from django.core.urlresolvers import reverse
+
 
 # Create your views here.
 
@@ -58,6 +60,14 @@ def create_report(request):
         report_form = ReportForm()
 
     return render(request, 'fileshare/create_report.html', {'report_form': report_form})
+
+def view_report(request, report_id):
+
+    report = get_object_or_404(models.Report, pk=report_id)
+
+
+
+    return render(request, 'fileshare/view_report.html', {'report': report})
 
 @login_required(login_url='login')
 def account_update_success(request):
