@@ -74,7 +74,9 @@ class UpdateProfile(forms.ModelForm):
 
 class messageForm(forms.ModelForm):
     messagecontent = forms.CharField(required=True)
+    newmessagefield = forms.CharField(required=False)
+    thekey = forms.CharField(required=False)
     class Meta:
         model = Message
-        fields = ('owned_by','sender','messagecontent',)
+        fields = ('owned_by','sender','messagecontent','thekey','newmessagefield')
 

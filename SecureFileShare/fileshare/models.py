@@ -61,6 +61,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User)
     time = models.DateTimeField(auto_now_add=True)
     messagecontent = models.CharField(max_length = 1000)
+    key = models.CharField(null=True,max_length=1000)
 
     def __str__(self):
         return self.messagecontent

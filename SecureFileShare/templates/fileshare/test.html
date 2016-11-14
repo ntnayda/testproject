@@ -1,43 +1,24 @@
-{% extends 'fileshare/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Success</title>
+</head>
+<body>
+    {% if message %}
+    <p>{{message}}</p>
+    {% endif %}
+<div class="chat_area" id="themessagearea">
+		 <ul class="list-unstyled" id="messagelist">
+<li class="left clearfix">
+                     <div class="chat-body1 clearfix">
+                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
+						<div class="chat_time pull-right">09:40PM</div>
+                     </div>
+                  </li>
 
+		 </ul>
+		 </div><!--chat_area-->
 
-{% block content %}
-
- <div class="container">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4">
-                <div class="login-panel panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Sign up for an account!</h3>
-                    </div>
-                    <div class="panel-body">
-<form id="signup_form" method="post" action="/fileshare/register/signup"
-                enctype="multipart/form-data">
-
-            {% csrf_token %}
-
-            <!-- Display each form. The as_p method wraps each element in a paragraph
-                 (<p>) element. This ensures each element appears on a new line,
-                 making everything look neater. -->
-            {{ form.as_p }}
-
-            <!-- Provide a button to click to submit the form. -->
-            <input type="submit" name="submit" value="Register" />
-        </form>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-{% endblock %}
-
-{% block javascript %}
-
-<script>
-{% if not user.is_authenticated %}
-$("ul.nav.navbar-nav.navbar-right").css("display","none");
-{% endif %}
-</script>
-
-{% endblock %}
+</body>
+</html>

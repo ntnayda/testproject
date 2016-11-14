@@ -6,6 +6,7 @@
 {% block content %}
 {% load staticfiles %}
 <link href="{% static 'css/messagescss.css' %}" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
 
 
 <div align="left">
@@ -33,17 +34,13 @@
                  <li class="left clearfix" onclick="loadMessages(this)" ">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
-                          {% if conversation.sender == user %}
                            <strong class="primary-font">{{conversation.reciever}}</strong>
-                          {% else %}
-                          <strong class="primary-font">{{conversation.sender}}</strong>
-                          {% endif %}
                           <strong class="pull-right">
                            {{conversation.recently_used}}</strong><p class="hidden" id="convoname">{{conversation.reciever_name}}</p>
 
                         </div>
                         <div class="contact_sec">
-                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.count}}</span>
+                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.length}}</span>
                         </div>
                      </div>
                   </li>
@@ -71,22 +68,29 @@
          <div class="col-sm-9 message_section">
 		 <div class="row">
 		 <div class="new_message_head">
-		 <div class="pull-left"><button><i class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button></div><div class="pull-right"><div class="dropdown">
+             <button onclick="newMessage()"><i  class="fa fa-plus-square-o" aria-hidden="true"></i> New Message</button><span padding="50px" display="inline-block" id="newmessagebar"  ></span>
+		 <span id="cancelbutton" class="hidden"><button onclick="cancelPressed()" type="button" class="btn btn-default btn-md">
+  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+</button></span>
+         </div>
+		 <!--new_message_head-->
 
-
-</div></div>
-		 </div><!--new_message_head-->
 
 		 <div class="chat_area" id="themessagearea">
 		 <ul class="list-unstyled" id="messagelist">
-
+<li class="left clearfix">
+                     <div class="chat-body1 clearfix">
+                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
+						<div class="chat_time pull-right">09:40PM</div>
+                     </div>
+                  </li>
 
 		 </ul>
 		 </div><!--chat_area-->
           <div class="message_write">
     	 <textarea class="form-control" placeholder="type a message" id="typedtext"></textarea>
 		 <div class="clearfix"></div>
-		 <div class="chat_bottom">
+		 <div class="chat_bottom"><span float="right"><input float="right" id="thecheckbox" type="checkbox"  aria-hidden="true" >      Send Encrypted</span>
  <button onclick="sendMessage()" class="pull-right btn btn-success">
  Send</button></div>
 		 </div>
@@ -98,7 +102,7 @@
 
 
 </div>
-<form  class="hidden" id="hiddenmessageform" method="post" action="/messages">
+<form class="hidden"  id="hiddenmessageform" method="post" action="/messages">
 {% csrf_token %}
 
 {{ form.as_p }}
@@ -113,7 +117,7 @@
       {% for m in message_list %}
         var currentconvo = [];
           {% for cm in m %}
-              var currentmessage = ["{{cm.messagecontent}}","{{cm.time}}",false];
+              var currentmessage = ["{{cm.messagecontent}}","{{cm.time}}",false,"{{cm.key}}","{{cm.id}}"];
               {% if cm.sender == user %}
                 currentmessage[2]=true;
               {% endif %}
@@ -124,10 +128,16 @@
     {% endif %}
 
   var sendee = -1;
+   var isnewmessage = false;
 
   function loadMessages(elmnt) {
-    var convos = document.getElementById("conversationlist").children;
 
+    var convos = document.getElementById("conversationlist").children;
+    if(isnewmessage) {
+        document.getElementById("newmessagerecepient").setAttribute("class","hidden");
+        document.getElementById("cancelbutton").setAttribute("class","hidden");
+      isnewmessage=false;
+    }
     elmnt.style.backgroundColor = '#2E86C1';
     elmnt.style.color = 'white';
     if (sendee != -1) {
@@ -158,14 +168,63 @@
         item.appendChild(document.createElement("div"));
         if (messagestoload[convo][i][2]) {
           item.firstElementChild.setAttribute("class", "chat-body2 clearfix");
+            item.firstElementChild.style.color = 'white';
         }
         else {
           item.firstElementChild.setAttribute("class", "chat-body1 clearfix");
         }
+        item.firstElementChild.appendChild(document.createElement("span"));
 
-        item.firstElementChild.appendChild(document.createElement("p"));
-        item.firstElementChild.firstElementChild.innerText = messagestoload[convo][i][0];
+        item.firstElementChild.firstElementChild.appendChild(document.createElement("p"));
+        item.firstElementChild.firstElementChild.firstElementChild.innerText = messagestoload[convo][i][0];
+          item.firstElementChild.firstElementChild.firstElementChild.appendChild(document.createElement("button"));
+
+
+          var thebutton = item.firstElementChild.firstElementChild.firstElementChild.firstElementChild;
+         thebutton.onclick = function(){window.location.href = "/deletemessage/"+this.children[1].innerText};
+          thebutton.setAttribute("type","button");
+          thebutton.setAttribute("class","btn btn-default btn-sm pull-right hidden");
+          thebutton.appendChild(document.createElement("span"));
+          thebutton.firstElementChild.setAttribute("class","glyphicon glyphicon-remove");
+          thebutton.firstElementChild.setAttribute("aria-hidden","true");
+          thebutton.appendChild(document.createElement("p"));
+          thebutton.children[1].setAttribute("class","hidden");
+          thebutton.children[1].innerText = messagestoload[convo][i][4];
+
+          if(messagestoload[convo][i][3]) {
+              item.firstElementChild.firstElementChild.firstElementChild.appendChild(document.createElement("button"));
+              var decryptbutton = item.firstElementChild.firstElementChild.firstElementChild.children[1];
+              decryptbutton.onclick = function(){decryptmessage(this.parentElement,this.parentElement.children[0],this.children[1].innerText);};
+          decryptbutton.setAttribute("type","button");
+          decryptbutton.setAttribute("class","btn btn-default btn-sm pull-right hidden");
+          decryptbutton.appendChild(document.createElement("span"));
+          decryptbutton.firstElementChild.setAttribute("class","glyphicon glyphicon-lock");
+          decryptbutton.firstElementChild.setAttribute("aria-hidden","true");
+              decryptbutton.appendChild(document.createElement("p"));
+              decryptbutton.children[1].setAttribute("class","hidden");
+              decryptbutton.children[1].innerText = messagestoload[convo][i][3];
+          item.onmouseover = function(){
+              this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right");
+              this.firstElementChild.firstElementChild.firstElementChild.children[1].setAttribute("class","btn btn-default btn-md pull-right");
+          };
+          item.onmouseout = function(){
+              this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right hidden");
+              this.firstElementChild.firstElementChild.firstElementChild.children[1].setAttribute("class","btn btn-default btn-md pull-right hidden")
+          };
+
+          }
+          else {
+              item.onmouseover = function(){
+              this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right");
+              };
+          item.onmouseout = function(){
+              this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right hidden");
+              };
+          }
+
         item.firstElementChild.appendChild(document.createElement("div"));
+
+
         if (messagestoload[convo][i][2]) {
           item.firstElementChild.children[1].setAttribute("class", "chat_time pull-right");
         }
@@ -174,6 +233,8 @@
         }
 
         item.firstElementChild.children[1].innerText = messagestoload[convo][i][1];
+          item.firstElementChild.children[1].style.color = 'black';
+
         table.appendChild(item);
       }
       var scrolldiv = document.getElementById("themessagearea");
@@ -203,9 +264,53 @@
           break;
         }
       }
-      document.getElementById("id_messagecontent").value = text;
+      var messagekey = null;
+        if(document.getElementById("thecheckbox").checked) {
+            messagekey = Math.random().toString(36).substr(2, 10);
+            document.getElementById("id_thekey").value = messagekey;
+            var encryptedmessage = CryptoJS.AES.encrypt(text,messagekey);
+            document.getElementById("id_messagecontent").value = encryptedmessage;
+        }
+        else {
+            document.getElementById("id_messagecontent").value = text;
+        }
+
       document.getElementById("id_sender").value = 1;
       document.getElementById("hiddenmessageform").submit();
+
+    }
+
+    else if(isnewmessage && text) {
+        var convolist = document.getElementById("conversationlist").children;
+        var convoselect = document.getElementById("id_owned_by");
+        var username = document.getElementById("newmessagerecepient").options[document.getElementById("newmessagerecepient").selectedIndex].text;
+        document.getElementById("id_newmessagefield").value = "Yes";
+        for (i=0;i<convolist.length;i++){
+            if (convolist[i].firstElementChild.firstElementChild.children[0].innerText == username) {
+                sendee = i;
+                document.getElementById("id_newmessagefield").value = "";
+                cancelPressed();
+                sendMessage();
+                break;
+            }
+        }
+
+        convoselect.value = 1;
+        var sendselect = document.getElementById("id_sender");
+        sendselect.value = document.getElementById("newmessagerecepient").value;
+        var messagekey = null;
+        if(document.getElementById("thecheckbox").checked) {
+            messagekey = Math.random().toString(36).substr(2, 10);
+            document.getElementById("id_thekey").value = messagekey;
+            var encryptedmessage = CryptoJS.AES.encrypt(text,messagekey);
+            document.getElementById("id_messagecontent").value = encryptedmessage;
+        }
+        else {
+            document.getElementById("id_messagecontent").value = text;
+        }
+
+        document.getElementById("hiddenmessageform").submit();
+
     }
     else {
       alert("failure!");
@@ -214,7 +319,55 @@
 
   }
 
-    document.onload = loadMessages(document.getElementById("conversationlist").children[0]);
+  function newMessage() {
+    if (sendee != -1) {
+    var convos = document.getElementById("conversationlist").children;
+    var lastconvo = convos.item(sendee);
+      lastconvo.style.backgroundColor = '';
+      lastconvo.style.color = 'black';
+    }
+    sendee = -1;
+
+    isnewmessage = true;
+    var recepientlist = document.getElementById("newmessagerecepient");
+      recepientlist.setAttribute("class","");
+    var table = document.getElementById("messagelist");
+    table.innerHTML = '';
+      document.getElementById("cancelbutton").setAttribute("class","");
+
+
+  }
+  function cancelPressed() {
+      document.getElementById("newmessagerecepient").setAttribute("class","hidden");
+        document.getElementById("cancelbutton").setAttribute("class","hidden");
+      isnewmessage=false;
+  }
+
+
+  function pageload() {
+      //load messages
+      {% if conversation_list %}
+      loadMessages(document.getElementById("conversationlist").children[0]);
+      {% endif %}
+      //load recepient list
+      var recepientlistinit = document.getElementById("id_sender");
+      var recepientlist = recepientlistinit.cloneNode(true);
+      var messagebar = document.getElementById("newmessagebar");
+      recepientlist.setAttribute("id","newmessagerecepient");
+      //recepientlist.setAttribute("margin","50px");
+      //recepientlist.setAttribute("padding","50px");
+      recepientlist.setAttribute("class","hidden");
+      messagebar.insertBefore(recepientlist,messagebar.firstElementChild);
+
+
+  }
+
+  function decryptmessage(themessage,thedeletebutton,key) {
+      var decrypted = CryptoJS.AES.decrypt(themessage.innerText,key);
+      themessage.innerText = decrypted.toString(CryptoJS.enc.Utf8);
+      themessage.appendChild(thedeletebutton);
+  }
+    document.onload = pageload();
 
 
 
