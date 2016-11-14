@@ -1,0 +1,65 @@
+{% extends 'fileshare/base.html' %}
+
+
+{% block content %}
+    {% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+<style>
+table, th, td {
+    border-collapse: collapse;
+}
+td {
+    padding: 5px;
+    text-align: left;
+}
+    th {
+            padding: 5px;
+    text-align: right;
+}
+</style>
+ <div class="container">
+        <div class="row">
+            <div >
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Account Information</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table>
+                        <tr>
+                            <tc><th>First Name:</th></tc><tc><td>{{ user.first_name }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Last Name:</th></tc><tc><td>{{ user.last_name }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Username:</th></tc><tc><td>{{ user.username }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Email:</th></tc><tc><td>{{ user.email }}</td></tc>
+                        </tr>
+                        <tr><td></td></tr>
+                        <tr><td colspan="2"><p class="text-center"><a href="/account/update">Edit Account Information</a></p></td></tr>
+                        <tr><td colspan="2"><p class="text-center"><a href="/account/changepassword">Change Password</a></p></td></tr>
+                        </table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+
+

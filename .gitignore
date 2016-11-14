@@ -1,0 +1,7 @@
+__pycache__/
+migrations/
+media/
+*.DS_Store
+*.idea
+admin_*
+.admin*
