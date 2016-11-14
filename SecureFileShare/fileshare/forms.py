@@ -80,3 +80,8 @@ class messageForm(forms.ModelForm):
         model = Message
         fields = ('owned_by','sender','messagecontent','thekey','newmessagefield')
 
+class GroupForm(forms.ModelForm):
+    members = forms.ModelMultipleChoiceField(queryset=Profile.objects.all(), widget=forms.CheckboxSelectMultiple())
+    class Meta:
+        model = ProfileGroup
+        fields = ['name', 'members']

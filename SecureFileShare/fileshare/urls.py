@@ -24,6 +24,7 @@ urlpatterns = [
     url('^account/changepassword',views.password_change,name='password_change'),
     url('^messages',views.messages, name='messages'),
     url('^create_report',views.create_report,name='create_report'),
+    url('^create_group', views.create_group, name='create_group'),
     #url('^account/changepassword',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     #url('^account/changepassworddone',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}),

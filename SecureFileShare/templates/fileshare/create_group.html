@@ -1,0 +1,47 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+
+<div class="container">
+	<div class="jumbotron">
+		<h3><b>Create a Group</b></h3>
+		<form method="POST" action="/fileshare/create_group" enctype="multipart/form-data">
+			{% csrf_token %}
+  <table>
+    <!-- {{ group_form.as_table }} -->
+    <tr>
+     <th><label for="id_name">Name:</label></th>
+     <td><input id="id_name" maxlength="128" name="name"
+      type="text" required />
+     </td>
+    </tr>
+    <tr>
+     <th><label for="id_members_0">Members:</label></th>
+     <td>
+      <ul id="id_members">
+      {% for profile in members %}
+       <li>
+        <label for="id_members_{{profile.id}}">
+        <input id="id_members_{{profile.id}}" name="members" type="checkbox" value="{{profile.id}}" />
+          {{profile.user.username}}
+        </label>
+       </li>
+      {% endfor %}
+      </ul>
+     </td>
+    </tr>
+   </table>
+			<!--<table>-->
+				<!--{{ group_form.as_table }}-->
+			<!--</table>-->
+			<input type="submit" value="Create Group" />
+		</form>
+
+	</div>
+</div>
+
+{% endblock %}
+
+
+
+

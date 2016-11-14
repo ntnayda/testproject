@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ReportForm
+from .forms import GroupForm
 from django.shortcuts import resolve_url
 from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url, urlsafe_base64_decode
@@ -200,3 +201,15 @@ def deletemessage(request,message_pk):
     query = models.Message.objects.get(pk=message_pk)
     query.delete()
     return redirect("/messages")
+
+def create_group(request):
+    if request.method == 'POST':
+        group_form = GroupForm(request.POST)
+        if group_form.is_valid():
+            group_form.save()
+            return redirect('main') #group made successfully
+    else:
+        #group_form=GroupForm()
+        members = models.Profile.objects.all()
+
+    return render(request, 'fileshare/create_group.html', {'members': members})
