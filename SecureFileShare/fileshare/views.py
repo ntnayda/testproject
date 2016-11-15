@@ -74,8 +74,14 @@ def view_report(request, report_id):
         update_form = ReportForm(request.POST, request.FILES, instance=report)
 
         if update_form.is_valid():
-            report.last_modified = datetime.datetime.now()
-            update_form.save()
+            
+            if request.POST.get('action') == "Save Changes":
+                report.last_modified = datetime.datetime.now()
+                update_form.save()
+                return redirect('main')
+            else:
+                report.delete()
+                return redirect('main')
     else:
         update_form = ReportForm(instance=report)
 
