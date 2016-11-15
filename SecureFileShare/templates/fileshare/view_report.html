@@ -9,6 +9,8 @@
 	</div>
 
 	<div class="jumbotron">
+	{% if report.owned_by == user %}
+	
 		<h2><b>Edit Report</b></h2>
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
@@ -16,6 +18,10 @@
 			<input type="submit" name="action" value="Save Changes"/>
 			<input type="submit" name="action" value="Delete"/>
 		</form>
+	
+	{% else %}
+	<p>*You cannot edit this report.</p>
+	{% endif %}
 	</div>
 
 </div>
