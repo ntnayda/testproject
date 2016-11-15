@@ -49,6 +49,7 @@ def create_report(request):
             newdoc = models.Report.objects.create(
                 owned_by = request.user,
                 created = datetime.datetime.now(),
+                last_modified = datetime.datetime.now(),
                 file_attached = request.FILES.get('file_attached'),
                 short_desc = report_form.cleaned_data['short_desc'],
                 long_desc = report_form.cleaned_data['long_desc']
@@ -69,12 +70,11 @@ def view_report(request, report_id):
     if request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)
 
-        if update_form.is_valid(): update_form.save()
-
+        if update_form.is_valid():
+            report.last_modified = datetime.datetime.now()
+            update_form.save()
     else:
         update_form = ReportForm(instance=report)
-
-
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})
 
