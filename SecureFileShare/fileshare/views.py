@@ -34,10 +34,13 @@ def profile(request):
 @login_required(login_url='login')
 def main(request):
 	
-    reports = models.Report.objects.filter(owned_by=request.user)
-    num_reports = len(reports)
+    your_reports = models.Report.objects.filter(owned_by=request.user)
+    num_reports = len(your_reports)
 
-    return render(request, 'fileshare/main.html', {'reports': reports, 'num_reports': num_reports})
+    other_reports = models.Report.objects.filter(private=False).exclude(owned_by=request.user)
+
+    return render(request, 'fileshare/main.html',
+        {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports})
 
 def create_report(request):
     
