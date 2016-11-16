@@ -49,28 +49,39 @@
 			</table>
 			{% endif %}
 		</div>
-	
 
-	<div class="jumbotron">
-		<h2><b>Other Public Reports<b></h2><br>
-		<table id="t01" width="80%">
-		<tr>
+
+		<div class="jumbotron">
+			<h2><b>Other Public Reports<b></h2><br>
+			<table id="t01" width="80%">
+				<tr>
 					<th>Title</th>
+					<th>Owner</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
-		{% for r in other_reports %}
-		<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-			<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
-				{% csrf_token %}
-				<td>
-					<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
-				</td>
-			</form>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
+				{% for r in other_reports %}
+				<tr><td>{{ r.short_desc }}</td><td>{{ r.owned_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
+						{% csrf_token %}
+						<td>
+							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
+						</td>
+					</form>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+
+		<div class="jumbotron">
+			<h2><b> Your Groups </b></h2>
+			<table id="t01" width="80%">
+				<th> Name </th>
+				{% for g in user.profile.groups_in.all %}
+				<tr><td> {{ g.name }} </td></tr>
+				{% endfor %}
+			</table>
+		</div>
 	</div>
 
 	{% endblock %}

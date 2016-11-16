@@ -36,8 +36,10 @@ def main(request):
 	
     your_reports = models.Report.objects.filter(owned_by=request.user)
     num_reports = len(your_reports)
-
     other_reports = models.Report.objects.filter(private=False).exclude(owned_by=request.user)
+    '''groups = []
+    for g in models.ProfileGroup.objects.all():
+        if '''
 
     return render(request, 'fileshare/main.html',
         {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports})
@@ -216,6 +218,12 @@ def create_group(request):
         group_form = GroupForm(request.POST)
         if group_form.is_valid():
             group_form.save()
+            instance = models.ProfileGroup.objects.get(name=request.POST.get('name'))
+
+            members_added = request.POST.getlist('members')
+            for m in members_added:
+                get_object_or_404(models.Profile, pk=m).groups_in.add(instance)
+
             return redirect('main') #group made successfully
     else:
         #group_form=GroupForm()

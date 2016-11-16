@@ -9,8 +9,9 @@ class Profile(models.Model):
 	# Django automatically creates a primary key ID... No need to create one here
 
 	user = models.OneToOneField(User)
-	#group_member_of = models.ManyToManyField('Group', blank=True)
 	reports_owned = models.ManyToManyField('Report', blank=True)
+	groups_in = models.ManyToManyField('ProfileGroup', blank=True)
+
 
 	def get_reports(self):
 		return "\n".join([report.short_desc for report in self.reports_owned.all()])
@@ -38,7 +39,8 @@ class Report(models.Model):
 class ProfileGroup(models.Model):
 
 	name = models.CharField(max_length=128, unique=True)
-	members = models.ManyToManyField('Profile', null=True, blank=True)
+	members = models.ManyToManyField('Profile', related_name='group_members', blank=True)
+	reports = models.ManyToManyField('Report', blank=True)
 
 
 class Conversation(models.Model):
