@@ -15,6 +15,9 @@ class Profile(models.Model):
 
 	def get_reports(self):
 		return "\n".join([report.short_desc for report in self.reports_owned.all()])
+
+	def __str__(self):
+		return self.user.username
 	
 
 

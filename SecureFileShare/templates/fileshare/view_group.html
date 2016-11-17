@@ -1,0 +1,20 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+
+<div class="container">
+
+	<div class="jumbotron">
+		<h2><b>Edit Group</b></h2>
+		<form method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ update_form.as_p }}
+			<input type="submit" name="action" value="Save Changes"/>
+		</form>
+	</div>
+	
+	
+
+</div>
+
+{% endblock %}

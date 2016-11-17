@@ -236,3 +236,43 @@ def create_group(request):
         members = models.Profile.objects.all()
 
     return render(request, 'fileshare/create_group.html', {'members': members})
+
+def view_group(request, group_id):
+
+    group = get_object_or_404(models.ProfileGroup, pk=group_id)
+
+    if request.method == "POST":
+        update_form = GroupForm(request.POST, instance=group)
+
+        if update_form.is_valid():
+
+            if request.POST.get('action') == "Save Changes":
+                update_form.save()
+                return redirect('main')
+            else:
+                group.delete()
+                return redirect('main')
+    else:
+        update_form = GroupForm(instance=group)
+
+    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form})
+
+    '''report = get_object_or_404(models.Report, pk=report_id)
+
+    if request.method == "POST":
+        update_form = ReportForm(request.POST, request.FILES, instance=report)
+
+        if update_form.is_valid():
+            
+            if request.POST.get('action') == "Save Changes":
+                report.last_modified = datetime.datetime.now()
+                report_form.last_modified_by = request.user.username
+                update_form.save()
+                return redirect('main')
+            else:
+                report.delete()
+                return redirect('main')
+    else:
+        update_form = ReportForm(instance=report)
+
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''

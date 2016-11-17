@@ -82,7 +82,7 @@
 				<th> Creator </th>
 				<th> Number of Members </th>
 				{% for g in user.profile.groups_in.all %}
-				<tr><td> {{ g.name }} </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
+				<tr><td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
 				{% endfor %}
 			</table>
 		</div>
