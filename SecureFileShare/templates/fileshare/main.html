@@ -33,11 +33,12 @@
 			<table id="t01" width="80%">
 				<tr>
 					<th>Title</th>
+					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
 				{% for r in your_reports %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
 					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 						{% csrf_token %}
 						<td> 
@@ -57,15 +58,16 @@
 				<tr>
 					<th>Title</th>
 					<th>Owner</th>
+					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
 				{% for r in other_reports %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.owned_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+				<tr><td>{{ r.short_desc }}</td><td>{{ r.owned_by }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
 					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 						{% csrf_token %}
 						<td>
-							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
+							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View/Edit</button></center>
 						</td>
 					</form>
 				</tr>
@@ -77,8 +79,10 @@
 			<h2><b> Your Groups </b></h2>
 			<table id="t01" width="80%">
 				<th> Name </th>
+				<th> Creator </th>
+				<th> Number of Members </th>
 				{% for g in user.profile.groups_in.all %}
-				<tr><td> {{ g.name }} </td></tr>
+				<tr><td> {{ g.name }} </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
 				{% endfor %}
 			</table>
 		</div>

@@ -55,6 +55,7 @@ def create_report(request):
                 owned_by = request.user,
                 created = datetime.datetime.now(),
                 last_modified = datetime.datetime.now(),
+                last_modified_by = request.user.username,
                 file_attached = request.FILES.get('file_attached'),
                 short_desc = report_form.cleaned_data['short_desc'],
                 long_desc = report_form.cleaned_data['long_desc']
@@ -79,6 +80,7 @@ def view_report(request, report_id):
             
             if request.POST.get('action') == "Save Changes":
                 report.last_modified = datetime.datetime.now()
+                report_form.last_modified_by = request.user.username
                 update_form.save()
                 return redirect('main')
             else:
@@ -217,12 +219,16 @@ def create_group(request):
     if request.method == 'POST':
         group_form = GroupForm(request.POST)
         if group_form.is_valid():
+
             group_form.save()
             instance = models.ProfileGroup.objects.get(name=request.POST.get('name'))
 
             members_added = request.POST.getlist('members')
             for m in members_added:
                 get_object_or_404(models.Profile, pk=m).groups_in.add(instance)
+
+            instance.creator = request.user
+            instance.save()
 
             return redirect('main') #group made successfully
     else:

@@ -59,7 +59,7 @@ class signup_form(forms.ModelForm):
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
-        fields = ['short_desc', 'long_desc', 'private', 'file_attached']
+        fields = ['short_desc', 'long_desc', 'private', 'file_attached', 'is_encrypted']
 
 class UpdateProfile(forms.ModelForm):
 

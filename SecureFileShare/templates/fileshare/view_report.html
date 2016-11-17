@@ -9,19 +9,19 @@
 	</div>
 
 	<div class="jumbotron">
-		{% if report.owned_by == user %}
-		
 		<h2><b>Edit Report</b></h2>
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ update_form.as_p }}
 			<input type="submit" name="action" value="Save Changes"/>
+			{% if report.owned_by == user %}
 			<input type="submit" name="action" value="Delete"/>
+			{% else %}
+			<p>*You cannot delete this report.</p>
+			{% endif %}
 		</form>
 	</div>
-	{% else %}
-	<p>*You cannot edit this report.</p>
-	{% endif %}
+	
 	
 
 </div>
