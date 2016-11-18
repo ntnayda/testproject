@@ -56,10 +56,14 @@ def create_report(request):
                 created = datetime.datetime.now(),
                 last_modified = datetime.datetime.now(),
                 last_modified_by = request.user.username,
-                file_attached = request.FILES.get('file_attached'),
+                #files = request.FILES.get('file_attached'),
                 short_desc = report_form.cleaned_data['short_desc'],
                 long_desc = report_form.cleaned_data['long_desc']
             )
+            newdoc.save()
+            for f in request.FILES.getlist('files'):
+                d = models.Documents.objects.create(file_attached=f)
+                newdoc.files.add(d)
             newdoc.save()
 
             return redirect('main')
@@ -72,6 +76,7 @@ def create_report(request):
 def view_report(request, report_id):
 
     report = get_object_or_404(models.Report, pk=report_id)
+    files = report.files
 
     if request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)
@@ -80,7 +85,7 @@ def view_report(request, report_id):
             
             if request.POST.get('action') == "Save Changes":
                 report.last_modified = datetime.datetime.now()
-                report_form.last_modified_by = request.user.username
+                report.last_modified_by = request.user.username
                 update_form.save()
                 return redirect('main')
             else:
@@ -89,7 +94,7 @@ def view_report(request, report_id):
     else:
         update_form = ReportForm(instance=report)
 
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
 
 @login_required(login_url='login')
 def account_update_success(request):

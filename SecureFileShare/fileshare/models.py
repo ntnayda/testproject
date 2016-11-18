@@ -29,7 +29,6 @@ post_save.connect(create_user_profile, sender=User)
 
 # Create Reports model
 class Report(models.Model):
-	datetime = '%Y/%m/%d'
 	owned_by = models.ForeignKey(User)
 	created = models.DateTimeField(auto_now_add=True)
 	last_modified = models.DateTimeField(auto_now_add=True, null=True)
@@ -37,9 +36,15 @@ class Report(models.Model):
 	short_desc = models.CharField("Title", max_length=128, unique=True)
 	long_desc = models.TextField("Description")
 	private = models.BooleanField("Restrict access to this file?", default=False)
+	files = models.ManyToManyField('Documents', blank=True)
 	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
+
+class Documents(models.Model):
+	datetime = '%Y/%m/%d'
 	file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
 
+	def __str__(self):
+		return str(self.file_attached)
 
 class ProfileGroup(models.Model):
 
