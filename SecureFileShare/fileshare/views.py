@@ -277,13 +277,12 @@ def view_group(request, group_id):
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
 
-def sitemanager(request):
-    user=request.user
-    if(user.is_superuser):
-        return render(request,'fileshare/sitemanager.html')
-    return redirect('main') #change this
-
 def users(request):
-    user = request.user
-    if (user.is_superuser):
-        return render(request, 'fileshare/users.html')
+    if (request.user.is_superuser):
+        all_users = models.User.objects.all()
+        return render(request,'fileshare/users.html',{'all_users':all_users})
+
+def sitemanager(request):
+    if request.user.is_superuser:
+        return render(request,'fileshare/sitemanager.html')
+

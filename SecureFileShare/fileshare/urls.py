@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^(?P<group_id>[0-9]+)/view_group/$', views.view_group, name='view_group'),
     url('^test', views.update_profile,name='updateprofile'),
     url('^deletemessage/(?P<message_pk>.*)$',views.deletemessage,name="delete_message"),
-    url('^sitemanager', permission_required('is_superuser')(views.sitemanager), name='sitemanager'),
-    url('^users', permission_required('is_superuser')(views.users), name='users'),
+    #site manager urls
+    url('^sitemanager',(views.sitemanager), name='sitemanager'),
+    url('^users',(views.users), name='users'),
 ]
