@@ -276,3 +276,14 @@ def view_group(request, group_id):
         update_form = ReportForm(instance=report)
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
+
+def sitemanager(request):
+    user=request.user
+    if(user.is_superuser):
+        return render(request,'fileshare/sitemanager.html')
+    return redirect('main') #change this
+
+def users(request):
+    user = request.user
+    if (user.is_superuser):
+        return render(request, 'fileshare/users.html')
