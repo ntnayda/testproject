@@ -7,7 +7,6 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.edit import CreateView
 from fileshare.forms import LoginForm
 from .forms import signup_form, UpdateProfile
-from django.contrib.auth.decorators import permission_required
 
 
 # user authentication urls
@@ -37,6 +36,7 @@ urlpatterns = [
     url('^test', views.update_profile,name='updateprofile'),
     url('^deletemessage/(?P<message_pk>.*)$',views.deletemessage,name="delete_message"),
     #site manager urls
-    url('^sitemanager',(views.sitemanager), name='sitemanager'),
-    url('^users',(views.users), name='users'),
+    url('^sitemanager',views.sitemanager, name='sitemanager'),
+    url('^manage_users',views.manage_users, name='manage_users'),
+    url('^manage_reports', views.manage_reports, name='manage_reports'),
 ]
