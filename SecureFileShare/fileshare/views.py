@@ -278,11 +278,11 @@ def view_group(request, group_id):
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
 
 def users(request):
-    if (request.user.is_superuser):
+    if (request.user.is_staff):
         all_users = models.User.objects.all()
         return render(request,'fileshare/users.html',{'all_users':all_users})
 
 def sitemanager(request):
-    if request.user.is_superuser:
+    if request.user.is_staff:
         return render(request,'fileshare/sitemanager.html')
 

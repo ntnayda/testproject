@@ -34,7 +34,7 @@
 		{% if user.is_authenticated %}
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav navbar-right">
-					  {% if user.is_superuser %}
+					  {% if user.is_staff %}
    				 <li><a href="/sitemanager">Manage</a></li>
 			  {% endif %}
 			  <li><a href="/main">Profile</a></li>
