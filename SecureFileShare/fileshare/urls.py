@@ -40,4 +40,5 @@ urlpatterns = [
     url('^manage_users',views.manage_users, name='manage_users'),
     url('^manage_reports', views.manage_reports, name='manage_reports'),
     url('^manage_groups', views.manage_groups, name='manage_groups'),
+    url('^edit_user', views.edit_user, name='edit_user'),
 ]

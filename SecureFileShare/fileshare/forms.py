@@ -2,7 +2,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from fileshare.models import *
-
 from django import forms
 
 class LoginForm(AuthenticationForm):

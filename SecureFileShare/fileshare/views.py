@@ -297,3 +297,8 @@ def manage_groups(request):
         all_groups = models.ProfileGroup.objects.all()
         return render(request, 'fileshare/manage_groups.html',{'all_groups':all_groups})
 
+def edit_user(request):
+    all_users = models.User.objects.all()
+    return render(request, 'fileshare/edit_user.html')
+
+#def update_user_permissions(request):
