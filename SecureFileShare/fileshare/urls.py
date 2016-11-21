@@ -9,7 +9,6 @@ from fileshare.forms import LoginForm
 from .forms import signup_form, UpdateProfile
 
 
-
 # user authentication urls
 urlpatterns = [
     url(r'^$', views.main, name='main'),
@@ -37,4 +36,11 @@ urlpatterns = [
     url(r'^(?P<folder_id>[0-9]+)/view_folder/$', views.view_folder, name='view_folder'),
     url('^test', views.update_profile,name='updateprofile'),
     url('^deletemessage/(?P<message_pk>.*)$',views.deletemessage,name="delete_message"),
+    #site manager urls
+    url('^sitemanager',views.sitemanager, name='sitemanager'),
+    url('^manage_users',views.manage_users, name='manage_users'),
+    url('^manage_reports', views.manage_reports, name='manage_reports'),
+    url('^manage_groups', views.manage_groups, name='manage_groups'),
+    url('^edit_user', views.edit_user, name='edit_user'),
+    url('^edit_group', views.edit_group, name='edit_group'),
 ]

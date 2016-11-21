@@ -1,0 +1,81 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+
+{% csrf_token %}
+<div class="container">
+	<h3>Site Administration</h3>
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong>Users</strong></div>
+		<div class="panel-body">
+			<!--<form method="get" action="/search" id="search">-->
+  <!--<input name="q" type="text" size="40" placeholder="Search..." />-->
+</form><br>
+			<style>
+				table{
+					font-family: arial, sans-serif;
+					border-collapse: collapse;
+					width: 100%
+				}
+				td, th{
+					border: 1px solid #dddddd;
+					text-align: left;
+					padding: 8px
+				}
+			</style>
+	<table>
+		<tr>
+			<th>Username</th>
+			<th>Active</th>
+			<th>Staff Status</th>
+		</tr>
+		{% if all_users != null%}
+		{% for user in all_users %}
+		<tr>
+		<td>{{user.username}}
+			<a href= edit_user/{{user.id}}
+			   i class="glyphicon glyphicon-pencil" style="padding-left:5px;"></i>
+			</a></td>
+		<td>
+			{% if user.is_active %}
+			<span class="glyphicon glyphicon-ok-circle" style="padding-center:5px;color:green"></span>
+			{% else %}
+			<span class="glyphicon glyphicon-remove-circle" style="padding-center:5px;color:red"></span>
+			{% endif %}
+			</td>
+		<td>
+			{% if user.is_staff %}
+			<span class="glyphicon glyphicon-ok-circle" style="padding-center:5px;color:green"></span>
+			{% else %}
+			<span class="glyphicon glyphicon-remove-circle" style="padding-center:5px;color:red"></span>
+			{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+			No users.
+		{% endif %}
+	</table>
+
+			<!--{% if all_users != null %}-->
+			<!--<ul class="list-group">-->
+				<!--{% for user in all_users %}-->
+					<!--<li class="list-group-item">-->
+						<!--{{user.username}}-->
+						<!--&lt;!&ndash;<a href="edit_user.html">&ndash;&gt;-->
+						<!--<a href="edit_user.html">-->
+							<!--<i class="glyphicon glyphicon-pencil" style="padding-left:5px;"></i>-->
+						<!--</a>-->
+							<!--<i class="glyphicon glyphicon-trash" style="padding-left:5px;"></i>-->
+						<!--&lt;!&ndash;</a>&ndash;&gt;-->
+					<!--</li>-->
+				<!--{% endfor %}-->
+			<!--</ul>-->
+		<!--{% else %}-->
+			<!--No users.-->
+		<!--{% endif %}-->
+		</div>
+	</div>
+    </div>
+
+{% endblock %}

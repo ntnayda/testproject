@@ -28,13 +28,16 @@
 	        <span class="icon-bar"></span>
 	      </button>
 	     {% endif %}
-	      <a class="navbar-brand" href="/"><b>SecureFileShare<b></a>
+	      <a class="navbar-brand" href="/"><b>SecureFileShare</b></a>
 	    </div>
 
 		{% if user.is_authenticated %}
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	      <ul class="nav navbar-nav navbar-right">
-			<li><a href="/main">Profile</a></li>
+					  {% if user.is_staff %}
+   				 <li><a href="/sitemanager">Manage</a></li>
+			  {% endif %}
+			  <li><a href="/main">Profile</a></li>
 			<li><a href="/messages">Messages</a></li>
 			<li><a href="/create_report">Create Report</a></li>
 			<li><a href="/create_group">Create Group</a></li>

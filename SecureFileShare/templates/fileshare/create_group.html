@@ -8,7 +8,6 @@
 		<form method="POST" action="/fileshare/create_group" enctype="multipart/form-data">
 			{% csrf_token %}
   <table>
-    <!-- {{ group_form.as_table }} -->
     <tr>
      <th><label for="id_name">Name:</label></th>
      <td><input id="id_name" maxlength="128" name="name"

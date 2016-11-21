@@ -1,0 +1,22 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+
+{% csrf_token %}
+<div class="container">
+	<h3>Edit User</h3>
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong>Groups</strong></div>
+		<div class="panel-body">
+            <!--still have to write the code that actually updates the info-->
+            <!--<form method="post" action="/fileshare/edit_group" enctype="multipart/form-data">-->
+
+            <!--</form>-->
+            <!--<br>-->
+            <!--<p><font size="3">Groups:</font></p>-->
+            <input class="btn btn-success btn-sm" type="submit" value="Save"/>
+		</div>
+	</div>
+    </div>
+
+{% endblock %}
