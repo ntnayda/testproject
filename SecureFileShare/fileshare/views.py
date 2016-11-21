@@ -94,6 +94,7 @@ def view_report(request, report_id):
     else:
         update_form = ReportForm(instance=report)
 
+
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
 
 @login_required(login_url='login')

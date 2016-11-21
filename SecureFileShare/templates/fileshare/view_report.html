@@ -2,6 +2,21 @@
 
 {% block content %}
 
+<head>
+	<style>
+	table#t01 tr:nth-child(even) {
+		background-color: #fff ;
+	}
+	table#t01 tr:nth-child(odd) {
+		background-color: #eee;
+	}
+	td {
+		padding: 3px;
+		border: 3px solid white;
+	}
+	</style>
+</head>
+
 <div class="container">
 	<div class="jumbotron">
 		<h2><b>{{ report.short_desc }} </b></h2><br>
@@ -13,6 +28,16 @@
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ update_form.as_p }}
+			<input type="file" name="files" multiple>
+			<h4><b>Attached files:</b></h4>
+			<table id="t01" width="60%">
+				{% for f in files.all %}
+				<tr>
+					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
+					<td><center><button type="submit" name="remove" value="REMOVE">Remove</button></center></td>
+				</tr>
+				{% endfor %}
+			</table><br>
 			<input type="submit" name="action" value="Save Changes"/>
 			{% if report.owned_by == user %}
 			<input type="submit" name="action" value="Delete"/>
