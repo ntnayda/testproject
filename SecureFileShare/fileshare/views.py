@@ -286,10 +286,10 @@ def view_folder(request, folder_id):
         if update_form.is_valid():
             if request.POST.get('action') == "Update":
                 update_form.save()
-            return redirect('main')
-        else:
-            folder.delete()
-            return redirect('main')
+                return redirect('main')
+            else:
+                folder.delete()
+                return redirect('main')
 
     else:
         update_form = FolderForm(instance=folder)
