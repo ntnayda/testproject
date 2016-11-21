@@ -299,6 +299,10 @@ def manage_groups(request):
 
 def edit_user(request):
     all_users = models.User.objects.all()
+    #return redirect(manage_users)
     return render(request, 'fileshare/edit_user.html')
 
+def edit_group(request):
+    all_groups = models.ProfileGroup.objects.all()
+    return render(request, 'fileshare/edit_group.html')
 #def update_user_permissions(request):

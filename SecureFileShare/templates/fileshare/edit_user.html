@@ -9,10 +9,10 @@
 		<div class="panel-heading"><strong>Permissions</strong></div>
 		<div class="panel-body">
             <!--still have to write the code that actually updates the info-->
-            <form method="post" action="/fileshare/edit_user" enctype="multipart/form-data">
-                <input type="checkbox" id="active"><font size = "3">Active</font><br>
+            <form method="POST" action="/fileshare/edit_user" enctype="multipart/form-data">
+                <input type="checkbox" id="active" value="{{user.is_active}}"><font size = "3">Active</font><br>
                 <p>Designates whether this user should be treated as active. Unselect this instead of deleting accounts</p>
-                <input type="checkbox" id="staff_status"><font size = "3">Staff Status</font><br>
+                <input type="checkbox" id="staff_status"><font size = "3" value ="{{user.is_staff}}">Staff Status</font><br>
                 <p>Designates whether the user is a site manager</p>
             </form>
             <br>

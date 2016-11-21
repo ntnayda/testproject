@@ -33,10 +33,16 @@
 		{% for user in all_users %}
 		<tr>
 		<td>{{user.username}}
-			<a href="edit_user.html"
+			<a href= edit_user/{{user.id}}
 			   i class="glyphicon glyphicon-pencil" style="padding-left:5px;"></i>
 			</a></td>
-		<td>{{user.is_active}}</td>
+		<td>
+			{% if user.is_active %}
+			<span class="glyphicon glyphicon-ok-circle" style="padding-center:5px;color:green"></span>
+			{% else %}
+			<span class="glyphicon glyphicon-remove-circle" style="padding-center:5px;color:red"></span>
+			{% endif %}
+			</td>
 		<td>
 			{% if user.is_staff %}
 			<span class="glyphicon glyphicon-ok-circle" style="padding-center:5px;color:green"></span>
