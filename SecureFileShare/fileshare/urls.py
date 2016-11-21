@@ -34,6 +34,7 @@ urlpatterns = [
     url('^test', views.update_profile, name='updateprofile'),
     url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report'),
     url(r'^(?P<group_id>[0-9]+)/view_group/$', views.view_group, name='view_group'),
+    url(r'^(?P<folder_id>[0-9]+)/view_folder/$', views.view_folder, name='view_folder'),
     url('^test', views.update_profile,name='updateprofile'),
     url('^deletemessage/(?P<message_pk>.*)$',views.deletemessage,name="delete_message"),
 ]

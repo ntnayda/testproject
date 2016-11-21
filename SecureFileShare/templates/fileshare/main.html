@@ -25,7 +25,7 @@
 
 		<div class="jumbotron">
 			<h2><b>Your Reports<b></h2><br>
-			
+
 			{% if num_reports == 0 %}
 			You have no reports.
 			{% else %}
@@ -76,13 +76,34 @@
 		</div>
 
 		<div class="jumbotron">
-			<h2><b> Your Groups </b></h2>
+			<h2><b> Your Folders </b></h2><br>
+			<table id="t01" width="80%">
+				<tr>
+					<th>Name</th>
+					<th>Created</th>
+				</tr>
+				{% for f in folders %}
+				<tr>
+					<td><a href="{{ f.id }}/view_folder">{{ f.name }}</a></td><td>{{ f.created }}</td>
+				</tr>
+				{% endfor %}
+			</table><br>
+			<h3><b>Create a New Folder<b></h3>
+			<form method="POST" action="{% url 'fileshare:main' %}">
+				{% csrf_token %}
+				{{ folder_form.as_p }}
+				<input type="submit" value="Create Folder">
+			</form>
+		</div>
+
+		<div class="jumbotron">
+			<h2><b> Your Groups </b></h2><br>
 			<table id="t01" width="80%">
 				<th> Name </th>
 				<th> Creator </th>
 				<th> Number of Members </th>
 				{% for g in user.profile.groups_in.all %}
-				<tr><td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
+				<tr><td> <a href="{{ g.id }}/view_group">{{ g.name }}</a> </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
 				{% endfor %}
 			</table>
 		</div>

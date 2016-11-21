@@ -6,8 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ReportForm
-from .forms import GroupForm
+from .forms import *
 from django.shortcuts import resolve_url
 from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url, urlsafe_base64_decode
@@ -37,12 +36,23 @@ def main(request):
     your_reports = models.Report.objects.filter(owned_by=request.user)
     num_reports = len(your_reports)
     other_reports = models.Report.objects.filter(private=False).exclude(owned_by=request.user)
-    '''groups = []
-    for g in models.ProfileGroup.objects.all():
-        if '''
+    folders = models.Folder.objects.filter(owned_by=request.user)
+    
+    if request.method == 'POST':
+        folder_form = FolderForm(request.POST)
+
+        if folder_form.is_valid():
+            folder = models.Folder.objects.create(
+                name=request.POST.get('name'),
+                owned_by=request.user,
+                created=datetime.datetime.now()
+                )
+            folder.save()
+    else:
+        folder_form = FolderForm()
 
     return render(request, 'fileshare/main.html',
-        {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports})
+        {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports, 'folder_form':folder_form, 'folders':folders})
 
 def create_report(request):
     
@@ -50,13 +60,11 @@ def create_report(request):
         report_form = ReportForm(request.POST, request.FILES)
 
         if report_form.is_valid():
-            #newdoc = models.Report(request.FILES.get('file_attached', False))
             newdoc = models.Report.objects.create(
                 owned_by = request.user,
                 created = datetime.datetime.now(),
                 last_modified = datetime.datetime.now(),
                 last_modified_by = request.user.username,
-                #files = request.FILES.get('file_attached'),
                 short_desc = report_form.cleaned_data['short_desc'],
                 long_desc = report_form.cleaned_data['long_desc']
             )
@@ -86,6 +94,10 @@ def view_report(request, report_id):
             if request.POST.get('action') == "Save Changes":
                 report.last_modified = datetime.datetime.now()
                 report.last_modified_by = request.user.username
+                for f in request.FILES.getlist('files'):
+                    d = models.Documents.objects.create(file_attached=f)
+                    report.files.add(d)
+                report.save()
                 update_form.save()
                 return redirect('main')
             else:
@@ -262,6 +274,33 @@ def view_group(request, group_id):
         update_form = GroupForm(instance=group)
 
     return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form})
+
+def view_folder(request, folder_id):
+
+    folder = get_object_or_404(models.Folder, pk=folder_id)
+    all_reports = models.Report.objects.filter(owned_by=request.user)
+
+    if request.method == "POST":
+        update_form = FolderForm(request.POST, instance=folder)
+
+        if update_form.is_valid():
+            if request.POST.get('action') == "Update":
+                update_form.save()
+            return redirect('main')
+        else:
+            folder.delete()
+            return redirect('main')
+
+    else:
+        update_form = FolderForm(instance=folder)
+
+    return render(request, 'fileshare/view_folder.html', {'folder':folder, 'update_form': update_form, 'all_reports': all_reports})
+
+
+
+
+
+
 
     '''report = get_object_or_404(models.Report, pk=report_id)
 

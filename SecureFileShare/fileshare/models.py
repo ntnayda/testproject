@@ -39,12 +39,21 @@ class Report(models.Model):
 	files = models.ManyToManyField('Documents', blank=True)
 	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
 
+	def __str__(self):
+		return self.short_desc
+
 class Documents(models.Model):
 	datetime = '%Y/%m/%d'
 	file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
 
 	def __str__(self):
 		return str(self.file_attached)
+
+class Folder(models.Model):
+	name = models.CharField(max_length=128, unique=True)
+	owned_by = models.ForeignKey(User)
+	created = models.DateTimeField(auto_now_add=True)
+	reports = models.ManyToManyField(Report, blank=True)
 
 class ProfileGroup(models.Model):
 

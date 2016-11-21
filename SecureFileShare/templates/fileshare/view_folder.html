@@ -1,0 +1,50 @@
+{% extends 'fileshare/base.html' %}
+
+
+{% block content %}
+<head>
+	<style>
+	table#t01 tr:nth-child(even) {
+		background-color: #fff ;
+	}
+	table#t01 tr:nth-child(odd) {
+		background-color: #eee;
+	}
+	td {
+		padding: 3px;
+		border: 3px solid white;
+	}
+	</style>
+</head>
+
+<div class="container">
+	<div class="jumbotron">
+		<form method="POST">
+			{% csrf_token %}
+			{{ update_form.as_p }}
+
+			
+			{% if folder.reports.count == 0 %}
+				There are no reports in this folder.
+			{% else %}
+				Reports in folder:
+				{% for r in folder.reports.all %}
+					{{ r }}<br>
+				{% endfor %}
+			{% endif %}<br><br>
+
+
+			<select multiple>
+				{% for r in all_reports %}
+				<option value="{{ r }}">{{ r }}</option>
+				{% endfor %}
+			</select><br><br>
+			<input type="submit" name="action" value="Update"/>
+			<input type="submit" name="action" value="Delete"/>
+		</form>
+	</div>
+</div>
+
+
+
+{% endblock %}
