@@ -54,6 +54,7 @@ def main(request):
     return render(request, 'fileshare/main.html',
         {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports, 'folder_form':folder_form, 'folders':folders})
 
+@login_required(login_url='login')
 def create_report(request):
     
     if request.method == 'POST':
@@ -66,7 +67,8 @@ def create_report(request):
                 last_modified = datetime.datetime.now(),
                 last_modified_by = request.user.username,
                 short_desc = report_form.cleaned_data['short_desc'],
-                long_desc = report_form.cleaned_data['long_desc']
+                long_desc = report_form.cleaned_data['long_desc'],
+                private = report_form.cleaned_data['private']
             )
             newdoc.save()
             for f in request.FILES.getlist('files'):
@@ -81,12 +83,16 @@ def create_report(request):
 
     return render(request, 'fileshare/create_report.html', {'report_form': report_form})
 
+@login_required(login_url='login')
 def view_report(request, report_id):
 
     report = get_object_or_404(models.Report, pk=report_id)
     files = report.files
 
-    if request.method == "POST":
+    if report.private and request.user != report.owned_by:
+        return redirect('main')
+
+    elif request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)
 
         if update_form.is_valid():
@@ -233,6 +239,7 @@ def deletemessage(request,message_pk):
     query.delete()
     return redirect("/messages")
 
+@login_required(login_url='login')
 def create_group(request):
     if request.method == 'POST':
         group_form = GroupForm(request.POST)
@@ -255,11 +262,14 @@ def create_group(request):
 
     return render(request, 'fileshare/create_group.html', {'members': members})
 
+@login_required(login_url='login')
 def view_group(request, group_id):
 
     group = get_object_or_404(models.ProfileGroup, pk=group_id)
 
-    if request.method == "POST":
+    if request.user.profile not in group.members.all():
+        return redirect('main')
+    elif request.method == "POST":
         update_form = GroupForm(request.POST, instance=group)
 
         if update_form.is_valid():
@@ -275,12 +285,15 @@ def view_group(request, group_id):
 
     return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form})
 
+@login_required(login_url='login')
 def view_folder(request, folder_id):
 
     folder = get_object_or_404(models.Folder, pk=folder_id)
     all_reports = models.Report.objects.filter(owned_by=request.user)
 
-    if request.method == "POST":
+    if folder.owned_by != request.user:
+        return redirect('main')
+    elif request.method == "POST":
         update_form = FolderForm(request.POST, instance=folder)
 
         if update_form.is_valid():
