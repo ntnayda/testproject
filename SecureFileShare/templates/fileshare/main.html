@@ -25,7 +25,7 @@
 
 		<div class="jumbotron">
 			
-			<h2><b> Your Folders </b></h2><br>
+			<h2><b> Your Reports </b></h2><br>
 			<table id="t01" width="80%">
 				<tr>
 					<th>Name</th>
@@ -38,8 +38,6 @@
 				{% endfor %}
 			</table><br>
 
-			<h2><b>Your Reports<b></h2><br>
-
 			{% if num_reports == 0 %}
 			You have no reports.
 			{% else %}
@@ -47,12 +45,22 @@
 			<table id="t01" width="80%">
 				<tr>
 					<th>Title</th>
+					<th></th>
 					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
 				{% for r in your_reports %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+				<tr><td>{{ r.short_desc }}</td>
+					<td>
+						{% if r.private %}
+							<b><font color="red">Private</font></b>
+						{% else %}
+							<b><font color="green">Public</font></b>
+						{% endif %}
+					</td>
+
+					<td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
 					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 						{% csrf_token %}
 						<td> 
