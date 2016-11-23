@@ -302,7 +302,7 @@ def view_folder(request, folder_id):
             report = get_object_or_404(models.Report, pk=action)
             folder.reports.add(report)
             folder.save()
-            return redirect('main')
+            return redirect('main') 
 
         elif update_form.is_valid():
             if action == "Update":

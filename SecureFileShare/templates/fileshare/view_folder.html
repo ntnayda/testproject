@@ -25,34 +25,37 @@
 
 			
 			{% if folder.reports.count == 0 %}
-				There are no reports in this folder.
+			There are no reports in this folder.
 			{% else %}
-				<h3><b>Reports in this folder</b></h3><br>
-				<table id="t01" width="80%">
+			<h3><b>Reports in this folder</b></h3><br>
+			<table id="t01" width="80%">
 				<tr>
 					<th>Title</th>
+					<th></th>
 					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
 				{% for r in folder.reports.all %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
-						{% csrf_token %}
-						<td> 
-							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View/Edit</button></center>
-						</td>
-					</form>
+				<tr><td>{{ r.short_desc }}</td>
+					<td>
+						{% if r.private %}
+							<b><font color="red">Private</font></b>
+						{% else %}
+							<b><font color="green">Public</font></b>
+						{% endif %}
+					</td>
+					<td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
 				</tr>
 				{% endfor %}
 			</table>
 			{% endif %}<br><br>
 
 			{% if able_to_add.count == 0 %}
-				There are no reports to add to this folder.
+			There are no reports to add to this folder.
 			{% else %}
-				<h3><b>Add a report to this folder</b></h3><br>
-				<table id="t01" width="80%">
+			<h3><b>Add a report to this folder</b></h3><br>
+			<table id="t01" width="80%">
 				<tr>
 					<th>Title</th>
 					<th>Last Modified By</th>
