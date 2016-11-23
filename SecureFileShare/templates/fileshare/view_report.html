@@ -2,21 +2,6 @@
 
 {% block content %}
 
-<head>
-	<style>
-	table#t01 tr:nth-child(even) {
-		background-color: #fff ;
-	}
-	table#t01 tr:nth-child(odd) {
-		background-color: #eee;
-	}
-	td {
-		padding: 3px;
-		border: 3px solid white;
-	}
-	</style>
-</head>
-
 <div class="container">
 	<div class="jumbotron">
 		<h2><b>{{ report.short_desc }} </b></h2><br>
@@ -41,10 +26,10 @@
 				</tr>
 				{% endfor %}
 			</table><br>
-			<input type="submit" name="action" value="Save Changes"/>
+			<input class="button buttonSubmit" type="submit" name="action" value="Save Changes"/>
 
 
-			<input type="submit" name="action" value="Delete"/>
+			<input class="button buttonDelete" type="submit" name="action" value="Delete Report"/>
 			{% else %}
 			<font size="3">*You cannot edit this report.</font>
 			{% endif %}

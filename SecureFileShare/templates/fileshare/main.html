@@ -9,9 +9,13 @@
 	table#t01 tr:nth-child(odd) {
 		background-color: #eee;
 	}
+	th {
+		/* text-align: center; */
+	}
 	td {
 		padding: 3px;
-		border: 3px solid white;
+		border: 4px solid white;
+		/* text-align: center; */
 	}
 	</style>
 </head>
@@ -54,9 +58,9 @@
 				<tr><td>{{ r.short_desc }}</td>
 					<td>
 						{% if r.private %}
-							<b><font color="red">Private</font></b>
+						<b><font color="red">Private</font></b>
 						{% else %}
-							<b><font color="green">Public</font></b>
+						<b><font color="green">Public</font></b>
 						{% endif %}
 					</td>
 
@@ -64,7 +68,7 @@
 					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 						{% csrf_token %}
 						<td> 
-							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View/Edit</button></center>
+							<center><button class="button buttonView" type="submit" form="{{ r.short_desc }}" name="action" value="view">View/Edit</button></center>
 						</td>
 					</form>
 				</tr>
@@ -76,7 +80,7 @@
 			<form method="POST" action="{% url 'fileshare:main' %}">
 				{% csrf_token %}
 				{{ folder_form.as_p }}
-				<input type="submit" value="Create Folder">
+				<input class= "button buttonSubmit"type="submit" value="Create Folder">
 			</form>
 
 		</div>
@@ -96,7 +100,7 @@
 					<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 						{% csrf_token %}
 						<td>
-							<center><button type="submit" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
+							<center><button type="submit" class="button buttonView" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
 						</td>
 					</form>
 				</tr>

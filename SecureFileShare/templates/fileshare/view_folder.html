@@ -67,7 +67,7 @@
 					<form id="add_{{ r.short_desc }}" action="{% url 'fileshare:view_folder' folder.id %}" method="POST">
 						{% csrf_token %}
 						<td> 
-							<center><button type="submit" name="action" value="{{ r.id }}">Add</button></center>
+							<center><button class="button buttonView" type="submit" name="action" value="{{ r.id }}">Add</button></center>
 						</td>
 					</form>
 				</tr>
@@ -75,8 +75,8 @@
 			</table>
 			{% endif %}<br><br>
 
-			<input type="submit" name="action" value="Update"/>
-			<input type="submit" name="action" value="Delete"/>
+			<input class="button buttonSubmit" type="submit" name="action" value="Update"/>
+			<input class="button buttonDelete" type="submit" name="action" value="Delete"/>
 		</form>
 	</div>
 </div>
