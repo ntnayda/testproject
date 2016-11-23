@@ -290,14 +290,22 @@ def view_folder(request, folder_id):
 
     folder = get_object_or_404(models.Folder, pk=folder_id)
     all_reports = models.Report.objects.filter(owned_by=request.user)
+    able_to_add = all_reports.exclude(id__in=folder.reports.all())
 
     if folder.owned_by != request.user:
         return redirect('main')
     elif request.method == "POST":
         update_form = FolderForm(request.POST, instance=folder)
 
-        if update_form.is_valid():
-            if request.POST.get('action') == "Update":
+        action = request.POST.get('action')
+        if action != "view" and action != "Update" and action != "Delete":
+            report = get_object_or_404(models.Report, pk=action)
+            folder.reports.add(report)
+            folder.save()
+            return redirect('main')
+
+        elif update_form.is_valid():
+            if action == "Update":
                 update_form.save()
                 return redirect('main')
             else:
@@ -307,7 +315,8 @@ def view_folder(request, folder_id):
     else:
         update_form = FolderForm(instance=folder)
 
-    return render(request, 'fileshare/view_folder.html', {'folder':folder, 'update_form': update_form, 'all_reports': all_reports})
+    return render(request, 'fileshare/view_folder.html', 
+        {'folder':folder, 'update_form': update_form, 'all_reports': all_reports, 'able_to_add': able_to_add})
 
 
 
