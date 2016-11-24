@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'SecureFileShare.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'fileshareDB3',
-        'USER': 'postgres',
-        'PASSWORD': 'highfive',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': 'fileshareDB',
+        'USER': 'User',
+        'PASSWORD': 'userPassword',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
