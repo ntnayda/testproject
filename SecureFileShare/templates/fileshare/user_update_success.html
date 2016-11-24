@@ -1,0 +1,48 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+<div class="container">
+        <div class="row">
+            <div >
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><strong>Account Information</strong></h3>
+                    </div>
+                    <div class="panel-body">
+                        <table>
+                        <tr>
+                            <tc><th>First Name:</th></tc><tc><td>{{ profile.user.first_name }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Last Name:</th></tc><tc><td>{{ profile.user.last_name }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Username:</th></tc><tc><td>{{ profile.user.username }}</td></tc>
+                        </tr>
+                        <tr>
+                            <tc><th>Email:</th></tc><tc><td>{{ profile.user.email }}</td></tc>
+                        </tr>
+                            <tr>
+                                <tc>
+                                    <th>Active:</th>
+                                </tc>
+                                <tc>
+                                    <td>{{ profile.user.is_active }}</td>
+                                </tc>
+                            </tr>
+                            <tr>
+                                <tc>
+                                    <th>Staff Status:</th>
+                                </tc>
+                                <tc>
+                                    <td>{{ profile.user.is_staff }}</td>
+                                </tc>
+                            </tr>
+                        <tr><td></td></tr>
+                             </table>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

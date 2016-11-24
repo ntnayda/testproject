@@ -41,6 +41,8 @@ urlpatterns = [
     url('^manage_users',views.manage_users, name='manage_users'),
     url('^manage_reports', views.manage_reports, name='manage_reports'),
     url('^manage_groups', views.manage_groups, name='manage_groups'),
+    url('^edit_user/(?P<user_id>[0-9]+)', views.edit_user, name='edit_user'),
     url('^edit_user', views.edit_user, name='edit_user'),
-    url('^edit_group', views.edit_group, name='edit_group'),
+    url('^sm_update_user', views.sm_update_user, name='sm_update_user'),
+    url('^user_update_success.html', views.sm_update_user, name = 'user_update_success')
 ]
