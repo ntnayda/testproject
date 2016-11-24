@@ -217,9 +217,6 @@ def update_profile(request):
 
     return render(request, "fileshare/account_update.html", context)
 
-
-
-
 def password_change(request):
     form = auth_forms.PasswordChangeForm(user=request.user, data=request.POST)
     if request.method == 'POST':
@@ -364,12 +361,27 @@ def manage_groups(request):
         all_groups = models.ProfileGroup.objects.all()
         return render(request, 'fileshare/manage_groups.html',{'all_groups':all_groups})
 
-def edit_user(request):
-    all_users = models.User.objects.all()
-    #return redirect(manage_users)
-    return render(request, 'fileshare/edit_user.html')
+def edit_user(request,user_id):
+    profile = models.Profile.objects.filter(user_id=user_id)
+    #print(profile[0].user.username)
+    return render(request, 'fileshare/edit_user.html',{'profile':profile[0]})
 
-def edit_group(request):
-    all_groups = models.ProfileGroup.objects.all()
-    return render(request, 'fileshare/edit_group.html')
+
+def sm_update_user(request):
+    profile = models.Profile.objects.filter(pk=request.POST['profile_id'])[0]
+    user = profile.user
+
+    user.first_name = request.POST['first_name']
+    user.last_name = request.POST['last_name']
+    user.email = request.POST['email']
+    user.is_active = not request.POST.get('is_active', None) == None
+    user.is_staff = not request.POST.get('is_staff', None) == None
+    user.save()
+    return render(request, 'fileshare/user_update_success.html', {'profile': profile})
+
+
+#return render(request, 'fileshare/sm_update_user.html')
+# def edit_group(request):
+#     all_groups = models.ProfileGroup.objects.all()
+#     return render(request, 'fileshare/edit_group.html')
 #def update_user_permissions(request):
