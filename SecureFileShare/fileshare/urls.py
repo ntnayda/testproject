@@ -45,5 +45,6 @@ urlpatterns = [
     url('^edit_user/(?P<user_id>[0-9]+)', views.edit_user, name='edit_user'),
     url('^edit_user', views.edit_user, name='edit_user'),
     url('^sm_update_user', views.sm_update_user, name='sm_update_user'),
-    url('^user_update_success.html', views.sm_update_user, name = 'user_update_success')
+    url('^user_update_success.html', views.sm_update_user, name = 'user_update_success'),
+    url(r'^delete_report/(?P<report_id>[0-9]+)$', views.delete_report, name='delete_report'),
 ]
