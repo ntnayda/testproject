@@ -89,9 +89,9 @@ def view_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     files = report.files
 
-    if(request.user.is_staff == False):
-        if report.private and request.user != report.owned_by:
-            return redirect('main')
+    #if(request.user.is_staff == False):
+    if report.private and request.user != report.owned_by and request.user.is_staff is False:
+        return redirect('main')
 
     elif request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)

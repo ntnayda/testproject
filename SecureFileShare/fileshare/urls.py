@@ -31,7 +31,7 @@ urlpatterns = [
     #url(r'^test',views.signin,name='signin'),
     #url(r'^',include('django.contrib.auth.urls')),
     url('^test', views.update_profile, name='updateprofile'),
-    #url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report'),
+    url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report'),
     url(r'^view_report/(?P<report_id>[0-9]+)$', views.view_report, name='view_report'),
     url(r'^(?P<group_id>[0-9]+)/view_group/$', views.view_group, name='view_group'),
     url(r'^(?P<folder_id>[0-9]+)/view_folder/$', views.view_folder, name='view_folder'),
