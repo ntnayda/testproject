@@ -295,11 +295,15 @@ def view_folder(request, folder_id):
         update_form = FolderForm(request.POST, instance=folder)
 
         action = request.POST.get('action')
-        if action != "view" and action != "Update" and action != "Delete":
-            report = get_object_or_404(models.Report, pk=action)
+        if action[-1] == "a":
+            report = get_object_or_404(models.Report, pk=action[:-1])
             folder.reports.add(report)
             folder.save()
-            return redirect('main') 
+ 
+        elif action[-1] == "r":
+            report = get_object_or_404(models.Report, pk=action[:-1])
+            folder.reports.remove(report)
+            folder.save()
 
         elif update_form.is_valid():
             if action == "Update":
@@ -308,7 +312,7 @@ def view_folder(request, folder_id):
             else:
                 folder.delete()
                 return redirect('main')
-
+    
     else:
         update_form = FolderForm(instance=folder)
 
