@@ -3,15 +3,34 @@
 {% block content %}
 
 <div class="container">
-	<div class="jumbotron">
-		<h2><b>Create a Report</b></h2>
+	<div class="panel panel-default">
+	<div class="panel-heading"><strong>Create a Report</strong></div>
+	<div class="panel-body">
 		<form method="POST" action="" enctype="multipart/form-data">
 			{% csrf_token %}
-			<table>
-				{{ report_form.as_p }}
-			</table>
-			<input type="file" name="files" multiple> 
-			<input class="button buttonSubmit" type="submit" value="Create Report" /> 
+
+			<div class="form-group">
+			<!-- {{ report_form.as_p }} -->
+				<label for="id_short_desc">Title:</label>
+				<input id="id_short_desc" maxlength="128" name="short_desc" type="text" required class="form-control" />
+				<label for="id_long_desc">Description:</label>
+				<textarea cols="40" id="id_long_desc" name="long_desc" rows="5" required class="form-control"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="id_private">Restrict access to this file?</label>
+				<input id="id_private" name="private" type="checkbox" />
+			</div>
+			<div class="form-group">
+				<label for="id_file_attached">Upload a file:</label>
+				<input id="id_file_attached" name="file_attached" type="file" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label for="id_is_encrypted">Is the attached file encrypted?</label>
+				<input id="id_is_encrypted" name="is_encrypted" type="checkbox" />
+				<span class="helptext">Leave blank if no file is attached.</span>
+			</div>
+			<input class="btn btn-primary" type="submit" value="Create Report" />
+
 		</form>
 	</div>
 </div>

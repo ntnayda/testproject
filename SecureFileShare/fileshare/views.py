@@ -89,7 +89,8 @@ def view_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     files = report.files
 
-    if report.private and request.user != report.owned_by:
+    #if(request.user.is_staff == False):
+    if report.private and request.user != report.owned_by and request.user.is_staff is False:
         return redirect('main')
 
     elif request.method == "POST":
@@ -114,6 +115,11 @@ def view_report(request, report_id):
 
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
+
+def delete_report(request, report_id):
+    report = get_object_or_404(models.Report, pk=report_id)
+    report.delete()
+    return render(request, 'fileshare/manage_reports.html')
 
 @login_required(login_url='login')
 def account_update_success(request):

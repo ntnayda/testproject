@@ -1,4 +1,3 @@
-
 {% load staticfiles %}
 
 <!DOCTYPE html>
@@ -6,110 +5,96 @@
 
 <head>
 
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<title>SecureFileShare</title>
+    <title>SecureFileShare</title>
 
-	<!-- Core CSS - Include with every page -->
-	<link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
-	<style>
-	table#t01 tr:nth-child(even) {
-		background-color: #fff ;
-	}
-	table#t01 tr:nth-child(odd) {
-		background-color: #eee;
-	}
-	th {
-		/* text-align: center; */
-	}
-	td {
-		padding: 3px;
-		border: 4px solid white;
-		/* text-align: center; */
-	}
-	.button {
-		border: none;
-		color: white;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		margin: 4px 2px;
-		cursor: pointer;
-		border-radius: 8px;
-	}
-	.buttonView {
-		padding: 4.5px 10px;
-		font-size: 14px;
-		background-color: #368BC1; /* Glacial Blue Ice */
-	}
-	.buttonSubmit {
-		padding: 5px 15px;
-		font-size: 16px;
-		background-color: #4CC417; /* Green Apple */
-	}
-	.buttonDelete {
-		padding: 5px 15px;
-		font-size: 16px;
-		background-color: #F62817; /* Fire Engine Red */
-	}
-	</style>
+    <!-- Core CSS - Include with every page -->
+    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <style>
+    .button {
+      border: none;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .buttonView {
+      padding: 3px 10px;
+      background-color: #2B60DE;
+    }
+    .buttonDelete {
+      padding: 3px 10px;
+      background-color: #F62817;
+    }
+    .buttonSubmit {
+      padding: 3px 10px;
+      background-color: #52D017;
+    }
+    </style>
 
 </head>
 
 <body>
 
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				{% if user.is_authenticated %}
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				{% endif %}
-				<a class="navbar-brand" href="/"><b>SecureFileShare</b></a>
-			</div>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    {% if user.is_authenticated %}
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+     {% endif %}
+      <a class="navbar-brand" href="/"><b>SecureFileShare</b></a>
+    </div>
 
-			{% if user.is_authenticated %}
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-					{% if user.is_staff %}
-					<li><a href="/sitemanager">Manage</a></li>
-					{% endif %}
-					<li><a href="/main">Profile</a></li>
-					<li><a href="/messages">Messages</a></li>
-					<li><a href="/create_report">Create Report</a></li>
-					<li><a href="/create_group">Create Group</a></li>
-					<li>
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-							<span class="glyphicon glyphicon-user"></span>
-							<span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-							<li><a href="/account/view"><span class="glyphicon glyphicon-cog"></span> Account</a></li>
-							<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-						</ul>
-					</li>
+	{% if user.is_authenticated %}
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+				  {% if user.is_staff %}
+  				 <li><a href="/sitemanager">Manage</a></li>
+		  {% endif %}
+		  <li><a href="/main">Profile</a></li>
+		<li><a href="/messages">Messages</a></li>
+		<li><a href="/create_report">Create Report</a></li>
+		<li><a href="/create_group">Create Group</a></li>
+		<li>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+				<span class="glyphicon glyphicon-user"></span>
+				<span class="caret"></span>
+			</a>
+			  <ul class="dropdown-menu" role="menu">
+	            <li><a href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+	            <li><a href="/account/view"><span class="glyphicon glyphicon-cog"></span> Account</a></li>
+	            <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+	          </ul>
+		</li>
 
-				</ul>
-			</div>
-			{% endif %}
-		</div>
-	</nav>
+      </ul>
+    </div>
+	{% endif %}
+  </div>
+</nav>
+<div style="padding-top: 65px">
+    {% block content %}
+    {% endblock %}
+</div>
 
-	{% block content %}
-	{% endblock %}
+    {% block javascript %}
+    <!-- Core Scripts - Include with every page -->
+    <script src = "{% static 'dist/js/jquery.min.js' %}"></script>
 
-	{% block javascript %}
-	<!-- Core Scripts - Include with every page -->
-	<script src = "{% static 'dist/js/jquery.min.js' %}"></script>
-
-	<script src = "{% static 'dist/js/bootstrap.min.js' %}"></script>
-	{% endblock %}
+    <script src = "{% static 'dist/js/bootstrap.min.js' %}"></script>
+    {% endblock %}
 
 </body>
 

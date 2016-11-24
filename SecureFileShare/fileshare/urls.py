@@ -32,6 +32,7 @@ urlpatterns = [
     #url(r'^',include('django.contrib.auth.urls')),
     url('^test', views.update_profile, name='updateprofile'),
     url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report'),
+    url(r'^view_report/(?P<report_id>[0-9]+)$', views.view_report, name='view_report'),
     url(r'^(?P<group_id>[0-9]+)/view_group/$', views.view_group, name='view_group'),
     url(r'^(?P<folder_id>[0-9]+)/view_folder/$', views.view_folder, name='view_folder'),
     url('^test', views.update_profile,name='updateprofile'),
@@ -44,5 +45,6 @@ urlpatterns = [
     url('^edit_user/(?P<user_id>[0-9]+)', views.edit_user, name='edit_user'),
     url('^edit_user', views.edit_user, name='edit_user'),
     url('^sm_update_user', views.sm_update_user, name='sm_update_user'),
-    url('^user_update_success.html', views.sm_update_user, name = 'user_update_success')
+    url('^user_update_success.html', views.sm_update_user, name = 'user_update_success'),
+    url(r'^delete_report/(?P<report_id>[0-9]+)$', views.delete_report, name='delete_report'),
 ]
