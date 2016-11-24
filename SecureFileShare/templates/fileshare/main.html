@@ -1,124 +1,122 @@
 {% extends 'fileshare/base.html' %}
 
 {% block content %}
-<head>
-	<style>
-	table#t01 tr:nth-child(even) {
-		background-color: #fff ;
-	}
-	table#t01 tr:nth-child(odd) {
-		background-color: #eee;
-	}
-	th {
-		/* text-align: center; */
-	}
-	td {
-		padding: 3px;
-		border: 4px solid white;
-		/* text-align: center; */
-	}
-	</style>
-</head>
 
 <div class="container">
-	<div class="row">
-		<div class="jumbotron">
-			<h1>Hello {{ user.username }}</h1>
-			<p>You are on your Dashboard</p>
+	<h1>Hello {{ user.username }}! <small>You are on your Dashboard</small></h1>
+	<div class="panel-group">
+		<div class="panel panel-default">
+			<div class="panel-heading">Your Folders</div>
+			<div class="panel-body">
+				<table class="table table-hover">
+					<tr>
+						<th>Name</th>
+						<th>Created</th>
+					</tr>
+					{% for f in folders %}
+					<tr>
+						<td><a href="{{ f.id }}/view_folder">{{ f.name }}</a></td><td>{{ f.created }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
 		</div>
 
-		<div class="jumbotron">
-			
-			<h2><b> Your Reports </b></h2><br>
-			<table id="t01" width="80%">
-				<tr>
-					<th>Name</th>
-					<th>Created</th>
-				</tr>
-				{% for f in folders %}
-				<tr>
-					<td><a href="{{ f.id }}/view_folder">{{ f.name }}</a></td><td>{{ f.created }}</td>
-				</tr>
-				{% endfor %}
-			</table><br>
-
-			{% if num_reports == 0 %}
-			You have no reports.
-			{% else %}
-			
-			<table id="t01" width="80%">
-				<tr>
-					<th>Title</th>
-					<th></th>
-					<th>Last Modified By</th>
-					<th>Last Modified</th>
-					<th>Created</th>
-				</tr>
-				{% for r in your_reports %}
-				<tr><td>{{ r.short_desc }}</td>
-					<td>
-						{% if r.private %}
-						<b><font color="red">Private</font></b>
-						{% else %}
-						<b><font color="green">Public</font></b>
-						{% endif %}
-					</td>
-
-					<td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-					<form id="{{ r.short_desc }}" action="view_report/{{ report.id }}" method="POST">
-						{% csrf_token %}
-						<td> 
-							<center><button class="button buttonView" type="submit" form="{{ r.short_desc }}" name="action" value="view">View/Edit</button></center>
+		<div class="panel panel-default">
+			<div class="panel-heading">Your Reports</div>
+			<div class="panel-body">
+				{% if num_reports == 0 %}
+				You have no reports.
+				{% else %}
+				<table class="table table-hover">
+					<tr>
+						<th>Title</th>
+						<th>Last Modified By</th>
+						<th>Last Modified</th>
+						<th>Created</th>
+						<th>View/Edit</th>
+					</tr>
+					{% for r in your_reports %}
+					<tr>
+						<td>{{ r.short_desc }}</td>
+						<td>{{ r.last_modified_by }}</td>
+						<td>{{ r.last_modified }}</td>
+						<td>{{ r.created }}</td>
+						<td>
+							<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
+								{% csrf_token %}
+								<button class="glyphicon glyphicon-pencil" type="submit" form="{{ r.short_desc }}" name="action" value="view">
+								</button>
+							</form>
 						</td>
-					</form>
-				</tr>
-				{% endfor %}
-			</table>
-			{% endif %}<br>
-
-			<h3><b>Create a New Folder<b></h3>
-			<form method="POST" action="{% url 'fileshare:main' %}">
-				{% csrf_token %}
-				{{ folder_form.as_p }}
-				<input class= "button buttonSubmit"type="submit" value="Create Folder">
-			</form>
-
+					</tr>
+					{% endfor %}
+				</table>
+				{% endif %}
+			</div>
 		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">Create a New Folder</div>
+			<div class="panel-body">
+				<form method="POST" action="{% url 'fileshare:main' %}">
+					{% csrf_token %}
+					{{ folder_form.as_p }}
+					<input class="btn btn-primary" type="submit" value="Create Folder">
+				</form>
+			</div>
+		</div>
+	</div>
 
-		<div class="jumbotron">
-			<h2><b>Other Public Reports<b></h2><br>
-			<table id="t01" width="80%">
+	<div class="panel panel-default">
+		<div class="panel-heading">Other Public Reports</div>
+		<div class="panel-body">
+			<table class="table table-striped">
 				<tr>
 					<th>Title</th>
 					<th>Owner</th>
 					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
+					<th>View/Edit</th>
 				</tr>
 				{% for r in other_reports %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.owned_by }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-					<form id="{{ r.short_desc }}" action="view_report/{{ report.id }}" method="POST">
-						{% csrf_token %}
-						<td>
-							<center><button type="submit" class="button buttonView" form="{{ r.short_desc }}" name="action" value="view">View</button></center>
-						</td>
-					</form>
+				<tr>
+					<td>{{ r.short_desc }}</td>
+					<td>{{ r.owned_by }}</td>
+					<td>{{ r.last_modified_by }}</td>
+					<td>{{ r.last_modified }}</td>
+					<td>{{ r.created }}</td>
+					<td>
+						<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
+							{% csrf_token %}
+							<center><button class="glyphicon glyphicon-pencil" type="submit" form="{{ r.short_desc }}" name="action" value="view"></button></center>
+						</form>
+					</td>
 				</tr>
-				{% endfor %}
-			</table>
-		</div>
-
-		<div class="jumbotron">
-			<h2><b> Your Groups </b></h2><br>
-			<table id="t01" width="80%">
-				<th> Name </th>
-				<th> Creator </th>
-				<th> Number of Members </th>
-				{% for g in user.profile.groups_in.all %}
-				<tr><td> <a href="{{ g.id }}/view_group">{{ g.name }}</a> </td><td>{{ g.creator }}</td> <td>{{ g.members.count }}</td></tr>
 				{% endfor %}
 			</table>
 		</div>
 	</div>
 
-	{% endblock %}
+	<div class="panel panel-default">
+		<div class="panel-heading">Your Groups</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tr>
+					<th> Name </th>
+					<th> Creator </th>
+					<th> Number of Members </th>
+				</tr>
+				{% for g in user.profile.groups_in.all %}
+				<tr>
+					<td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td>
+					<td>{{ g.creator }}</td>
+					<td>{{ g.members.count }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

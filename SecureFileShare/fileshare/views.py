@@ -116,6 +116,11 @@ def view_report(request, report_id):
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
 
+# def delete_report(request):
+#     report = get_object_or_404(models.Report, pk=report_id)
+#     report.delete()
+#     return render(request, 'fileshare/manage_reports.html')
+
 @login_required(login_url='login')
 def account_update_success(request):
     return render(request,'fileshare/account_update_success.html')
