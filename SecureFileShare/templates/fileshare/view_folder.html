@@ -10,93 +10,71 @@
 	table#t01 tr:nth-child(odd) {
 		background-color: #eee;
 	}
-	th {
-		/* text-align: center; */
-	}
 	td {
-		padding: 3px 10px;
+		padding: 3px;
 		border: 3px solid white;
-		/* text-align: center; */
-	}
-	.buttonRow {
-		padding: 4px 10px;
-		font-size: 14px;
 	}
 	</style>
 </head>
 
 <div class="container">
 	<div class="jumbotron">
-		{% if folder.reports.count == 0 %}
-		There are no reports in this folder.
-		{% else %}
-		<h2><b>{{ folder.name }}</b></h2><br>
-		<table id="t01" width="80%">
-			<tr>
-				<th>Title</th>
-				<th></th>
-				<th>Editor</th>
-				<th>Last Modified</th>
-				<th>Created</th>
-			</tr>
-			{% for r in folder.reports.all %}
-			<tr><td>{{ r.short_desc }}</td>
-				<td>
-					{% if r.private %}
-					<font color="red">Private</font>
-					{% else %}
-					<font color="green">Public</font>
-					{% endif %}
-				</td>
-				<td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-				<form id="view_{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
-					{% csrf_token %}
-					<td>
-						<center><button class="button buttonView" type="submit" name="action" value="{{ r.id }}v">View/Edit</button></center>
-					</td>
-				</form>
-				<form id="remove_{{ r.short_desc }}" action="." method="POST">
-					{% csrf_token %}
-					<td> 
-						<center><button class="button buttonDelete buttonRow" type="submit" name="action" value="{{ r.id }}r">Remove</button></center>
-					</td>
-				</form>
-			</tr>
-			{% endfor %}
-		</table>
-		{% endif %}
-	</div>
-
-	<div class="jumbotron">
-		{% if able_to_add.count == 0 %}
-		There are no reports to add to this folder.
-		{% else %}
-		<h3><b>Add a report to this folder</b></h3><br>
-		<table id="t01" width="80%">
-			<tr>
-				<th>Title</th>
-				<th>Last Modified By</th>
-				<th>Last Modified</th>
-				<th>Created</th>
-			</tr>
-			{% for r in able_to_add %}
-			<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
-				<form id="add_{{ r.short_desc }}" action="." method="POST">
-					{% csrf_token %}
-					<td> 
-						<center><button class="button buttonView" type="submit" name="action" value="{{ r.id }}a">Add</button></center>
-					</td>
-				</form>
-			</tr>
-			{% endfor %}
-		</table>
-		{% endif %}<br><br>
-	</div>
-	<div class="jumbotron">
 		<form method="POST">
 			{% csrf_token %}
-			<h3><b>Rename Folder</b></h3>
 			{{ update_form.as_p }}
+
+
+			{% if folder.reports.count == 0 %}
+			There are no reports in this folder.
+			{% else %}
+			<h3><b>Reports in this folder</b></h3><br>
+			<table id="t01" width="80%">
+				<tr>
+					<th>Title</th>
+					<th>Type</th>
+					<th>Last Modified By</th>
+					<th>Last Modified</th>
+					<th>Created</th>
+				</tr>
+				{% for r in folder.reports.all %}
+				<tr><td>{{ r.short_desc }}</td>
+					<td>
+						{% if r.private %}
+							<b><font color="red">Private</font></b>
+						{% else %}
+							<b><font color="green">Public</font></b>
+						{% endif %}
+					</td>
+					<td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+			{% endif %}<br><br>
+
+			{% if able_to_add.count == 0 %}
+			There are no reports to add to this folder.
+			{% else %}
+			<h3><b>Add a report to this folder</b></h3><br>
+			<table id="t01" width="80%">
+				<tr>
+					<th>Title</th>
+					<th>Last Modified By</th>
+					<th>Last Modified</th>
+					<th>Created</th>
+				</tr>
+				{% for r in able_to_add %}
+				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+					<form id="add_{{ r.short_desc }}" action="{% url 'fileshare:view_folder' folder.id %}" method="POST">
+						{% csrf_token %}
+						<td>
+							<center><button class="button buttonView" type="submit" name="action" value="{{ r.id }}">Add</button></center>
+						</td>
+					</form>
+				</tr>
+				{% endfor %}
+			</table>
+			{% endif %}<br><br>
+
 			<input class="button buttonSubmit" type="submit" name="action" value="Update"/>
 			<input class="button buttonDelete" type="submit" name="action" value="Delete"/>
 		</form>

@@ -10,7 +10,7 @@
 
 	<div class="jumbotron">
 		<h2><b>Edit Report</b></h2>
-		
+
 			{% if report.owned_by == user %}
 
 			<form method="POST" enctype="multipart/form-data">
@@ -27,16 +27,14 @@
 				{% endfor %}
 			</table><br>
 			<input class="button buttonSubmit" type="submit" name="action" value="Save Changes"/>
-
-
-			<input class="button buttonDelete" type="submit" name="action" value="Delete Report"/>
+			<a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger"  name="action">Delete Report</a>
 			{% else %}
 			<font size="3">*You cannot edit this report.</font>
 			{% endif %}
 		</form>
 	</div>
-	
-	
+
+
 
 </div>
 
