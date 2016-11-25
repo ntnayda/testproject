@@ -21,66 +21,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/main.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="464">
-              <caret line="127" column="14" selection-start-line="127" selection-start-column="14" selection-end-line="127" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="manage_groups.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_groups.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="manage_users.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_users.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-287">
-              <caret line="35" column="21" selection-start-line="35" selection-start-column="21" selection-end-line="35" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="profile.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/profile.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sitemanager.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/sitemanager.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="view_folder.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/fileshare/view_folder.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="478">
-              <caret line="85" column="14" selection-start-line="85" selection-start-column="14" selection-end-line="85" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="view_group.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/fileshare/view_group.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -94,8 +34,8 @@
       <file leaf-file-name="view_report.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/fileshare/view_report.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="478">
-              <caret line="40" column="14" selection-start-line="40" selection-start-column="14" selection-end-line="40" selection-end-column="14" />
+            <state relative-caret-position="342">
+              <caret line="38" column="74" selection-start-line="38" selection-start-column="74" selection-end-line="38" selection-end-column="74" />
               <folding />
             </state>
           </provider>
@@ -104,9 +44,11 @@
       <file leaf-file-name="manage_reports.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_reports.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="546">
-              <caret line="53" column="14" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
-              <folding />
+            <state relative-caret-position="70">
+              <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="79" />
+              <folding>
+                <element signature="e#699#725#0#HTML" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -114,8 +56,8 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SecureFileShare/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="83" column="17" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="17" />
+            <state relative-caret-position="334">
+              <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -156,8 +98,8 @@
         <option value="$PROJECT_DIR$/fileshare/views.py" />
         <option value="$PROJECT_DIR$/templates/fileshare/base.html" />
         <option value="$PROJECT_DIR$/templates/fileshare/view_folder.html" />
-        <option value="$PROJECT_DIR$/templates/fileshare/view_report.html" />
         <option value="$PROJECT_DIR$/templates/fileshare/manage_reports.html" />
+        <option value="$PROJECT_DIR$/templates/fileshare/view_report.html" />
         <option value="$PROJECT_DIR$/SecureFileShare/settings.py" />
       </list>
     </option>
@@ -289,8 +231,9 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/cs3240-f16-team03" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/fileshare/views.py" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/fileshare/views.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -575,7 +518,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22401172" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -895,22 +838,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/fileshare/main.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="127" column="14" selection-start-line="127" selection-start-column="14" selection-end-line="127" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_groups.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_users.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-287">
@@ -935,6 +862,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_reports.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="70">
+          <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="79" />
+          <folding>
+            <element signature="e#699#725#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/fileshare/view_report.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="38" column="74" selection-start-line="38" selection-start-column="74" selection-end-line="38" selection-end-column="74" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_groups.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/fileshare/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="478">
+          <caret line="127" column="14" selection-start-line="127" selection-start-column="14" selection-end-line="127" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/templates/fileshare/view_folder.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="478">
@@ -951,26 +912,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/fileshare/view_report.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="40" column="14" selection-start-line="40" selection-start-column="14" selection-end-line="40" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/fileshare/manage_reports.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="546">
-          <caret line="53" column="14" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/SecureFileShare/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="83" column="17" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="17" />
+        <state relative-caret-position="334">
+          <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
           <folding />
         </state>
       </provider>

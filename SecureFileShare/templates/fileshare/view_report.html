@@ -26,8 +26,29 @@
 				</tr>
 				{% endfor %}
 			</table><br>
-			<input class="button buttonSubmit" type="submit" name="action" value="Save Changes"/>
-			<a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger"  name="action">Delete Report</a>
+			<input class="btn btn-default btn-sm"  type="submit" name="action" value="Save Changes"/>
+			<a href="#" role="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#user_del_report"  name="action">Delete Report</a>
+                						<!-- Modal -->
+						<div id="user_del_report" class="modal fade" role="dialog">
+						  <div class="modal-dialog modal-md">
+
+						    <!-- Modal content-->
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="close" data-dismiss="modal">&times;</button>
+						        <h4 class="modal-title">Delete Report</h4>
+						      </div>
+						      <div class="modal-body">
+						        <p>Are you sure you want to delete report, "{{report.short_desc}} ?"</p>
+						      </div>
+						      <div class="modal-footer">
+						        <a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger">Delete</a>
+						        <a href="#" role="button" class="btn btn-default" data-dismiss="modal">Cancel</a>
+						      </div>
+						    </div>
+
+						  </div>
+						</div>
 			{% else %}
 			<font size="3">*You cannot edit this report.</font>
 			{% endif %}
