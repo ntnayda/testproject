@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>You have successfully registered!</h1>
+    {% if private_key %}
+    "Please save this key somewhere safe for decrypting items: {{private_key}}"
+    {% endif %}
     <a href="/fileshare">Return to the homepage.</a>
 </body>
 </html>

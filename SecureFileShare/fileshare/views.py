@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ReportForm
 from .forms import GroupForm
+from .forms import signup_form
 from django.shortcuts import resolve_url
 from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url, urlsafe_base64_decode
@@ -17,10 +18,14 @@ from . import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import update_session_auth_hash
 from . import models
+from django.contrib.auth import models as authmodels
 from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
 from django.core.urlresolvers import reverse
+from Crypto.PublicKey import RSA
+from Crypto import Random
+import os
 
 
 # Create your views here.
@@ -167,10 +172,10 @@ def messages(request):
     message_list = []
     for convo in conversation_list:
         message_list.append(models.Message.objects.all().filter(owned_by=convo).order_by('time').reverse)
-
+    reciever_list = models.User.objects.all()
     forms.messageForm.base_fields['owned_by'] = djangoforms.ModelChoiceField(queryset=conversation_list,required=False)
     form = forms.messageForm()
-    return render(request,'fileshare/messages.html',{'conversation_list':conversation_list,'message_list':message_list,'form':form})
+    return render(request,'fileshare/messages.html',{'reciever_list':reciever_list,'conversation_list':conversation_list,'message_list':message_list,'form':form})
 
 def update_profile(request):
 
@@ -276,3 +281,27 @@ def view_group(request, group_id):
         update_form = ReportForm(instance=report)
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
+
+def register(request):
+
+    if request.method == 'POST':
+        register_form = signup_form(request.POST)
+
+        if register_form.is_valid():
+            newuser = authmodels.User.objects.create(username=request.POST['username'],
+                                                     first_name=request.POST['first_name'],
+                                                     last_name=request.POST['last_name'],
+                                                     email=request.POST['email']
+                                                     )
+            newuser.set_password(register_form.cleaned_data["password1"])
+            newuser.save()
+
+            #newuser.profile.publickey = random_generator
+            #newuser.save()
+            #print(random_generator)
+            return render(request,'fileshare/register_success.html')
+
+    else:
+        register_form = signup_form()
+
+    return render(request, 'fileshare/register.html', {'form': signup_form()})

@@ -13,6 +13,7 @@ from .forms import signup_form, UpdateProfile
 # user authentication urls
 urlpatterns = [
     url(r'^$', views.main, name='main'),
+    url('^register/signup',views.register,name='register'),
     url('^register/signup',CreateView.as_view(template_name='fileshare/register.html',form_class=signup_form,success_url='/fileshare/register/success')),
     url('^register/success',views.register_success,name='register_success'),
     url('^register/updateprofile/success',views.account_update_success,name='account_update_success'),
