@@ -274,7 +274,7 @@ def create_group(request):
 def view_group(request, group_id):
     group = get_object_or_404(models.ProfileGroup, pk=group_id)
 
-    if request.user.profile not in group.members.all():
+    if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
     elif request.method == "POST":
         update_form = GroupForm(request.POST, instance=group)

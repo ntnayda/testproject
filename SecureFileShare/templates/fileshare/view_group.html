@@ -4,25 +4,42 @@
 
 <div class="container">
 
-	<div class="jumbotron">
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong>{{ group.name }}</strong></div>
+		<div class="panel-body">
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
-			{% if group.creator == user %}
-			<h2><b>Edit Group</b></h2>
-			{{ update_form.as_p }}
-			<input type="submit" name="action" value="Save Changes"/>
+            <div class="row">
+                <div class="col-lg-8">
+                {% if group.creator == user or user.is_staff %}
+                <h2><b>Edit Group</b></h2>
+                {{ update_form.as_p }}
+                <input type="submit" name="action" value="Save Changes"/>
 
-			{% else %}
-			<h2><b>View Report</b></h2>
-			<h3>{{ group.name }}</h3>
-			{% for m in group.members.all %}
-				<br>{{ m }}<br>
-			{% endfor %}
-			{% endif %}
+                {% else %}
+
+                    <h2><b>View Report</b></h2>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><strong>Group Members</strong></div>
+                            <div class="panel-body">
+                            <ul class="list-group">
+                            {% for m in group.members.all %}
+                                <li class="list-group-item">{{ m }}</li>
+                            {% endfor %}
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endif %}
+            </div>
 		</form>
 	</div>
-	
-	
+
+	</div>
 
 </div>
 
