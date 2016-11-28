@@ -273,24 +273,33 @@ def create_group(request):
 @login_required(login_url='login')
 def view_group(request, group_id):
     group = get_object_or_404(models.ProfileGroup, pk=group_id)
+    #private_reports = request.user.profile.reports_owned.filter(private=True)
+    private_reports = models.Report.objects.filter(owned_by=request.user, private=True).exclude(id__in=group.reports.all())
 
     if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
     elif request.method == "POST":
         update_form = GroupForm(request.POST, instance=group)
+        action = request.POST.get('action')
+        
+        if action != "Save Changes":
+            report = get_object_or_404(models.Report, pk=action[1:])
+            if action[0] == 'a':
+                group.reports.add(report)
+            else:
+                group.reports.remove(report)
 
         if update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
                 update_form.save()
-                return redirect('main')
             else:
                 group.delete()
                 return redirect('main')
     else:
         update_form = GroupForm(instance=group)
 
-    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form})
+    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports})
 
 
 @login_required(login_url='login')
@@ -306,10 +315,14 @@ def view_folder(request, folder_id):
 
         action = request.POST.get('action')
         if action != "view" and action != "Update" and action != "Delete":
-            report = get_object_or_404(models.Report, pk=action)
-            folder.reports.add(report)
+            report = get_object_or_404(models.Report, pk=action[1:])
+            if action[0] == 'a':
+                folder.reports.add(report)
+                report.in_folder = True
+            else:
+                folder.reports.remove(report)
+                report.in_folder = False
             folder.save()
-            return redirect('main')
 
         elif update_form.is_valid():
             if action == "Update":

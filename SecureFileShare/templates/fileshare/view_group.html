@@ -7,39 +7,68 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><strong>{{ group.name }}</strong></div>
 		<div class="panel-body">
-		<form method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-            <div class="row">
-                <div class="col-lg-8">
+         <div class="row">
+            <div class="col-lg-8">
                 {% if group.creator == user or user.is_staff %}
-                <h2><b>Edit Group</b></h2>
-                {{ update_form.as_p }}
-                <input type="submit" name="action" value="Save Changes"/>
-
-                {% else %}
-
-                    <h2><b>View Report</b></h2>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><strong>Group Members</strong></div>
-                            <div class="panel-body">
-                            <ul class="list-group">
-                            {% for m in group.members.all %}
-                                <li class="list-group-item">{{ m }}</li>
-                            {% endfor %}
-                            </ul>
-                            </div>
-                        </div>
-                    </div>
-
+                <form method="POST" action=".">
+                    {% csrf_token %}
+                    <h2><b>Edit Group</b></h2>
+                    {{ update_form.as_p }}
+                    <input type="submit" name="action" value="Save Changes"/>
+                </form>
                 {% endif %}
-            </div>
-		</form>
-	</div>
 
-	</div>
+                <div class="panel-body">
+                    <h2><b>Reports in this group</b></h2>
+                    <ul class="list-group">
+                        {% for r in group.reports.all %}
+                        <li class="list-group-item">
+                            {{ r }}
+                            <form id="remove_{{ r.short_desc }}" method="POST" action=".">
+                                {% csrf_token %}
+                                <div align="right"><button class="glyphicon glyphicon-remove" type="submit" form="remove_{{ r.short_desc }}" name="action" value="r{{ r.id }}"></button></div>
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Group Members</strong></div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            {% for m in group.members.all %}
+                            <li class="list-group-item">{{ m }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Add private reports to this group</strong></div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            {% for r in private_reports %}
+                            <li class="list-group-item">
+                                {{ r }}
+                                <form id="add_{{ r.short_desc }}" action="." method="POST">
+                                    {% csrf_token %}
+                                    <div align="right"><button class="glyphicon glyphicon-plus" type="submit" form="add_{{ r.short_desc }}" name="action" value="a{{ r.id }}"></button></div>
+                                </form>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 </div>
 

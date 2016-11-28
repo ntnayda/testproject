@@ -4,8 +4,16 @@
 
 <div class="container">
 	<div class="jumbotron">
-		<h2><b>{{ report.short_desc }} </b></h2><br>
-		<h3>{{ report.long_desc }}</h3>
+		<h2><b>{{ report.short_desc }} </b></h2>
+		<h3>{{ report.long_desc }}</h3><br>
+		<h4><b>Attached files:</b></h4>
+			<table id="t01" width="60%">
+				{% for f in files.all %}
+				<tr>
+					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
+				</tr>
+				{% endfor %}
+			</table>
 	</div>
 
 	<div class="jumbotron">
@@ -16,7 +24,6 @@
 			<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ update_form.as_p }}
-			<input type="file" name="files" multiple>
 			<h4><b>Attached files:</b></h4>
 			<table id="t01" width="60%">
 				{% for f in files.all %}
@@ -26,6 +33,7 @@
 				</tr>
 				{% endfor %}
 			</table><br>
+			<input type="file" name="files" multiple>
 			<input class="btn btn-default btn-sm"  type="submit" name="action" value="Save Changes"/>
 			<a href="#" role="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#user_del_report"  name="action">Delete Report</a>
                 						<!-- Modal -->
