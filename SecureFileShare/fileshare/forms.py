@@ -96,7 +96,7 @@ class UpdateFolder(forms.ModelForm):
         fields = ['name', 'reports']
 
 class SearchForm(forms.Form):
-    search = forms.CharField(max_length='128')
+    search = forms.CharField(max_length='128', widget=forms.Textarea(attrs={'cols': 50, 'rows': 1}))
     SEARCH_OPTIONS = (
             ('desc', "Description"),
             ('owner', "Owned By"),

@@ -30,6 +30,7 @@
 			<h3><b>Reports in this folder</b></h3><br>
 			<table id="t01" width="80%">
 				<tr>
+					<th></th>
 					<th>Title</th>
 					<th>Type</th>
 					<th>Last Modified By</th>
@@ -37,7 +38,14 @@
 					<th>Created</th>
 				</tr>
 				{% for r in folder.reports.all %}
-				<tr><td><a href="http://127.0.0.1:8000/fileshare/view_report/{{ r.id }}">{{ r.short_desc }}</a></td>
+				<tr>
+					<td>
+						{% if r.is_encrypted %}
+						<div align="right"><span class="glyphicon glyphicon-lock" style="color:#50aeed"></span></div>
+						{% else %}
+						{% endif %}
+					</td>
+					<td><a href="http://127.0.0.1:8000/fileshare/view_report/{{ r.id }}">{{ r.short_desc }}</a></td>
 					<td>
 						{% if r.private %}
 							<b><font color="red">Private</font></b>
@@ -49,7 +57,7 @@
 					<form id="remove_{{ r.short_desc }}" action="." method="POST">
 						{% csrf_token %}
 						<td>
-							<center><button class="glyphicon glyphicon-remove" type="submit" name="action" value="r{{ r.id }}"></button></center>
+							<center><button class="glyphicon glyphicon-remove" style="color:red" type="submit" name="action" value="r{{ r.id }}"></button></center>
 						</td>
 					</form>
 				</tr>
@@ -63,13 +71,21 @@
 			<h3><b>Add a report to this folder</b></h3><br>
 			<table id="t01" width="80%">
 				<tr>
+					<th></th>
 					<th>Title</th>
 					<th>Last Modified By</th>
 					<th>Last Modified</th>
 					<th>Created</th>
 				</tr>
 				{% for r in able_to_add %}
-				<tr><td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
+				<tr>
+					<td>
+						{% if r.is_encrypted %}
+						<div align="right"><span class="glyphicon glyphicon-lock" style="color:#50aeed"></span></div>
+						{% else %}
+						{% endif %}
+					</td>
+					<td>{{ r.short_desc }}</td><td>{{ r.last_modified_by }}</td><td>{{ r.last_modified }}</td><td>{{ r.created }}</td>
 					<form id="add_{{ r.short_desc }}" action="." method="POST">
 						{% csrf_token %}
 						<td>

@@ -14,7 +14,7 @@
                     {% csrf_token %}
                     <h2><b>Edit Group</b></h2>
                     {{ update_form.as_p }}
-                    <input type="submit" name="action" value="Save Changes"/>
+                    <input type="submit"  class="btn btn-default btn-sm" name="action" value="Save Changes"/>
                 </form>
                 {% endif %}
 
@@ -26,7 +26,7 @@
                             {{ r }}
                             <form id="remove_{{ r.short_desc }}" method="POST" action=".">
                                 {% csrf_token %}
-                                <div align="right"><button class="glyphicon glyphicon-remove" type="submit" form="remove_{{ r.short_desc }}" name="action" value="r{{ r.id }}"></button></div>
+                                <div align="right"><button class="btn btn-danger btn-sm"  type="submit" form="remove_{{ r.short_desc }}" name="action" value="r{{ r.id }}"><span class="glyphicon glyphicon-remove"></span></button></div>
                             </form>
                         </li>
                         {% endfor %}
@@ -56,7 +56,7 @@
                                 {{ r }}
                                 <form id="add_{{ r.short_desc }}" action="." method="POST">
                                     {% csrf_token %}
-                                    <div align="right"><button class="glyphicon glyphicon-plus" type="submit" form="add_{{ r.short_desc }}" name="action" value="a{{ r.id }}"></button></div>
+                                    <div align="right"><button class="btn btn-success btn-sm" type="submit" form="add_{{ r.short_desc }}" name="action" value="a{{ r.id }}"><span class="glyphicon glyphicon-plus"></span></button></div>
                                 </form>
                             </li>
                             {% endfor %}

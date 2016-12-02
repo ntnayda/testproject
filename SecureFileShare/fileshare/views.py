@@ -125,7 +125,7 @@ def view_report(request, report_id):
     else:
         update_form = ReportForm(instance=report)
 
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count()})
 
 
 def user_delete_report(request, report_id):
