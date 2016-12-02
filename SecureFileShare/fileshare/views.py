@@ -20,6 +20,8 @@ from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
 from django.core.urlresolvers import reverse
+from django.db.models import Q
+
 
 
 # Create your views here.
@@ -42,7 +44,11 @@ def main(request):
     if request.method == 'POST':
         folder_form = FolderForm(request.POST)
 
-        if folder_form.is_valid():
+        if request.POST.get('a') == "Search":
+            request.session['query'] = request.POST.get('q')
+            return redirect('search_results')
+
+        elif folder_form.is_valid():
             folder = models.Folder.objects.create(
                 name=request.POST.get('name'),
                 owned_by=request.user,
@@ -339,27 +345,6 @@ def view_folder(request, folder_id):
                   {'folder': folder, 'update_form': update_form, 'all_reports': all_reports,
                    'able_to_add': able_to_add})
 
-    '''report = get_object_or_404(models.Report, pk=report_id)
-
-    if request.method == "POST":
-        update_form = ReportForm(request.POST, request.FILES, instance=report)
-
-        if update_form.is_valid():
-
-            if request.POST.get('action') == "Save Changes":
-                report.last_modified = datetime.datetime.now()
-                report_form.last_modified_by = request.user.username
-                update_form.save()
-                return redirect('main')
-            else:
-                report.delete()
-                return redirect('main')
-    else:
-        update_form = ReportForm(instance=report)
-
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
-
-
 # site manager views
 def sitemanager(request):
     if (request.user.is_staff):
@@ -414,3 +399,17 @@ def delete_report(request, report_id):
 #     all_groups = models.ProfileGroup.objects.all()
 #     return render(request, 'fileshare/edit_group.html')
 # def update_user_permissions(request):
+
+@login_required(login_url='login')
+def search_results(request):
+
+    query = request.session.get('query')
+
+    if query is None:
+        return redirect('main')
+
+    results = models.Report.objects.filter(
+        Q(short_desc__contains=query) | Q(long_desc__contains=query)
+        ).exclude(~Q(owned_by=request.user), Q(private=True))
+
+    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results})

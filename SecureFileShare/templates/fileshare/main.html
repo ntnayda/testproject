@@ -4,6 +4,30 @@
 
 <div class="container">
 	<h1>Hello {{ user.username }}! <small>You are on your Dashboard</small></h1>
+
+	
+	<div class="panel-group">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-lg-4">
+						<form method="POST" action=".">
+							{% csrf_token %}
+							<select name="type">
+								<option value="description">Description</option>
+								<option value="owner">Owner</option>
+								<option value="mercedes">Mercedes</option>
+								<option value="audi">Audi</option>
+							</select>
+							<input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Search for a report">
+							<button type="submit" class="glyphicon glyphicon-search" name="a" value="Search"></button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="panel-group">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Your Folders</strong></div>
@@ -31,7 +55,7 @@
 				<table class="table table-hover">
 					<tr>
 						<th>Title</th>
-                        <th>Type</th>
+						<th>Type</th>
 						<th>Last Modified By</th>
 						<th>Last Modified</th>
 						<th>Created</th>
@@ -40,89 +64,89 @@
 					{% for r in your_reports %}
 					<tr>
 						<td>{{ r.short_desc }}</td>
-                        <td>{% if r.private %}
-                            <p>Private</p>
-                        {% else %}
-                            <p>Public</p>
-                        {% endif %}</td>
+						<td>{% if r.private %}
+							<p>Private</p>
+							{% else %}
+							<p>Public</p>
+							{% endif %}</td>
+							<td>{{ r.last_modified_by }}</td>
+							<td>{{ r.last_modified }}</td>
+							<td>{{ r.created }}</td>
+							<td>
+								<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
+									{% csrf_token %}
+									<button class="glyphicon glyphicon-pencil" type="submit" form="{{ r.short_desc }}" name="action" value="view">
+									</button>
+								</form>
+							</td>
+						</tr>
+						{% endfor %}
+					</table>
+					{% endif %}
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"><strong>Create a New Folder</strong></div>
+				<div class="panel-body">
+					<form method="POST" action="{% url 'fileshare:main' %}">
+						{% csrf_token %}
+						{{ folder_form.as_p }}
+						<input class="btn btn-primary" type="submit" value="Create Folder">
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Other Public Reports</strong></div>
+			<div class="panel-body">
+				<table class="table table-striped">
+					<tr>
+						<th>Title</th>
+						<th>Owner</th>
+						<th>Last Modified By</th>
+						<th>Last Modified</th>
+						<th>Created</th>
+						<th>View/Edit</th>
+					</tr>
+					{% for r in other_reports %}
+					<tr>
+						<td>{{ r.short_desc }}</td>
+						<td>{{ r.owned_by }}</td>
 						<td>{{ r.last_modified_by }}</td>
 						<td>{{ r.last_modified }}</td>
 						<td>{{ r.created }}</td>
 						<td>
 							<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
 								{% csrf_token %}
-								<button class="glyphicon glyphicon-pencil" type="submit" form="{{ r.short_desc }}" name="action" value="view">
-								</button>
+								<center><button class="glyphicon glyphicon-eye-open" type="submit" form="{{ r.short_desc }}" name="action" value="view"></button></center>
 							</form>
 						</td>
 					</tr>
 					{% endfor %}
 				</table>
-				{% endif %}
 			</div>
 		</div>
+
 		<div class="panel panel-default">
-			<div class="panel-heading"><strong>Create a New Folder</strong></div>
+			<div class="panel-heading"><strong>Your Groups</strong></div>
 			<div class="panel-body">
-				<form method="POST" action="{% url 'fileshare:main' %}">
-					{% csrf_token %}
-					{{ folder_form.as_p }}
-					<input class="btn btn-primary" type="submit" value="Create Folder">
-				</form>
+				<table class="table table-striped">
+					<tr>
+						<th> Name </th>
+						<th> Creator </th>
+						<th> Number of Members </th>
+					</tr>
+					{% for g in user.profile.groups_in.all %}
+					<tr>
+						<td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td>
+						<td>{{ g.creator }}</td>
+						<td>{{ g.members.count }}</td>
+					</tr>
+					{% endfor %}
+				</table>
 			</div>
 		</div>
 	</div>
 
-	<div class="panel panel-default">
-		<div class="panel-heading"><strong>Other Public Reports</strong></div>
-		<div class="panel-body">
-			<table class="table table-striped">
-				<tr>
-					<th>Title</th>
-					<th>Owner</th>
-					<th>Last Modified By</th>
-					<th>Last Modified</th>
-					<th>Created</th>
-					<th>View/Edit</th>
-				</tr>
-				{% for r in other_reports %}
-				<tr>
-					<td>{{ r.short_desc }}</td>
-					<td>{{ r.owned_by }}</td>
-					<td>{{ r.last_modified_by }}</td>
-					<td>{{ r.last_modified }}</td>
-					<td>{{ r.created }}</td>
-					<td>
-						<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
-							{% csrf_token %}
-							<center><button class="glyphicon glyphicon-eye-open" type="submit" form="{{ r.short_desc }}" name="action" value="view"></button></center>
-						</form>
-					</td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
-
-	<div class="panel panel-default">
-		<div class="panel-heading"><strong>Your Groups</strong></div>
-		<div class="panel-body">
-			<table class="table table-striped">
-				<tr>
-					<th> Name </th>
-					<th> Creator </th>
-					<th> Number of Members </th>
-				</tr>
-				{% for g in user.profile.groups_in.all %}
-				<tr>
-					<td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td>
-					<td>{{ g.creator }}</td>
-					<td>{{ g.members.count }}</td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
-</div>
-
-{% endblock %}
+	{% endblock %}
