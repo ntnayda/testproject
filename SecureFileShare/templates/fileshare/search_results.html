@@ -7,10 +7,12 @@
 	<div class="panel panel-default">
 		<div class="panel-heading"><h3>Displaying results for <strong>{{ query }}</strong>...</h3></div>
 		<div class="panel-body">
+			{% if results.count %}
 			<table class="table table-hover">
 					<tr>
 						<th>Title</th>
                         <th>Type</th>
+                        <th>Owner</th>
 						<th>Last Modified By</th>
 						<th>Last Modified</th>
 						<th>Created</th>
@@ -19,16 +21,20 @@
 					<tr>
 						<td><a href="http://127.0.0.1:8000/fileshare/view_report/{{ r.id }}">{{ r }}</a></td>
                         <td>{% if r.private %}
-                            <p>Private</p>
-                        {% else %}
-                            <p>Public</p>
-                        {% endif %}</td>
+							<font color="red">Private</font>
+							{% else %}
+							<font color="green">Public</font>
+							{% endif %}</td>
+                        <td>{{r.owned_by }}</td>
 						<td>{{ r.last_modified_by }}</td>
 						<td>{{ r.last_modified }}</td>
 						<td>{{ r.created }}</td>
 					</tr>
 					{% endfor %}
 				</table>
+				{% else %}
+				Your search returned no results...
+				{% endif %}
 		</div>
 	</div>
 </div>

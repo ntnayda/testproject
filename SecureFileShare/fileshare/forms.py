@@ -94,3 +94,14 @@ class UpdateFolder(forms.ModelForm):
     class Meta:
         model = Folder
         fields = ['name', 'reports']
+
+class SearchForm(forms.Form):
+    search = forms.CharField(max_length='128')
+    SEARCH_OPTIONS = (
+            ('desc', "Description"),
+            ('owner', "Owned By"),
+            ('created', "Created",),
+            ('modified', "Last Modified"),
+        )
+    parameter = forms.CharField(widget=forms.Select(choices=SEARCH_OPTIONS))
+

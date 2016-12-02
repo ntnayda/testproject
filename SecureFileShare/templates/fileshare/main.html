@@ -11,15 +11,17 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-lg-4">
-						<form method="POST" action=".">
+						<form id="s01" method="POST" action="{% url 'fileshare:search_results' %}">
 							{% csrf_token %}
-							<select name="type">
+							{{ search_form.as_p }}
+							<!--
+							<select form="s01" title="type">
 								<option value="description">Description</option>
-								<option value="owner">Owner</option>
-								<option value="mercedes">Mercedes</option>
-								<option value="audi">Audi</option>
+								<option value="owner">Owned By</option>
+								<option value="mercedes">Created</option>
+								<option value="audi">Last Modified</option>
 							</select>
-							<input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Search for a report">
+							<input type="text" id="searchBox" class="input-medium search-query" name="q" placeholder="Search for a report"> -->
 							<button type="submit" class="glyphicon glyphicon-search" name="a" value="Search"></button>
 						</form>
 					</div>
@@ -65,9 +67,9 @@
 					<tr>
 						<td>{{ r.short_desc }}</td>
 						<td>{% if r.private %}
-							<p>Private</p>
+							<font color="red">Private</font>
 							{% else %}
-							<p>Public</p>
+							<font color="green">Public</font>
 							{% endif %}</td>
 							<td>{{ r.last_modified_by }}</td>
 							<td>{{ r.last_modified }}</td>

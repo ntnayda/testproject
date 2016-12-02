@@ -43,10 +43,13 @@ def main(request):
 
     if request.method == 'POST':
         folder_form = FolderForm(request.POST)
+        search_form = SearchForm(request.POST)
 
-        if request.POST.get('a') == "Search":
-            request.session['query'] = request.POST.get('q')
-            return redirect('search_results')
+        if search_form.is_valid():
+            cd = search_form.cleaned_data
+            #request.session['param'] = cd.get('param')
+            #request.session['query'] = cd.get('query')
+            #return redirect('search_results')
 
         elif folder_form.is_valid():
             folder = models.Folder.objects.create(
@@ -57,10 +60,11 @@ def main(request):
             folder.save()
     else:
         folder_form = FolderForm()
+        search_form = SearchForm()
 
     return render(request, 'fileshare/main.html',
                   {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports,
-                   'folder_form': folder_form, 'folders': folders})
+                   'folder_form': folder_form, 'folders': folders, 'search_form': search_form})
 
 
 @login_required(login_url='login')
@@ -403,13 +407,23 @@ def delete_report(request, report_id):
 @login_required(login_url='login')
 def search_results(request):
 
-    query = request.session.get('query')
+    query = request.POST.get('search')
+    param = request.POST.get('parameter')
 
-    if query is None:
+    if query is None or query == "":
         return redirect('main')
 
-    results = models.Report.objects.filter(
-        Q(short_desc__contains=query) | Q(long_desc__contains=query)
-        ).exclude(~Q(owned_by=request.user), Q(private=True))
+    usernames = []
+    if param == "desc":
+        results = models.Report.objects.filter(
+            Q(short_desc__icontains=query) | Q(long_desc__icontains=query)
+            ).exclude(~Q(owned_by=request.user), Q(private=True))
+    elif param == "owner":
+        usernames = models.User.objects.filter(username__icontains=query)
+        results = models.Report.objects.filter(Q(owned_by__in=usernames)).exclude(~Q(owned_by=request.user ), Q(private=True))
+    else: 
+        results = []
 
-    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results})
+        # Add support for searching by date created and date modified??
+
+    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results, 'usernames': usernames, 'param': param})
