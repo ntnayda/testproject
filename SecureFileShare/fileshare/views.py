@@ -138,6 +138,7 @@ def create_report(request):
 def view_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     files = report.files
+    encrypted = report.is_encrypted
 
     # if(request.user.is_staff == False):
     if report.private and request.user != report.owned_by and request.user.is_staff is False:
@@ -178,12 +179,14 @@ def view_report(request, report_id):
     else:
         update_form = ReportForm(instance=report)
 
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count()})
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count(), 'encrypted': encrypted})
 
-@login_required
+@login_required(login_url='login')
 def view_group_report(request, report_id, profilegroup_id):
     report = get_object_or_404(models.Report, pk=report_id)
     group = get_object_or_404(models.ProfileGroup, pk=profilegroup_id)
+    files = report.files
+    encrypted = report.is_encrypted
 
     if request.user.profile not in group.members.all():
         return redirect('main')
@@ -191,7 +194,7 @@ def view_group_report(request, report_id, profilegroup_id):
 
 
 
-    return render(request, 'fileshare/view_group_report.html', {'report': report, 'group': group})
+    return render(request, 'fileshare/view_group_report.html', {'report': report, 'group': group, 'encrypted': encrypted, 'files': files, 'num_files': files.count()})
 
 def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)

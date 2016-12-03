@@ -19,9 +19,8 @@
 				</tr>
 				<tr>
 					<td>
-						{% if report.is_encrypted %}
-						<div align="right"><span class="glyphicon glyphicon-lock" style="color:blue"></span></div>
-						{% else %}
+						{% if encrypted == True %}
+						<div align="right"><span class="glyphicon glyphicon-lock" style="color:#50aeed"></span></div>
 						{% endif %}
 					</td>
 					<td>{{ report.short_desc }}</td>
@@ -33,127 +32,139 @@
 						{% endif %}
 					</td>
 					<th>{{ report.owned_by }}</td>
-					<td>{{ report.last_modified_by }}</td>
-					<td>{{ report.last_modified }}</td>
-					<td>{{ report.created }}</td>
-				</tr>
-			</table>
-			<br>
-			<div class="row">
-			<div class="col-lg-8">
-				<div class="panel-body">
-				<h5><strong>Description</strong></h5>
-				<div align="left">{{ report.long_desc }}</div>
-			</div>
-			</div>
-		</div>
-		</div>
-
-		{% if num_files != 0 %}
-		<h4><b>Attached files:</b></h4>
-		<div class="panel panel-default">
-		<table id="t01" width="60%" class="table table-hover">
-			{% for f in files.all %}
-			<tr>
-				<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-		{% else %}
-		<h4>There are no files attached to this report.</h4>
-		{% endif %}
-
-
-	</div>
-
-	<div class="jumbotron">
-		<div class="panel-group">
-		<div class="panel panel-default">
-			<div class="panel-heading"><h2><strong>Edit Report</strong></h2></div>
-			<div class="panel-body">
-
-		{% if report.owned_by == user %}
-
-		<form method="POST" action="{% url 'fileshare:view_report' report.id %}" enctype="multipart/form-data">
-			{% csrf_token %}
-			<div class="form-group">
-				<div class="input-group"> 
-					<strong>Title: </strong>
-					{{ update_form.short_desc }}
-				</div><br>
-				<div class="input-group">
-					<strong>Description: </strong><br>
-					{{ update_form.long_desc }}
-				</div>
-				<div class="input-group">
-					<strong>Restict access? </strong>
-					{{ update_form.private }}
-				</div>
-				<div class="input-group">
-					<strong>Files encrypted? </strong>
-					{{ update_form.is_encrypted }}
-				</div>
-			</div>
-
-			
-			<input type="file" name="files" multiple><br>
-			<h4><b>Attached files:</b></h4>
-			<div class="panel panel-default">
-			<table id="t01" width="20%" class="table table-hover">
-				{% for f in files.all %}
-				<tr>
-					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
-					<td>
-						<form id="r01" method="POST" action="{% url 'fileshare:view_report' report.id %}">
-							{% csrf_token %}
-							<div align="right">
-								<button class="btn btn-danger btn-sm"  type="submit" form="r01" name="action" value="f{{ f.id }}">
-									<span class="glyphicon glyphicon-remove"></span> 
-									Remove</button>
-							</div>
-						</form>
-					</td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-		<br>
-			<input class="btn btn-success btn-sm"  type="submit" name="action" value="Save Changes"/>
-			<a href="#" role="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#user_del_report"  name="action">Delete Report</a>
-			<!-- Modal -->
-			<div id="user_del_report" class="modal fade" role="dialog">
-				<div class="modal-dialog modal-md">
-
-					<!-- Modal content-->
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Delete Report</h4>
-						</div>
-						<div class="modal-body">
-							<p>Are you sure you want to delete report, "{{report.short_desc}} ?"</p>
-						</div>
-						<div class="modal-footer">
-							<a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger">Delete</a>
-							<a href="#" role="button" class="btn btn-default" data-dismiss="modal">Cancel</a>
+						<td>{{ report.last_modified_by }}</td>
+						<td>{{ report.last_modified }}</td>
+						<td>{{ report.created }}</td>
+					</tr>
+				</table>
+				<br>
+				<div class="row">
+					<div class="col-lg-8">
+						<div class="panel-body">
+							<h5><strong>Description</strong></h5>
+							<div align="left">{{ report.long_desc }}</div>
 						</div>
 					</div>
-
 				</div>
 			</div>
-		</form>
-		{% else %}
-		<font size="3">*You cannot edit this report.</font>
-		{% endif %}
-	</div>
-</div>
-</div>
-		
-	</div>
+
+			{% if num_files != 0 %}
+			<h4><b>Attached files:</b></h4>
+			<div class="panel panel-default">
+				<table id="t01" width="60%" class="table table-hover">
+					{% for f in files.all %}
+					<tr>
+						<td>
+							{% if not encrypted %}
+							<a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a>
+							{% else %}
+							{{ f.file_attached.url }}
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			{% else %}
+			<h4>There are no files attached to this report.</h4>
+			{% endif %}
+
+
+		</div>
+
+		<div class="jumbotron">
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading"><h2><strong>Edit Report</strong></h2></div>
+					<div class="panel-body">
+
+						{% if report.owned_by == user %}
+
+						<form method="POST" action="{% url 'fileshare:view_report' report.id %}" enctype="multipart/form-data">
+							{% csrf_token %}
+							<div class="form-group">
+								<div class="input-group"> 
+									<strong>Title: </strong>
+									{{ update_form.short_desc }}
+								</div><br>
+								<div class="input-group">
+									<strong>Description: </strong><br>
+									{{ update_form.long_desc }}
+								</div>
+								<div class="input-group">
+									<strong>Restict access? </strong>
+									{{ update_form.private }}
+								</div>
+								<div class="input-group">
+									<strong>Files encrypted? </strong>
+									{{ update_form.is_encrypted }}
+								</div>
+							</div>
+
+
+							<input type="file" name="files" multiple><br>
+							<h4><b>Attached files:</b></h4>
+							<div class="panel panel-default">
+								<table id="t01" width="20%" class="table table-hover">
+									{% for f in files.all %}
+									<tr>
+										<td>
+											{% if not encrypted %}
+											<a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a>
+											{% else %}
+											{{ f.file_attached.url }}
+											{% endif %}
+										</td>
+										<td>
+											<form id="r01" method="POST" action="{% url 'fileshare:view_report' report.id %}">
+												{% csrf_token %}
+												<div align="right">
+													<button class="btn btn-danger btn-sm"  type="submit" form="r01" name="action" value="f{{ f.id }}">
+														<span class="glyphicon glyphicon-remove"></span> 
+														Remove</button>
+													</div>
+												</form>
+											</td>
+										</tr>
+										{% endfor %}
+									</table>
+								</div>
+								<br>
+								<input class="btn btn-success btn-sm"  type="submit" name="action" value="Save Changes"/>
+								<a href="#" role="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#user_del_report"  name="action">Delete Report</a>
+								<!-- Modal -->
+								<div id="user_del_report" class="modal fade" role="dialog">
+									<div class="modal-dialog modal-md">
+
+										<!-- Modal content-->
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												<h4 class="modal-title">Delete Report</h4>
+											</div>
+											<div class="modal-body">
+												<p>Are you sure you want to delete report, "{{report.short_desc}} ?"</p>
+											</div>
+											<div class="modal-footer">
+												<a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger">Delete</a>
+												<a href="#" role="button" class="btn btn-default" data-dismiss="modal">Cancel</a>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</form>
+							{% else %}
+							<font size="3">*You cannot edit this report.</font>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+			</div>
 
 
 
-</div>
+		</div>
 
-{% endblock %}
+		{% endblock %}

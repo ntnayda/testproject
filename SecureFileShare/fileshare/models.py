@@ -14,14 +14,8 @@ class Profile(models.Model):
     publickey = models.CharField(null=True, max_length=10000)
     unreadmessages = models.CharField(max_length=10,default="false")
 
-
-
-def get_reports(self):
-    return "\n".join([report.short_desc for report in self.reports_owned.all()])
-
-
-def __str__(self):
-    return self.user.username
+    def __str__(self):
+        return self.user.username
 
 
 def create_user_profile(sender, instance, created, **kwargs):
