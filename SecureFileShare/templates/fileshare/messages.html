@@ -6,7 +6,6 @@
 {% block content %}
 {% load staticfiles %}
 <link href="{% static 'css/messagescss.css' %}" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
 
 
 <div align="left">
@@ -31,7 +30,7 @@
                <ul class="list-unstyled" id="conversationlist">
                   {% if conversation_list %}
                     {% for conversation in conversation_list %}
-                 <li class="left clearfix" onclick="loadMessages(this)" ">
+                 <li class="left clearfix" onclick="loadMessages(this)">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
                            <strong class="primary-font">{{conversation.reciever}}</strong>
@@ -40,7 +39,7 @@
 
                         </div>
                         <div class="contact_sec">
-                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.length}}</span>
+                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.unreadmessages}}</span><span class="hidden">{{conversation.id}}</span>
                         </div>
                      </div>
                   </li>
@@ -102,7 +101,7 @@
 
 
 </div>
-<form class="hidden"  id="hiddenmessageform" method="post" action="/messages">
+<form class="hidden" id="hiddenmessageform" method="post" action="/messages">
 {% csrf_token %}
 
 {{ form.as_p }}
@@ -110,6 +109,8 @@
 <input id="thesubmitbutton" class="btn btn-success btn-sm" type="submit" value="HiddenSubmit" />
 
 </form>
+
+
 <script>
 
    var messagestoload = [];
@@ -127,11 +128,19 @@
       {% endfor %}
     {% endif %}
 
+    var recieverlist = [];
+   {% if reciever_list %}
+   {% for r in reciever_list %}
+        recieverlist.push(["{{r.username}}","{{r.Profile.publickey}}"]);
+   {% endfor %}
+   {% endif %}
+
+
   var sendee = -1;
    var isnewmessage = false;
 
   function loadMessages(elmnt) {
-
+    readmessages(elmnt);
     var convos = document.getElementById("conversationlist").children;
     if(isnewmessage) {
         document.getElementById("newmessagerecepient").setAttribute("class","hidden");
@@ -194,7 +203,12 @@
           if(messagestoload[convo][i][3]) {
               item.firstElementChild.firstElementChild.firstElementChild.appendChild(document.createElement("button"));
               var decryptbutton = item.firstElementChild.firstElementChild.firstElementChild.children[1];
-              decryptbutton.onclick = function(){decryptmessage(this.parentElement,this.parentElement.children[0],this.children[1].innerText);};
+              decryptbutton.onclick = function(){
+                  var theurl = "/decrypt_message/";
+                  theurl += this.children[1].innerText;
+                  var win = window.open(theurl,'_blank');
+                  win.focus();
+              };
           decryptbutton.setAttribute("type","button");
           decryptbutton.setAttribute("class","btn btn-default btn-sm pull-right hidden");
           decryptbutton.appendChild(document.createElement("span"));
@@ -202,7 +216,7 @@
           decryptbutton.firstElementChild.setAttribute("aria-hidden","true");
               decryptbutton.appendChild(document.createElement("p"));
               decryptbutton.children[1].setAttribute("class","hidden");
-              decryptbutton.children[1].innerText = messagestoload[convo][i][3];
+              decryptbutton.children[1].innerText = messagestoload[convo][i][4];
           item.onmouseover = function(){
               this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right");
               this.firstElementChild.firstElementChild.firstElementChild.children[1].setAttribute("class","btn btn-default btn-md pull-right");
@@ -253,27 +267,25 @@
     if (sendee != -1 && text) {
       var convolist = document.getElementById("conversationlist");
       var convoitem = convolist.children[sendee];
+
       var convoselect = document.getElementById("id_owned_by");
 
       var convoname = convoitem.firstElementChild.firstElementChild.children[2];
 
       for (i = 0; i < convoselect.childElementCount; i++) {
+        if (convoname.innerText == convoselect.children[i].innerText) {
 
-        if (convoname.innerText.valueOf() == convoselect.children[i].innerText.valueOf()) {
           convoselect.value = convoselect.children[i].getAttribute("value");
-          break;
+              break;
         }
       }
-      var messagekey = null;
+
         if(document.getElementById("thecheckbox").checked) {
-            messagekey = Math.random().toString(36).substr(2, 10);
-            document.getElementById("id_thekey").value = messagekey;
-            var encryptedmessage = CryptoJS.AES.encrypt(text,messagekey);
-            document.getElementById("id_messagecontent").value = encryptedmessage;
+
+                document.getElementById("id_thekey").value = "True";
         }
-        else {
             document.getElementById("id_messagecontent").value = text;
-        }
+
 
       document.getElementById("id_sender").value = 1;
       document.getElementById("hiddenmessageform").submit();
@@ -285,29 +297,36 @@
         var convoselect = document.getElementById("id_owned_by");
         var username = document.getElementById("newmessagerecepient").options[document.getElementById("newmessagerecepient").selectedIndex].text;
         document.getElementById("id_newmessagefield").value = "Yes";
+
+        convoselect.value = 1;
+
         for (i=0;i<convolist.length;i++){
             if (convolist[i].firstElementChild.firstElementChild.children[0].innerText == username) {
                 sendee = i;
                 document.getElementById("id_newmessagefield").value = "";
+                var convoname = convolist[i].firstElementChild.firstElementChild.children[2];
+
+                for (i = 0; i < convoselect.childElementCount; i++) {
+                     if (convoname.innerText == convoselect.children[i].innerText) {
+
+                        convoselect.value = convoselect.children[i].getAttribute("value");
+                         break;
+                        }
+                }
                 cancelPressed();
                 sendMessage();
                 break;
             }
         }
 
-        convoselect.value = 1;
+
         var sendselect = document.getElementById("id_sender");
         sendselect.value = document.getElementById("newmessagerecepient").value;
         var messagekey = null;
         if(document.getElementById("thecheckbox").checked) {
-            messagekey = Math.random().toString(36).substr(2, 10);
-            document.getElementById("id_thekey").value = messagekey;
-            var encryptedmessage = CryptoJS.AES.encrypt(text,messagekey);
-            document.getElementById("id_messagecontent").value = encryptedmessage;
+            document.getElementById("id_thekey").value = "True";
         }
-        else {
             document.getElementById("id_messagecontent").value = text;
-        }
 
         document.getElementById("hiddenmessageform").submit();
 
@@ -318,7 +337,6 @@
 
 
   }
-
   function newMessage() {
     if (sendee != -1) {
     var convos = document.getElementById("conversationlist").children;
@@ -363,9 +381,21 @@
   }
 
   function decryptmessage(themessage,thedeletebutton,key) {
-      var decrypted = CryptoJS.AES.decrypt(themessage.innerText,key);
-      themessage.innerText = decrypted.toString(CryptoJS.enc.Utf8);
+      var decrypted = key.decrypt(themessage.innerText,key);
+      //themessage.innerText = decrypted.toString(CryptoJS.enc.Utf8);
+      themessage.innerText = decrypted;
       themessage.appendChild(thedeletebutton);
+  }
+
+  function readmessages(convoitem) {
+      convoitem.firstElementChild.children[1].children[1].innerText = 0;
+
+      var read = new XMLHttpRequest();
+      var requeststring = "/update_unread/" + convoitem.firstElementChild.children[1].children[2].innerText;
+
+      read.open("GET",requeststring,true);
+      read.send();
+      //alert("worked");
   }
     document.onload = pageload();
 

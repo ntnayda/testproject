@@ -5,20 +5,15 @@
     <title>Registration Success</title>
 </head>
 <body>
-    {% if message %}
-    <p>{{message}}</p>
-    {% endif %}
-<div class="chat_area" id="themessagearea">
-		 <ul class="list-unstyled" id="messagelist">
-<li class="left clearfix">
-                     <div class="chat-body1 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-						<div class="chat_time pull-right">09:40PM</div>
-                     </div>
-                  </li>
+{% if key %}
+<p>"The key: {{key}}"</p>
+{% endif %}
+{% if message %}
+<p>"The message: {{message}}"</p>
+{% endif %}
 
-		 </ul>
-		 </div><!--chat_area-->
-
+{% if message2 %}
+<p>"The first message: {{message2}}"</p>
+{% endif %}
 </body>
 </html>

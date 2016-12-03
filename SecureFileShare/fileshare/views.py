@@ -6,6 +6,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from Crypto.Util import asn1
+from base64 import b64decode
 from .forms import *
 from django.shortcuts import resolve_url
 from django.template.response import TemplateResponse
@@ -16,23 +18,59 @@ from . import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import update_session_auth_hash
 from . import models
+from django.contrib.auth import models as authmodels
 from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
 from django.core.urlresolvers import reverse
+from Crypto.PublicKey import RSA
+from Crypto import Random
+import base64
+import os
+import binascii
 from django.db.models import Q
 
 
-
 # Create your views here.
+def ByteToHex(byteStr):
+    """
+    Convert a byte string to it's hex string representation e.g. for output.
+    """
+
+    # Uses list comprehension which is a fractionally faster implementation than
+    # the alternative, more readable, implementation below
+    #
+    #    hex = []
+    #    for aChar in byteStr:
+    #        hex.append( "%02X " % ord( aChar ) )
+    #
+    #    return ''.join( hex ).strip()
+
+    return ''.join(["%02X " % ord(x) for x in byteStr]).strip()
+
+
+def HexToByte(hexStr):
+    """
+    Convert a string hex byte values into a byte string. The Hex Byte values may
+    or may not be space separated.
+    """
+    # The list comprehension implementation is fractionally slower in this case
+    #
+    #    hexStr = ''.join( hexStr.split(" ") )
+    #    return ''.join( ["%c" % chr( int ( hexStr[i:i+2],16 ) ) \
+    #                                   for i in range(0, len( hexStr ), 2) ] )
+
+    bytes = []
+
+    hexStr = ''.join(hexStr.split(" "))
+
+    for i in range(0, len(hexStr), 2):
+        bytes.append(chr(int(hexStr[i:i + 2], 16)))
+
+    return ''.join(bytes)
 
 def register_success(request):
     return render(request, 'fileshare/register_success.html')
-
-
-def profile(request):
-    return
-
 
 @login_required(login_url='login')
 def main(request):
@@ -161,6 +199,7 @@ def user_delete_report(request, report_id):
     return HttpResponseRedirect('/main')
 
 
+
 @login_required(login_url='login')
 def account_update_success(request):
     return render(request, 'fileshare/account_update_success.html')
@@ -173,23 +212,30 @@ def account(request):
 
 def messages(request):
     user = request.user
+    user.profile.unreadmessages = "false"
+    user.profile.save()
     form = forms.messageForm(request.POST or None)
     if request.method == 'POST':
         if (request.POST['newmessagefield'] == "Yes"):
             # sender data
+
             newconvo = models.Conversation.objects.create(sender=user,
                                                           reciever=models.User.objects.get(id=request.POST['sender']),
                                                           reciever_name=user.username + "-" + models.User.objects.get(
                                                               id=request.POST[
                                                                   'sender']).username,
-                                                          recently_used=datetime.datetime.now()
+                                                          recently_used=datetime.datetime.now(),unreadmessages="0"
                                                           )
             newconvo.save()
-            newmessage = models.Message.objects.create(owned_by=newconvo,
-                                                       sender=user,
-                                                       messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now(), key=request.POST['thekey'])
-            newmessage.save()
+            if(request.POST['thekey']!="True"):
+                newmessage = models.Message.objects.create(owned_by=newconvo,
+                                                           sender=user,
+                                                           messagecontent=request.POST['messagecontent'],
+                                                           time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage.save()
+
+
+
 
             # reciever data
             newconvo2 = models.Conversation.objects.create(reciever=user,
@@ -197,49 +243,99 @@ def messages(request):
                                                            reciever_name=models.User.objects.get(
                                                                id=request.POST[
                                                                    'sender']).username + "-" + user.username,
-                                                           recently_used=datetime.datetime.now()
+                                                           recently_used=datetime.datetime.now(),unreadmessages="1"
                                                            )
             newconvo2.save()
-            newmessage2 = models.Message.objects.create(owned_by=newconvo2,
-                                                        sender=user,
-                                                        messagecontent=request.POST['messagecontent'],
-                                                        time=datetime.datetime.now(), key=request.POST['thekey'])
-            newmessage2.save()
+            otheruser = newconvo2.sender
+            print(otheruser.username)
+            print(otheruser.profile.unreadmessages)
+            otheruser.profile.unreadmessages = "true"
+            otheruser.profile.save()
+            print(otheruser.profile.unreadmessages)
+
+            if (request.POST['thekey'] == "True"):
+                thekey = RSA.importKey(newconvo.sender.profile.publickey)
+                messagetoencrypt = request.POST['messagecontent']
+                encryptedmessage = thekey.encrypt(messagetoencrypt.encode(), 1)
+                encryptedmessage = encryptedmessage[0];
+                encryptedmessage = base64.b16encode(encryptedmessage)
+                encryptedmessage = str(encryptedmessage, 'ascii')
+                newmessage2 = models.Message.objects.create(owned_by=newconvo2,
+                                                           sender=user,
+                                                           messagecontent=encryptedmessage,
+                                                           time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage2.save()
+
+            else:
+                newmessage2 = models.Message.objects.create(owned_by=newconvo2,
+                                                           sender=user,
+                                                           messagecontent=request.POST['messagecontent'],
+                                                           time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage2.save()
+
+
             return redirect("/messages")
 
         elif form.is_valid():
 
             # sender data
-            newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
-                                                       sender=user,
-                                                       messagecontent=request.POST['messagecontent'],
-                                                       time=datetime.datetime.now(), key=request.POST['thekey'])
-            newmessage.save()
+            if (request.POST['thekey'] != "True"):
+                newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
+                                                           sender=user,
+                                                           messagecontent=request.POST['messagecontent'],
+                                                           time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage.save()
+                convo = form.cleaned_data['owned_by']
+                convo.recently_used = newmessage.time
+                convo.save()
             convo = form.cleaned_data['owned_by']
-            convo.recently_used = newmessage.time
-            convo.save()
-
             # reciever data
-            convo2 = models.Conversation.objects.get(reciever=convo.sender, sender=convo.reciever)
-            newmessage2 = models.Message.objects.create(owned_by=convo2,
-                                                        sender=user,
-                                                        messagecontent=request.POST['messagecontent'],
-                                                        time=datetime.datetime.now(), key=request.POST['thekey'])
-            newmessage2.save()
 
-            convo2.recently_used = newmessage.time
+            convo2 = models.Conversation.objects.get(reciever=convo.sender, sender=convo.reciever)
+            if (request.POST['thekey'] == "True"):
+                thekey = RSA.importKey(convo2.sender.profile.publickey)
+
+                messagetoencrypt = request.POST['messagecontent']
+                encryptedmessage = thekey.encrypt(messagetoencrypt.encode(),1)
+                encryptedmessage = encryptedmessage[0];
+                encryptedmessage = base64.b16encode(encryptedmessage)
+                encryptedmessage = str(encryptedmessage,'ascii')
+                newmessage2 = models.Message.objects.create(owned_by=convo2,
+                                                        sender=user,
+                                                        messagecontent=encryptedmessage,
+                                                        time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage2.save()
+            else:
+                newmessage2 = models.Message.objects.create(owned_by=convo2,
+                                                           sender=user,
+                                                           messagecontent=request.POST['messagecontent'],
+                                                           time=datetime.datetime.now(), key=request.POST['thekey'])
+                newmessage2.save()
+
+            convo2.recently_used = newmessage2.time
+            currentcount = int(convo2.unreadmessages)
+            currentcount += 1
+            convo2.unreadmessages = str(currentcount)
             convo2.save()
+            otheruser = convo2.sender
+            print(otheruser.username)
+            print(otheruser.profile.unreadmessages)
+            otheruser.profile.unreadmessages = "true"
+            otheruser.profile.save()
+            print(otheruser.profile.unreadmessages)
             return redirect("/messages")
 
     conversation_list = models.Conversation.objects.all().filter(sender=user).order_by('recently_used').reverse()
     message_list = []
     for convo in conversation_list:
         message_list.append(models.Message.objects.all().filter(owned_by=convo).order_by('time').reverse)
-
+    reciever_list = models.User.objects.all()
     forms.messageForm.base_fields['owned_by'] = djangoforms.ModelChoiceField(queryset=conversation_list, required=False)
     form = forms.messageForm()
     return render(request, 'fileshare/messages.html',
-                  {'conversation_list': conversation_list, 'message_list': message_list, 'form': form})
+                  {'reciever_list': reciever_list, 'conversation_list': conversation_list, 'message_list': message_list,
+                   'form': form})
+
 
 
 def update_profile(request):
@@ -364,6 +460,7 @@ def view_group(request, group_id):
     return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users})
 
 
+
 @login_required(login_url='login')
 def view_folder(request, folder_id):
     folder = get_object_or_404(models.Folder, pk=folder_id)
@@ -400,6 +497,36 @@ def view_folder(request, folder_id):
     return render(request, 'fileshare/view_folder.html',
                   {'folder': folder, 'update_form': update_form, 'all_reports': all_reports,
                    'able_to_add': able_to_add})
+
+
+def register(request):
+    if request.method == 'POST':
+        register_form = signup_form(request.POST)
+
+        if register_form.is_valid():
+            newuser = authmodels.User.objects.create(username=request.POST['username'],
+                                                     first_name=request.POST['first_name'],
+                                                     last_name=request.POST['last_name'],
+                                                     email=request.POST['email']
+                                                     )
+            newuser.set_password(register_form.cleaned_data["password1"])
+            newuser.save()
+
+            random_generator = Random.new().read
+            key = RSA.generate(1024, random_generator)
+            pubkey = key.publickey()
+            newuser.profile.publickey = pubkey.exportKey()
+            newuser.profile.save()
+
+
+            # return HttpResponseRedirect('/register/success/'+str(newuser.id))
+            # return(register_success(request,newuser.id))
+            return render(request,'fileshare/register_success.html',{'key':str(key.exportKey())})
+
+    else:
+        register_form = signup_form()
+
+    return render(request, 'fileshare/register.html', {'form': signup_form()})
 
 # site manager views
 def sitemanager(request):
@@ -455,6 +582,48 @@ def delete_report(request, report_id):
 #     all_groups = models.ProfileGroup.objects.all()
 #     return render(request, 'fileshare/edit_group.html')
 # def update_user_permissions(request):
+
+def test(request):
+    return HttpResponse("test")
+
+
+def decrypt_message(request, message_pk):
+    query = models.Message.objects.get(pk=message_pk)
+
+    if request.method == 'POST':
+        decrypt_form = DecryptMessageForm(request.POST)
+
+        password = request.POST['password']
+        print(password)
+        password = password[2:]
+        password = password[:-1]
+        password2 = password.replace('\\n','\n')
+        password = password[0:24]+password2[24:-25]+password[-25:]
+        print(password)
+        originalmessage = binascii.unhexlify(query.messagecontent)
+        try:
+            thekey = RSA.importKey(password)
+            pubkey = thekey.publickey()
+            encryptedmessage = thekey.decrypt(originalmessage)
+        except:
+            return render(request,'fileshare/decrypt_message.html', {'message': "Invalid RSA key."})
+
+        return render(request, 'fileshare/decrypt_message.html', {'message': encryptedmessage})
+    else:
+        decrypt_form = DecryptMessageForm()
+
+    return render(request, 'fileshare/decrypt_message.html', {'form': decrypt_form})
+
+def updateunread(request, message_pk):
+    query = models.Conversation.objects.get(pk=message_pk)
+    currentcount = query.unreadmessages
+    query.unreadmessages = 0
+    query.save()
+    #usercount = int(request.user.profile.unreadmessages)
+
+    #request.user.profile.save()
+    return HttpResponse("success")
+
 
 @login_required(login_url='login')
 def search_results(request):

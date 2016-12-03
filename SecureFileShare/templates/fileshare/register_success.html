@@ -1,11 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration Success</title>
-</head>
-<body>
-    <h1>You have successfully registered!</h1>
-    <a href="/fileshare">Return to the homepage.</a>
-</body>
-</html>
+{% extends 'fileshare/base.html' %}
+
+
+{% block content %}
+
+ <div class="container">
+
+  <h1>You have successfully registered! </h1>
+
+
+{% if key %}
+    Please save this key somewhere safe for decrypting items:<br />
+     {{key}}
+
+    {% endif %}
+     <br />
+    <a href="/login">Click here to return to the login page.</a>
+
+
+
+
+
+
+</div>
+
+{% endblock %}
+
+
