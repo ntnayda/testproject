@@ -39,6 +39,7 @@ class Report(models.Model):
 	files = models.ManyToManyField('Documents', blank=True)
 	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
 	in_folder = models.BooleanField(default=False)
+	group_in = models.ManyToManyField('ProfileGroup', blank=True)
 	
 	def __str__(self):
 		return self.short_desc

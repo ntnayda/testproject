@@ -23,7 +23,7 @@
                     <ul class="list-group">
                         {% for r in group.reports.all %}
                         <li class="list-group-item">
-                            {{ r }}
+                            <a href="http://127.0.0.1:8000/fileshare/view_group_report/{{ r.id }}/{{ group.id }}" >{{ r }}</a>
                             <form id="remove_{{ r.short_desc }}" method="POST" action=".">
                                 {% csrf_token %}
                                 <div align="right"><button class="btn btn-danger btn-sm"  type="submit" form="remove_{{ r.short_desc }}" name="action" value="r{{ r.id }}"><span class="glyphicon glyphicon-remove"></span></button></div>

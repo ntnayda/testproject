@@ -155,7 +155,7 @@
 						</tr>
 						{% for g in user.profile.groups_in.all %}
 						<tr>
-							<td> <a href="fileshare/{{ g.id }}/view_group">{{ g.name }}</a> </td>
+							<td> <a href="{{ g.id }}/view_group">{{ g.name }}</a> </td>
 							<td>{{ g.creator }}</td>
 							<td>{{ g.members.count }}</td>
 						</tr>

@@ -68,7 +68,12 @@
 				{% for f in files.all %}
 				<tr>
 					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
-					<td><center><button type="submit" name="remove" value="REMOVE">Remove</button></center></td>
+					<td>
+						<form id="remove" method="POST" action="">
+                                {% csrf_token %}
+                                <div align="right"><button class="btn btn-danger btn-sm"  type="submit" form="remove" name="action" value="f{{ f.id }}"><span class="glyphicon glyphicon-remove"></span></button></div>
+                            </form>
+                        </td>
 				</tr>
 				{% endfor %}
 			</table><br>

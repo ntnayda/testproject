@@ -119,6 +119,13 @@ def view_report(request, report_id):
                 report.save()
                 update_form.save()
                 return redirect('main')
+            
+            # elif request.POST.get('action')[0] == "f":
+            #     report.last_modified = datetime.datetime.now()
+            #     report.last_modified_by = request.user.username
+            #     d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
+            #     d.delete()
+
             else:
                 report.delete()
                 return redirect('main')
@@ -127,6 +134,18 @@ def view_report(request, report_id):
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count()})
 
+@login_required
+def view_group_report(request, report_id, profilegroup_id):
+    report = get_object_or_404(models.Report, pk=report_id)
+    group = get_object_or_404(models.ProfileGroup, pk=profilegroup_id)
+
+    if request.user.profile not in group.members.all():
+        return redirect('main')
+
+
+
+
+    return render(request, 'fileshare/view_group_report.html', {'report': report, 'group': group})
 
 def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
@@ -267,10 +286,13 @@ def create_group(request):
 
             members_added = request.POST.getlist('members')
             for m in members_added:
-                get_object_or_404(models.Profile, pk=m).groups_in.add(instance)
+                m = get_object_or_404(models.Profile, pk=m)
+                m.groups_in.add(instance)
+                instance.members.add(m)
 
             instance.creator = request.user
             instance.save()
+            m.save()
 
             return redirect('main')  # group made successfully
     else:
