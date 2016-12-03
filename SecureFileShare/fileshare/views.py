@@ -23,16 +23,12 @@ from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
 from django.core.urlresolvers import reverse
-<<<<<<< HEAD
 from Crypto.PublicKey import RSA
 from Crypto import Random
 import base64
 import os
 import binascii
-=======
 from django.db.models import Q
-
->>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 
 
 # Create your views here.
@@ -76,14 +72,6 @@ def HexToByte(hexStr):
 def register_success(request):
     return render(request, 'fileshare/register_success.html')
 
-
-<<<<<<< HEAD
-=======
-def profile(request):
-    return
-
-
->>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 @login_required(login_url='login')
 def main(request):
     your_reports = models.Report.objects.filter(owned_by=request.user)
@@ -114,11 +102,7 @@ def main(request):
 
     return render(request, 'fileshare/main.html',
                   {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports,
-<<<<<<< HEAD
-                   'folder_form': folder_form, 'folders': folders})
-=======
                    'folder_form': folder_form, 'folders': folders, 'search_form': search_form})
->>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 
 
 @login_required(login_url='login')

@@ -51,4 +51,5 @@ urlpatterns = [
     url(r'^delete_report/(?P<report_id>[0-9]+)$', views.delete_report, name='delete_report'),
     url('^decrypt_message/(?P<message_pk>.*)$',views.decrypt_message,name="decrypt_message"),
     url('^update_unread/(?P<message_pk>.*)$',views.updateunread,name="update_unread"),
-    url('^search_results', views.search_results, name='search_results')
+    url('^search_results', views.search_results, name='search_results'),
+]
