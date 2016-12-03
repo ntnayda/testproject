@@ -108,7 +108,14 @@ def view_report(request, report_id):
     elif request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)
 
-        if update_form.is_valid():
+        if request.POST.get('action')[0] == "f":
+            report.last_modified = datetime.datetime.now()
+            report.last_modified_by = request.user.username
+            d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
+            d.delete()
+            report.save()
+
+        elif update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
                 report.last_modified = datetime.datetime.now()
@@ -120,11 +127,12 @@ def view_report(request, report_id):
                 update_form.save()
                 return redirect('main')
             
-            # elif request.POST.get('action')[0] == "f":
-            #     report.last_modified = datetime.datetime.now()
-            #     report.last_modified_by = request.user.username
-            #     d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
-            #     d.delete()
+            if request.POST.get('action')[0] == "f":
+                report.last_modified = datetime.datetime.now()
+                report.last_modified_by = request.user.username
+                d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
+                d.delete()
+                return redirect('main')
 
             else:
                 report.delete()
