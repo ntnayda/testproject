@@ -5,13 +5,13 @@
 <div class="container">
 
 	<div class="panel panel-default">
-		<div class="panel-heading"><strong>{{ group.name }}</strong></div>
+		<div class="panel-heading"><h2><strong>{{ group.name }}</strong></h2></div>
 		<div class="panel-body">
          <div class="row">
             <div class="col-lg-8">
 
                 <div class="panel-body">
-                    <h2><b>Reports in this group</b></h2>
+                    <div class="panel-heading"><h3><b>Reports in this group</b></h3></div><br>
                     <ul class="list-group">
                         {% for r in group.reports.all %}
                         <li class="list-group-item">
@@ -69,7 +69,32 @@
                             </tr>
 
                             {% endfor %}
+                        </table><br>
+                        <table class="table table-striped">
+                            <th><stron>Add members</strong><h4>
+                                <th></th>
+                            {% for m in all_users %}
+
+                             <tr>
+                                 {% if m.profile not in group.members.all %}
+                                <td> {{ m.profile }} </td>
+                                <td>
+                                   
+
+                                    <form id="add{{ m }}" method="POST" action=".">
+                                        {% csrf_token %}
+                                        <div align="right"><button class="btn btn-default btn-me"  type="submit" form="add{{ m }}" name="action" value="p{{ m.profile.id }}"><span class="glyphicon glyphicon-plus" style="color: green"></span></button></div>
+                                    </form>
+
+                                    
+                                </td>
+                                {% endif %}
+                            </tr>
+
+                            {% endfor %}
+
                         </table>
+
                     </div>
                 </div>
 
@@ -92,7 +117,12 @@
                 <div align="right">
                     <form id="leave_{{ group.name }}" action="{% url 'fileshare:main' %}" method="POST">
                         {% csrf_token %}
-                        <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l"><span>Leave group</button>
+
+                        {% if user == group.creator %}
+                        <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l" disabled><span>Leave group</button>
+                        {% else %}
+                        <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l" ><span>Leave group</button>
+                        {% endif %}
 
                     </form>
                 </div>

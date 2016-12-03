@@ -307,6 +307,7 @@ def view_group(request, group_id):
     group = get_object_or_404(models.ProfileGroup, pk=group_id)
     #private_reports = request.user.profile.reports_owned.filter(private=True)
     private_reports = models.Report.objects.filter(owned_by=request.user, private=True).exclude(id__in=group.reports.all())
+    all_users = models.User.objects.all()
 
     if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
@@ -323,6 +324,19 @@ def view_group(request, group_id):
                 report = get_object_or_404(models.Report, pk=action[1:])
                 group.reports.remove(report)
                 group.save()
+            
+            elif action[0] == 'p':
+                m = get_object_or_404(models.Profile, pk=action[1:])
+                m.groups_in.add(group)
+                group.members.add(m)
+                group.save()
+
+            elif action == 'l':
+                request.user.profile.groups_in.remove(group)
+                group.members.remove(request.user.profile)
+                group.save()
+
+
             else:
                 m = get_object_or_404(models.Profile, pk=action)
                 m.groups_in.remove(group)
@@ -339,7 +353,7 @@ def view_group(request, group_id):
     else:
         update_form = GroupForm(instance=group)
 
-    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports})
+    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users})
 
 
 @login_required(login_url='login')
