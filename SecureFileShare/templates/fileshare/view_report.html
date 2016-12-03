@@ -4,39 +4,110 @@
 
 <div class="container">
 	<div class="jumbotron">
-		<h2><b>{{ report.short_desc }} </b></h2><br>
-		<h3>{{ report.long_desc }}</h3>
+		<h2><strong>This Report</strong></h2>
+		
+		<div class="panel panel-default">
+		<table class="table table-hover">
+					<tr>
+						<th></th>
+						<th>Title</th>
+						<th>Type</th>
+						<th>Last Modified By</th>
+						<th>Last Modified</th>
+						<th>Created</th>
+					</tr>
+					<tr>
+						<td>
+							{% if report.is_encrypted %}
+							<div align="right"><span class="glyphicon glyphicon-lock" style="color:blue"></span></div>
+							{% else %}
+							{% endif %}
+						</td>
+						<td>{{ report.short_desc }}</td>
+						<td>
+							{% if report.private %}
+							<font color="red">Private</font>
+							{% else %}
+							<font color="green">Public</font>
+							{% endif %}
+						</td>
+						<td>{{ report.last_modified_by }}</td>
+						<td>{{ report.last_modified }}</td>
+						<td>{{ report.created }}</td>
+						</tr>
+					</table>
+				</div>
+
+		{% if num_files != 0 %}
+		<h4><b>Attached files:</b></h4>
+			<table id="t01" width="60%">
+				{% for f in files.all %}
+				<tr>
+					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		{% else %}
+		<h4>There are no files attached to this report.</h4>
+		{% endif %}
+
+
 	</div>
 
 	<div class="jumbotron">
 		<h2><b>Edit Report</b></h2>
-		
+
 			{% if report.owned_by == user %}
 
 			<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ update_form.as_p }}
-			<input type="file" name="files" multiple>
+
 			<h4><b>Attached files:</b></h4>
 			<table id="t01" width="60%">
 				{% for f in files.all %}
 				<tr>
 					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
-					<td><center><button type="submit" name="remove" value="REMOVE">Remove</button></center></td>
+					<td>
+						<form id="remove" method="POST" action="">
+                                {% csrf_token %}
+                                <div align="right"><button class="btn btn-danger btn-sm"  type="submit" form="remove" name="action" value="f{{ f.id }}"><span class="glyphicon glyphicon-remove"></span></button></div>
+                            </form>
+                        </td>
 				</tr>
 				{% endfor %}
 			</table><br>
-			<input class="button buttonSubmit" type="submit" name="action" value="Save Changes"/>
+			<input type="file" name="files" multiple><br>
+			<input class="btn btn-success btn-sm"  type="submit" name="action" value="Save Changes"/>
+			<a href="#" role="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#user_del_report"  name="action">Delete Report</a>
+                						<!-- Modal -->
+						<div id="user_del_report" class="modal fade" role="dialog">
+						  <div class="modal-dialog modal-md">
 
+						    <!-- Modal content-->
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="close" data-dismiss="modal">&times;</button>
+						        <h4 class="modal-title">Delete Report</h4>
+						      </div>
+						      <div class="modal-body">
+						        <p>Are you sure you want to delete report, "{{report.short_desc}} ?"</p>
+						      </div>
+						      <div class="modal-footer">
+						        <a href="/user_delete_report/{{ report.id }}" role="button" class="btn btn-danger">Delete</a>
+						        <a href="#" role="button" class="btn btn-default" data-dismiss="modal">Cancel</a>
+						      </div>
+						    </div>
 
-			<input class="button buttonDelete" type="submit" name="action" value="Delete Report"/>
+						  </div>
+						</div>
 			{% else %}
 			<font size="3">*You cannot edit this report.</font>
 			{% endif %}
 		</form>
 	</div>
-	
-	
+
+
 
 </div>
 

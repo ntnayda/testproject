@@ -32,19 +32,20 @@ post_save.connect(create_user_profile, sender=User)
 
 # Create Reports model
 class Report(models.Model):
-    owned_by = models.ForeignKey(User)
-    created = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now_add=True, null=True)
-    last_modified_by = models.CharField(default="Owner", max_length=128)
-    short_desc = models.CharField("Title", max_length=128, unique=True)
-    long_desc = models.TextField("Description")
-    private = models.BooleanField("Restrict access to this file?", default=False)
-    files = models.ManyToManyField('Documents', blank=True)
-    is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False,
-                                       help_text="Leave blank if no file is attached.")
-
-    def __str__(self):
-        return self.short_desc
+	owned_by = models.ForeignKey(User)
+	created = models.DateTimeField(auto_now_add=True)
+	last_modified = models.DateTimeField(auto_now_add=True, null=True)
+	last_modified_by = models.CharField(default="Owner", max_length=128)
+	short_desc = models.CharField("Title", max_length=128, unique=True)
+	long_desc = models.TextField("Description")
+	private = models.BooleanField("Restrict access to this file?", default=False)
+	files = models.ManyToManyField('Documents', blank=True)
+	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
+	in_folder = models.BooleanField(default=False)
+	group_in = models.ManyToManyField('ProfileGroup', blank=True)
+	
+	def __str__(self):
+		return self.short_desc
 
 
 class Documents(models.Model):
@@ -67,6 +68,9 @@ class ProfileGroup(models.Model):
     name = models.CharField(max_length=128, unique=True)
     members = models.ManyToManyField('Profile', related_name='group_members', blank=True)
     reports = models.ManyToManyField('Report', blank=True)
+
+	def __str__(self):
+		return self.name
 
 
 class Conversation(models.Model):

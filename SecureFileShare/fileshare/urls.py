@@ -23,6 +23,7 @@ urlpatterns = [
     url('^account/changepassword',views.password_change,name='password_change'),
     url('^messages',views.messages, name='messages'),
     url('^create_report',views.create_report,name='create_report'),
+    url(r'^user_delete_report/(?P<report_id>[0-9]+)$', views.user_delete_report, name='user_delete_report'),
     url('^create_group', views.create_group, name='create_group'),
     #url('^account/changepassword',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
     #url('^account/changepassworddone',auth_views.password_change,{'template_name':'fileshare/changepassword.html'},name='password_change'),
@@ -33,6 +34,7 @@ urlpatterns = [
     url('^test', views.test, name='test'),
     url(r'^(?P<report_id>[0-9]+)/view/$', views.view_report, name='view_report'),
     url(r'^view_report/(?P<report_id>[0-9]+)$', views.view_report, name='view_report'),
+    url(r'^view_group_report/(?P<report_id>[0-9]+)/(?P<profilegroup_id>[0-9]+)$', views.view_group_report, name='view_group_report'),
     url(r'^(?P<group_id>[0-9]+)/view_group/$', views.view_group, name='view_group'),
     url(r'^(?P<folder_id>[0-9]+)/view_folder/$', views.view_folder, name='view_folder'),
     url('^test', views.update_profile,name='updateprofile'),
@@ -49,6 +51,4 @@ urlpatterns = [
     url(r'^delete_report/(?P<report_id>[0-9]+)$', views.delete_report, name='delete_report'),
     url('^decrypt_message/(?P<message_pk>.*)$',views.decrypt_message,name="decrypt_message"),
     url('^update_unread/(?P<message_pk>.*)$',views.updateunread,name="update_unread"),
-
-
-]
+    url('^search_results', views.search_results, name='search_results')

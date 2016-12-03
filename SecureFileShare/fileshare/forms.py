@@ -132,6 +132,7 @@ class UpdateFolder(forms.ModelForm):
         model = Folder
         fields = ['name', 'reports']
 
+
 class DecryptMessageForm(forms.ModelForm):
     password = forms.CharField(required=True)
     #message = forms.ModelMultipleChoiceField(queryset=Message.objects.all())
@@ -139,4 +140,14 @@ class DecryptMessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ['password']
+
+class SearchForm(forms.Form):
+    search = forms.CharField(max_length='128', widget=forms.TextInput(attrs={'cols': 50, 'rows': 1, 'placeholder': "Search for a report"}))
+    SEARCH_OPTIONS = (
+            ('desc', "Description"),
+            ('owner', "Owned By"),
+            ('created', "Created",),
+            ('modified', "Last Modified"),
+        )
+    parameter = forms.CharField(widget=forms.Select(choices=SEARCH_OPTIONS))
 

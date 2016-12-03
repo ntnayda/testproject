@@ -23,11 +23,16 @@ from django.core.files.storage import FileSystemStorage
 import datetime
 from django import forms as djangoforms
 from django.core.urlresolvers import reverse
+<<<<<<< HEAD
 from Crypto.PublicKey import RSA
 from Crypto import Random
 import base64
 import os
 import binascii
+=======
+from django.db.models import Q
+
+>>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 
 
 # Create your views here.
@@ -69,8 +74,16 @@ def HexToByte(hexStr):
     return ''.join(bytes)
 
 def register_success(request):
-    return render(request,'fileshare/register_success.html')
+    return render(request, 'fileshare/register_success.html')
 
+
+<<<<<<< HEAD
+=======
+def profile(request):
+    return
+
+
+>>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 @login_required(login_url='login')
 def main(request):
     your_reports = models.Report.objects.filter(owned_by=request.user)
@@ -80,8 +93,15 @@ def main(request):
 
     if request.method == 'POST':
         folder_form = FolderForm(request.POST)
+        search_form = SearchForm(request.POST)
 
-        if folder_form.is_valid():
+        if search_form.is_valid():
+            cd = search_form.cleaned_data
+            #request.session['param'] = cd.get('param')
+            #request.session['query'] = cd.get('query')
+            #return redirect('search_results')
+
+        elif folder_form.is_valid():
             folder = models.Folder.objects.create(
                 name=request.POST.get('name'),
                 owned_by=request.user,
@@ -90,10 +110,15 @@ def main(request):
             folder.save()
     else:
         folder_form = FolderForm()
+        search_form = SearchForm()
 
     return render(request, 'fileshare/main.html',
                   {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports,
+<<<<<<< HEAD
                    'folder_form': folder_form, 'folders': folders})
+=======
+                   'folder_form': folder_form, 'folders': folders, 'search_form': search_form})
+>>>>>>> adc7d5419611a530a734e332e028658e3dbcc86e
 
 
 @login_required(login_url='login')
@@ -148,19 +173,39 @@ def view_report(request, report_id):
                 report.save()
                 update_form.save()
                 return redirect('main')
+            
+            # elif request.POST.get('action')[0] == "f":
+            #     report.last_modified = datetime.datetime.now()
+            #     report.last_modified_by = request.user.username
+            #     d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
+            #     d.delete()
+
             else:
                 report.delete()
                 return redirect('main')
     else:
         update_form = ReportForm(instance=report)
 
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files})
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count()})
+
+@login_required
+def view_group_report(request, report_id, profilegroup_id):
+    report = get_object_or_404(models.Report, pk=report_id)
+    group = get_object_or_404(models.ProfileGroup, pk=profilegroup_id)
+
+    if request.user.profile not in group.members.all():
+        return redirect('main')
 
 
-def delete_report(request, report_id):
+
+
+    return render(request, 'fileshare/view_group_report.html', {'report': report, 'group': group})
+
+def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     report.delete()
-    return render(request, 'fileshare/manage_reports.html')
+    return HttpResponseRedirect('/main')
+
 
 
 @login_required(login_url='login')
@@ -199,6 +244,7 @@ def messages(request):
 
 
 
+
             # reciever data
             newconvo2 = models.Conversation.objects.create(reciever=user,
                                                            sender=models.User.objects.get(id=request.POST['sender']),
@@ -234,6 +280,7 @@ def messages(request):
                                                            messagecontent=request.POST['messagecontent'],
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage2.save()
+
 
             return redirect("/messages")
 
@@ -298,6 +345,7 @@ def messages(request):
                    'form': form})
 
 
+
 def update_profile(request):
     user = request.user
     form = forms.UpdateProfile(request.POST or None,
@@ -350,10 +398,13 @@ def create_group(request):
 
             members_added = request.POST.getlist('members')
             for m in members_added:
-                get_object_or_404(models.Profile, pk=m).groups_in.add(instance)
+                m = get_object_or_404(models.Profile, pk=m)
+                m.groups_in.add(instance)
+                instance.members.add(m)
 
             instance.creator = request.user
             instance.save()
+            m.save()
 
             return redirect('main')  # group made successfully
     else:
@@ -366,24 +417,56 @@ def create_group(request):
 @login_required(login_url='login')
 def view_group(request, group_id):
     group = get_object_or_404(models.ProfileGroup, pk=group_id)
+    #private_reports = request.user.profile.reports_owned.filter(private=True)
+    private_reports = models.Report.objects.filter(owned_by=request.user, private=True).exclude(id__in=group.reports.all())
+    all_users = models.User.objects.all()
 
-    if request.user.profile not in group.members.all():
+    if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
     elif request.method == "POST":
         update_form = GroupForm(request.POST, instance=group)
+        action = request.POST.get('action')
+        
+        if action != "Save Changes":
+            if action[0] == 'a':
+                report = get_object_or_404(models.Report, pk=action[1:])
+                group.reports.add(report)
+                group.save()
+            elif action[0] == 'r':
+                report = get_object_or_404(models.Report, pk=action[1:])
+                group.reports.remove(report)
+                group.save()
+            
+            elif action[0] == 'p':
+                m = get_object_or_404(models.Profile, pk=action[1:])
+                m.groups_in.add(group)
+                group.members.add(m)
+                group.save()
+
+            elif action == 'l':
+                request.user.profile.groups_in.remove(group)
+                group.members.remove(request.user.profile)
+                group.save()
+
+
+            else:
+                m = get_object_or_404(models.Profile, pk=action)
+                m.groups_in.remove(group)
+                group.members.remove(m)
+                group.save()
 
         if update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
                 update_form.save()
-                return redirect('main')
             else:
                 group.delete()
                 return redirect('main')
     else:
         update_form = GroupForm(instance=group)
 
-    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form})
+    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users})
+
 
 
 @login_required(login_url='login')
@@ -398,14 +481,14 @@ def view_folder(request, folder_id):
         update_form = FolderForm(request.POST, instance=folder)
 
         action = request.POST.get('action')
-        if action[-1] == "a":
-            report = get_object_or_404(models.Report, pk=action[:-1])
-            folder.reports.add(report)
-            folder.save()
-
-        elif action[-1] == "r":
-            report = get_object_or_404(models.Report, pk=action[:-1])
-            folder.reports.remove(report)
+        if action != "view" and action != "Update" and action != "Delete":
+            report = get_object_or_404(models.Report, pk=action[1:])
+            if action[0] == 'a':
+                folder.reports.add(report)
+                report.in_folder = True
+            else:
+                folder.reports.remove(report)
+                report.in_folder = False
             folder.save()
 
         elif update_form.is_valid():
@@ -422,26 +505,6 @@ def view_folder(request, folder_id):
     return render(request, 'fileshare/view_folder.html',
                   {'folder': folder, 'update_form': update_form, 'all_reports': all_reports,
                    'able_to_add': able_to_add})
-
-    '''report = get_object_or_404(models.Report, pk=report_id)
-
-    if request.method == "POST":
-        update_form = ReportForm(request.POST, request.FILES, instance=report)
-
-        if update_form.is_valid():
-            
-            if request.POST.get('action') == "Save Changes":
-                report.last_modified = datetime.datetime.now()
-                report_form.last_modified_by = request.user.username
-                update_form.save()
-                return redirect('main')
-            else:
-                report.delete()
-                return redirect('main')
-    else:
-        update_form = ReportForm(instance=report)
-
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form})'''
 
 
 def register(request):
@@ -472,7 +535,6 @@ def register(request):
         register_form = signup_form()
 
     return render(request, 'fileshare/register.html', {'form': signup_form()})
-
 
 # site manager views
 def sitemanager(request):
@@ -517,6 +579,12 @@ def sm_update_user(request):
     return render(request, 'fileshare/user_update_success.html', {'profile': profile})
 
 
+def delete_report(request, report_id):
+    report = get_object_or_404(models.Report, pk=report_id)
+    report.delete()
+    return HttpResponseRedirect('/manage_reports.html')
+    # return render(request, 'fileshare/manage_reports.html')
+
 # return render(request, 'fileshare/sm_update_user.html')
 # def edit_group(request):
 #     all_groups = models.ProfileGroup.objects.all()
@@ -524,50 +592,7 @@ def sm_update_user(request):
 # def update_user_permissions(request):
 
 def test(request):
-    newuser = request.user
-    random_generator = Random.new().read
-    key = RSA.generate(1024, random_generator)
-    pubkey = key.publickey()
-    originalkey = pubkey.exportKey(format='PEM')
-    newuser.profile.publickey = originalkey
-    newuser.profile.save()
-    # originalkey= ""
-    thestring = ""
-    thestring1 = ""
-    """
-    privatekey = ""
-    thestring = ""
-    privatekey = RSA.generate(1024)
-
-    originalkey = privatekey.exportKey(format='PEM')
-    pubkey = privatekey.publickey()
-    asdf = "this is a test message"
-    thestring1 =  pubkey.encrypt(asdf.encode(),1)
-
-    newkey = RSA.importKey(originalkey)
-
-    thestring = newkey.decrypt(thestring1)
-    #thestring = newkey.decrypt(b"\x85!Gi\n\x1a\xa2\xf8h\x06\xe2\xe9^\xcd\x9c\xeel\x938v\x1ecYQ\x1a\xa9CM\xfa\xc1\x0b\x17\xac\xd4\x9b\xbf\xe1\x91\xd6$\xed\\\x10\x92\xbb2\xbb\xa2*\xe8\xa1Z\xcc\x1f\x1a\x9bW\xaf\xcb[Q!\x8b\xf3\xed\xdc\xef\x8dW\xa5\xf0\xc5t\xad\x93J,*\x8e\x84\x1c\xfc\x07\x84'\xd5\xaaV\xe0\xf0\xf1\x82y\x16]&W\xd8\t7\xbcwo\x97\x8dM\xa1]^W\xaf\xecB\xac\xde\x7fM\xe3\x10j\x98q\xc9h\x02\x088\xcc")
-    """
-
-    """
-    #random_generator = Random.new().read
-    #key = RSA.generate(1024, random_generator)
-    #privatekey = key.exportKey()
-    tempkey = "MIICXAIBAAKBgQDFm1+GU9ZhY1/Xdd21jkskQRpdagnMbeH/VBS56XPTp6m4oAHd NV26yBa/oB6WNTuNLesvO+V92s/X6NhhZoo1mRg4n8Ctks2WGG5DXwubojQSYjTf hkrYPsNdAH1QeF8TWsXrqrefLCty7P5i3FIL0LSU8fh4NmZLXvyykLpa5QIDAQAB AoGBAI7anhor7aWGA7ltmhQwhB33eqnhiKfjIChHjpxAKt3uLYItGmvispnfIKLz jGkmnqCXe5gwAt4TG4KI8DSpvmtvxHi7r+gxBX/1W3KYu5PQUrC5dn8VxfHQ0JVF 35EQZWqUslkIdt26dX8O42aHcKiG23k1TrRj6v8SBDoNDD/ZAkEA3ounk6hBQ071 npU0JBzBkTevy8l6q2hBr/tlsYWBfJTdQ6jtz8vNNAmGGVMcinMWD4JSG6CeJnSN KwFOV/PlKwJBAONP/ggw00WTZF1MvtlWNEU7yw4eZ2+1n6cjJEiTotljud3atGtS Jdf/YPFaQo316eF3E+vRCjElVC8O1RdF2C8CQE0gh2ZUJLIoFlXsjdKKKMekTgfJ fvsSudk8vmTEyTic+wYs8KZYknibaF80f6q38ghT+RLcGpNnR1mFLVqsC1sCQCBP B1lcrzrNZ0+Hj/zOLuHETOk10xfipc2Yxhh2u4fQj+ODqW8znuNjjgDgBmOtF1AP n8o9zQgNOTjzD8CeEcsCQH/il5QKk+Tl/dsgQmJM57nJ1jZiz5bjNb6HVBEPDixF wneeHLOnNCRhVG8zAaQBpeXahl1mWx9ok6IE5eCzBbQ="
-    tempkey = b64decode(tempkey)
-    seq = asn1.DerSequence()
-    seq.decode(tempkey)
-    privatekey = RSA.construct((seq[0], seq[1]))
-
-    #thestring = privatekey.decrypt("\x85!Gi\n\x1a\xa2\xf8h\x06\xe2\xe9^\xcd\x9c\xeel\x938v\x1ecYQ\x1a\xa9CM\xfa\xc1\x0b\x17\xac\xd4\x9b\xbf\xe1\x91\xd6$\xed\\\x10\x92\xbb2\xbb\xa2*\xe8\xa1Z\xcc\x1f\x1a\x9bW\xaf\xcb[Q!\x8b\xf3\xed\xdc\xef\x8dW\xa5\xf0\xc5t\xad\x93J,*\x8e\x84\x1c\xfc\x07\x84'\xd5\xaaV\xe0\xf0\xf1\x82y\x16]&W\xd8\t7\xbcwo\x97\x8dM\xa1]^W\xaf\xecB\xac\xde\x7fM\xe3\x10j\x98q\xc9h\x02\x088\xcc")
-    # message = newuser.publickey.encrypt(thestring.encode(),1)
-    # newuser.profile.publickey = random_generator
-    # newuser.save()
-    # print(random_generator)
-    """
-    return render(request, 'fileshare/test.html',
-                  {'key': originalkey, 'message': thestring, 'message2': thestring1})
+    return HttpResponse("test")
 
 
 def decrypt_message(request, message_pk):
@@ -607,3 +632,27 @@ def updateunread(request, message_pk):
     #request.user.profile.save()
     return HttpResponse("success")
 
+
+@login_required(login_url='login')
+def search_results(request):
+
+    query = request.POST.get('search')
+    param = request.POST.get('parameter')
+
+    if query is None or query == "":
+        return redirect('main')
+
+    usernames = []
+    if param == "desc":
+        results = models.Report.objects.filter(
+            Q(short_desc__icontains=query) | Q(long_desc__icontains=query)
+            ).exclude(~Q(owned_by=request.user), Q(private=True))
+    elif param == "owner":
+        usernames = models.User.objects.filter(username__icontains=query)
+        results = models.Report.objects.filter(Q(owned_by__in=usernames)).exclude(~Q(owned_by=request.user ), Q(private=True))
+    else: 
+        results = []
+
+        # Add support for searching by date created and date modified??
+
+    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results, 'usernames': usernames, 'param': param})
