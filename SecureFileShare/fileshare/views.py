@@ -315,11 +315,19 @@ def view_group(request, group_id):
         action = request.POST.get('action')
         
         if action != "Save Changes":
-            report = get_object_or_404(models.Report, pk=action[1:])
             if action[0] == 'a':
+                report = get_object_or_404(models.Report, pk=action[1:])
                 group.reports.add(report)
-            else:
+                group.save()
+            elif action[0] == 'r':
+                report = get_object_or_404(models.Report, pk=action[1:])
                 group.reports.remove(report)
+                group.save()
+            else:
+                m = get_object_or_404(models.Profile, pk=action)
+                m.groups_in.remove(group)
+                group.members.remove(m)
+                group.save()
 
         if update_form.is_valid():
 

@@ -64,6 +64,9 @@ class ProfileGroup(models.Model):
 	members = models.ManyToManyField('Profile', related_name='group_members', blank=True)
 	reports = models.ManyToManyField('Report', blank=True)
 
+	def __str__(self):
+		return self.name
+
 
 class Conversation(models.Model):
 

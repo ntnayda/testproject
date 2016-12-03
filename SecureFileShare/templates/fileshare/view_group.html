@@ -9,14 +9,6 @@
 		<div class="panel-body">
          <div class="row">
             <div class="col-lg-8">
-                {% if group.creator == user or user.is_staff %}
-                <form method="POST" action=".">
-                    {% csrf_token %}
-                    <h2><b>Edit Group</b></h2>
-                    {{ update_form.as_p }}
-                    <input type="submit"  class="btn btn-default btn-sm" name="action" value="Save Changes"/>
-                </form>
-                {% endif %}
 
                 <div class="panel-body">
                     <h2><b>Reports in this group</b></h2>
@@ -33,17 +25,51 @@
                     </ul>
                 </div>
 
+
+
             </div>
 
             <div class="col-lg-4">
                 <div class="panel panel-default">
+                    <div class="panel-heading"><strong>Rename</strong></div>
+                    <div class="panel-body">
+                        {% if group.creator == user or user.is_staff %}
+                        <div class="form-group">
+                            <form class="form-inline" method="POST" action=".">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    {{ update_form.name }}
+                                </div>
+                                <input type="submit"  class="btn btn-default btn-sm" name="action" value="Save Changes"/>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
                     <div class="panel-heading"><strong>Group Members</strong></div>
                     <div class="panel-body">
-                        <ul class="list-group">
+                        <table class="table table-striped">
+
                             {% for m in group.members.all %}
-                            <li class="list-group-item">{{ m }}</li>
+
+                            <tr>
+                                <td> {{ m }} </td>
+                                <td>
+                                    {% if m != user.profile %}
+
+                                    <form id="remove_{{ m }}" method="POST" action=".">
+                                        {% csrf_token %}
+                                        <div align="right"><button class="btn btn-default btn-me"  type="submit" form="remove_{{ m }}" name="action" value="{{ m.id }}"><span class="glyphicon glyphicon-remove" style="color: red"></span></button></div>
+                                    </form>
+
+                                    {% endif %}
+                                </td>
+                            </tr>
+
                             {% endfor %}
-                        </ul>
+                        </table>
                     </div>
                 </div>
 
@@ -63,6 +89,14 @@
                         </ul>
                     </div>
                 </div>
+                <div align="right">
+                    <form id="leave_{{ group.name }}" action="{% url 'fileshare:main' %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l"><span>Leave group</button>
+
+                    </form>
+                </div>
+
             </div>
 
         </div>
