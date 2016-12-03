@@ -1,0 +1,45 @@
+{% extends 'fileshare/base.html' %}
+
+
+{% block content %}
+
+ <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">View Message</h3>
+                    </div>
+                    <div class="panel-body">
+{% if message %}
+                        <p>{{message}}</p>
+                        <p>{{message2}}</p>
+
+    {% else %}
+                        <form id="decrypt_message_form" method="post"
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- Display each form. The as_p method wraps each element in a paragraph
+                 (<p>) element. This ensures each element appears on a new line,
+                 making everything look neater. -->
+            {{ form.as_p }}
+
+            <!-- Provide a button to click to submit the form. -->
+    <p class="text-center"><input type="submit" class="btn btn-success btn-sm" name="submit" value="Decrypt" />
+
+
+        </form>
+
+                        {% endif %}
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}
+

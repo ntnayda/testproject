@@ -10,14 +10,28 @@
 
 	<div class="jumbotron">
 		<h2><b>Edit Report</b></h2>
-		<form method="POST" enctype="multipart/form-data">
+		
+			{% if report.owned_by == user %}
+
+			<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ update_form.as_p }}
-			<input type="submit" name="action" value="Save Changes"/>
-			{% if report.owned_by == user %}
-			<input type="submit" name="action" value="Delete"/>
+			<input type="file" name="files" multiple>
+			<h4><b>Attached files:</b></h4>
+			<table id="t01" width="60%">
+				{% for f in files.all %}
+				<tr>
+					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
+					<td><center><button type="submit" name="remove" value="REMOVE">Remove</button></center></td>
+				</tr>
+				{% endfor %}
+			</table><br>
+			<input class="button buttonSubmit" type="submit" name="action" value="Save Changes"/>
+
+
+			<input class="button buttonDelete" type="submit" name="action" value="Delete Report"/>
 			{% else %}
-			<p>*You cannot delete this report.</p>
+			<font size="3">*You cannot edit this report.</font>
 			{% endif %}
 		</form>
 	</div>

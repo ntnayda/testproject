@@ -30,7 +30,7 @@
                <ul class="list-unstyled" id="conversationlist">
                   {% if conversation_list %}
                     {% for conversation in conversation_list %}
-                 <li class="left clearfix" onclick="loadMessages(this)" ">
+                 <li class="left clearfix" onclick="loadMessages(this)">
                      <div class="chat-body clearfix">
                         <div class="header_sec">
                            <strong class="primary-font">{{conversation.reciever}}</strong>
@@ -39,7 +39,7 @@
 
                         </div>
                         <div class="contact_sec">
-                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.messages.length}}</span>
+                           <strong class="primary-font"></strong> <span class="badge pull-right">{{conversation.unreadmessages}}</span><span class="hidden">{{conversation.id}}</span>
                         </div>
                      </div>
                   </li>
@@ -110,7 +110,6 @@
 
 </form>
 
-<button onclick="test()">Test</button>
 
 <script>
 
@@ -141,7 +140,7 @@
    var isnewmessage = false;
 
   function loadMessages(elmnt) {
-
+    readmessages(elmnt);
     var convos = document.getElementById("conversationlist").children;
     if(isnewmessage) {
         document.getElementById("newmessagerecepient").setAttribute("class","hidden");
@@ -205,10 +204,10 @@
               item.firstElementChild.firstElementChild.firstElementChild.appendChild(document.createElement("button"));
               var decryptbutton = item.firstElementChild.firstElementChild.firstElementChild.children[1];
               decryptbutton.onclick = function(){
-                  var key = new JSEncrypt();
-                  var privatekey = prompt("Please enter your private key");
-                  key.setPrivateKey(privatekey);
-                  decryptmessage(this.parentElement,this.parentElement.children[0],key);
+                  var theurl = "/decrypt_message/";
+                  theurl += this.children[1].innerText;
+                  var win = window.open(theurl,'_blank');
+                  win.focus();
               };
           decryptbutton.setAttribute("type","button");
           decryptbutton.setAttribute("class","btn btn-default btn-sm pull-right hidden");
@@ -217,7 +216,7 @@
           decryptbutton.firstElementChild.setAttribute("aria-hidden","true");
               decryptbutton.appendChild(document.createElement("p"));
               decryptbutton.children[1].setAttribute("class","hidden");
-              decryptbutton.children[1].innerText = messagestoload[convo][i][3];
+              decryptbutton.children[1].innerText = messagestoload[convo][i][4];
           item.onmouseover = function(){
               this.firstElementChild.firstElementChild.firstElementChild.firstElementChild.setAttribute("class","btn btn-default btn-md pull-right");
               this.firstElementChild.firstElementChild.firstElementChild.children[1].setAttribute("class","btn btn-default btn-md pull-right");
@@ -268,6 +267,7 @@
     if (sendee != -1 && text) {
       var convolist = document.getElementById("conversationlist");
       var convoitem = convolist.children[sendee];
+
       var convoselect = document.getElementById("id_owned_by");
 
       var convoname = convoitem.firstElementChild.firstElementChild.children[2];
@@ -279,31 +279,13 @@
               break;
         }
       }
-      var messagekey = null;
+
         if(document.getElementById("thecheckbox").checked) {
-            messagekey = new JSEncrypt();
-            var thekey = "";
-            for(r in recieverlist) {
-                if(r[0] == convoitem.firstElementChild.firstElementChild.firstElementChild.innerText) {
-                    thekey = r[1];
-                }
-            }
-            if (thekey != "") {
-                messagekey.setPublicKey(thekey);
+
                 document.getElementById("id_thekey").value = "True";
-                var encryptedmessage = messagekey.encrypt(text);
-                document.getElementById("id_messagecontent").value = encryptedmessage;
-            }
-            else {
-                alert("ERROR: Could not find the user's public key.")
-            }
-
-
-
         }
-        else {
             document.getElementById("id_messagecontent").value = text;
-        }
+
 
       document.getElementById("id_sender").value = 1;
       document.getElementById("hiddenmessageform").submit();
@@ -317,6 +299,7 @@
         document.getElementById("id_newmessagefield").value = "Yes";
 
         convoselect.value = 1;
+
         for (i=0;i<convolist.length;i++){
             if (convolist[i].firstElementChild.firstElementChild.children[0].innerText == username) {
                 sendee = i;
@@ -336,25 +319,17 @@
             }
         }
 
-/*
+
         var sendselect = document.getElementById("id_sender");
         sendselect.value = document.getElementById("newmessagerecepient").value;
         var messagekey = null;
         if(document.getElementById("thecheckbox").checked) {
-            messagekey = new JSEncrypt();
-            messagekey.setPublicKey("{{user.profile.publickey}}");
-            //messagekey = Math.random().toString(36).substr(2, 10);
             document.getElementById("id_thekey").value = "True";
-            //var encryptedmessage = CryptoJS.AES.encrypt(text,messagekey);
-            var encryptedmessage = messagekey.encrypt(text);
-            document.getElementById("id_messagecontent").value = encryptedmessage;
         }
-        else {
             document.getElementById("id_messagecontent").value = text;
-        }
 
         document.getElementById("hiddenmessageform").submit();
-*/
+
     }
     else {
       alert("failure!");
@@ -362,21 +337,6 @@
 
 
   }
-    function test() {
-        var PassPhrase = "The Moon is a Harsh Mistress.";
-        var bits = 1024;
-        alert("asdf");
-        try {
-            var MattsRSAkey = cryptico.generateRSAKey(PassPhrase, Bits);
-        }
-        catch(e) {
-            alert(e);
-        }
-        alert("2");
-        var MattsPublicKeyString = cryptico.publicKeyString(MattsRSAkey);
-        alert(MattsPublicKeyString);
-
-    }
   function newMessage() {
     if (sendee != -1) {
     var convos = document.getElementById("conversationlist").children;
@@ -425,6 +385,17 @@
       //themessage.innerText = decrypted.toString(CryptoJS.enc.Utf8);
       themessage.innerText = decrypted;
       themessage.appendChild(thedeletebutton);
+  }
+
+  function readmessages(convoitem) {
+      convoitem.firstElementChild.children[1].children[1].innerText = 0;
+
+      var read = new XMLHttpRequest();
+      var requeststring = "/update_unread/" + convoitem.firstElementChild.children[1].children[2].innerText;
+
+      read.open("GET",requeststring,true);
+      read.send();
+      //alert("worked");
   }
     document.onload = pageload();
 

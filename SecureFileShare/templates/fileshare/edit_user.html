@@ -1,0 +1,94 @@
+{% extends 'fileshare/base.html' %}
+
+{% block content %}
+
+<div class="container">
+	<div class="panel panel-default">
+		<div class="panel-heading"><strong>Edit User - {{profile.user.username}}</strong></div>
+		<div class="panel-body">
+			<form method="post" action="/sm_update_user" enctype="multipart/form-data">
+				{% csrf_token %}
+                    <input type="hidden" name="profile_id" value="{{ profile.id }}">
+				<!-- {{ user_form.as_p }} -->
+				<p>
+					<label for="id_username">Username:</label> <input id="id_username"
+						maxlength="150" name="username" type="text" value="{{profile.user.username}}" required /> <span
+						class="helptext">Required. 150 characters or fewer.
+						Letters, digits and @/./+/-/_ only.</span>
+				</p>
+				<p>
+					<label for="id_email">Email Address:</label> <input id="id_email"
+						maxlength="254" name="email" type="email" value="{{profile.user.email}}" />
+				</p>
+				<p>
+					<label for="id_first_name">First Name:</label> <input
+						id="id_first_name" maxlength="30" name="first_name" type="text" value="{{profile.user.first_name}}"/>
+				</p>
+				<p>
+					<label for="id_last_name">Last Name:</label> <input
+						id="id_last_name" maxlength="30" name="last_name" type="text" value="{{profile.user.last_name}}"/>
+				</p>
+				<p>
+					<div class="form-control-static">
+					<label for="id_date_joined">Date Joined:</label>
+						 {{profile.user.date_joined}}
+					</div>
+				</p>
+				<p>
+					<label for="id_password1">Reset Password:</label> <input
+						id="id_password1" name="password1" type="password" />
+				</p>
+				<p> <!--make sure verification works. check if p1 equals p2-->
+					<label for="id_password2">Password confirmation:</label> <input
+						id="id_password2" name="password2" type="password" /> <span
+						class="helptext">Enter the same password as above, for
+						verification.</span>
+				</p>
+                {% if profile.user.is_active %}
+					<input type="checkbox" name='is_active'id="is_active" checked><font size="3">Active</font><br>
+				{% else %}
+					<input type="checkbox" name='is_active' id="is_active"><font size="3">Active</font><br>
+				{% endif %}
+				<p>Designates whether this user should be treated as active.
+					Unselect this instead of deleting accounts</p>
+				{% if profile.user.is_staff %}
+					<input type="checkbox" name='is_staff' id="is_staff" checked/><font size="3">Staff Status</font><br>
+				{% else %}
+					<input type="checkbox" name='is_staff' id="is_staff" /><font size="3">Staff Status</font><br>
+				{% endif %}
+				<p>Designates whether the user is a site manager</p>
+            	<input class="btn btn-success btn-sm" type="submit" value="Save" />
+			</form>
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{#{% extends 'fileshare/base.html' %}#}
+{##}
+{#{% block content %}#}
+{##}
+{#{% csrf_token %}#}
+{#<div class="container">#}
+{#	<h3>Edit User</h3>#}
+{#	<div class="panel panel-default">#}
+{#		<div class="panel-heading"><strong>Permissions</strong></div>#}
+{#		<div class="panel-body">#}
+{#            <!--still have to write the code that actually updates the info-->#}
+{#            <form method="POST" action="/fileshare/edit_user" enctype="multipart/form-data">#}
+{#                <input type="checkbox" id="active" value="{{user.is_active}}"><font size = "3">Active</font><br>#}
+{#                <p>Designates whether this user should be treated as active. Unselect this instead of deleting accounts</p>#}
+{#                <input type="checkbox" id="staff_status"><font size = "3" value ="{{user.is_staff}}">Staff Status</font><br>#}
+{#                <p>Designates whether the user is a site manager</p>#}
+{#            </form>#}
+{#            <br>#}
+{#            <!--<p><font size="3">Groups:</font></p>-->#}
+{#            <input class="btn btn-success btn-sm" type="submit" value="Save"/>#}
+{#		</div>#}
+{#	</div>#}
+{#    </div>#}
+{##}
+{#{% endblock %}#}

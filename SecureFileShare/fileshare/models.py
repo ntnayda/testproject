@@ -11,8 +11,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     reports_owned = models.ManyToManyField('Report', blank=True)
     groups_in = models.ManyToManyField('ProfileGroup', blank=True)
-    publickey = models.CharField(null=False,max_length=1000)
-
+    publickey = models.CharField(null=True, max_length=10000)
+    unreadmessages = models.CharField(max_length=10,default="false")
 
 
 
@@ -27,14 +27,11 @@ def __str__(self):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-
-
 post_save.connect(create_user_profile, sender=User)
 
 
 # Create Reports model
 class Report(models.Model):
-    datetime = '%Y/%m/%d'
     owned_by = models.ForeignKey(User)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now_add=True, null=True)
@@ -42,9 +39,27 @@ class Report(models.Model):
     short_desc = models.CharField("Title", max_length=128, unique=True)
     long_desc = models.TextField("Description")
     private = models.BooleanField("Restrict access to this file?", default=False)
+    files = models.ManyToManyField('Documents', blank=True)
     is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False,
                                        help_text="Leave blank if no file is attached.")
+
+    def __str__(self):
+        return self.short_desc
+
+
+class Documents(models.Model):
+    datetime = '%Y/%m/%d'
     file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.file_attached)
+
+
+class Folder(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+    owned_by = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
+    reports = models.ManyToManyField(Report, blank=True)
 
 
 class ProfileGroup(models.Model):
@@ -60,6 +75,7 @@ class Conversation(models.Model):
     reciever_name = models.CharField(max_length=128)
     recently_used = models.DateTimeField()
     messages = models.ManyToManyField('Message', blank=True)
+    unreadmessages = models.CharField(max_length=1000,default="0")
 
     def __str__(self):
         return self.reciever_name
@@ -69,8 +85,8 @@ class Message(models.Model):
     owned_by = models.ForeignKey('Conversation')
     sender = models.ForeignKey(User)
     time = models.DateTimeField(auto_now_add=True)
-    messagecontent = models.CharField(max_length=1000)
-    key = models.CharField(null=True, max_length=1000)
+    messagecontent = models.CharField(max_length=10000)
+    key = models.CharField(null=True, max_length=10000)
 
     def __str__(self):
         return self.messagecontent

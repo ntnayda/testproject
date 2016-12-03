@@ -95,7 +95,7 @@ class signup_form(forms.ModelForm):
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
-        fields = ['short_desc', 'long_desc', 'private', 'file_attached', 'is_encrypted']
+        fields = ['short_desc', 'long_desc', 'private', 'is_encrypted']
 
 class UpdateProfile(forms.ModelForm):
 
@@ -121,3 +121,22 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = ProfileGroup
         fields = ['name', 'members']
+
+class FolderForm(forms.ModelForm):
+    class Meta:
+        model = Folder
+        fields = ['name']
+
+class UpdateFolder(forms.ModelForm):
+    class Meta:
+        model = Folder
+        fields = ['name', 'reports']
+
+class DecryptMessageForm(forms.ModelForm):
+    password = forms.CharField(required=True)
+    #message = forms.ModelMultipleChoiceField(queryset=Message.objects.all())
+
+    class Meta:
+        model = Message
+        fields = ['password']
+
