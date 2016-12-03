@@ -56,7 +56,7 @@
 					<tr>
 						<td>
 							{% if not encrypted %}
-							<a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a>
+							<a href="{{ f.file_attached.url }}" download>{{ f.file_attached.url }}</a>
 							{% else %}
 							{{ f.file_attached.url }}
 							{% endif %}
