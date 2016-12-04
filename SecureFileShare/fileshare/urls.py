@@ -52,4 +52,6 @@ urlpatterns = [
     url('^decrypt_message/(?P<message_pk>.*)$',views.decrypt_message,name="decrypt_message"),
     url('^update_unread/(?P<message_pk>.*)$',views.updateunread,name="update_unread"),
     url('^search_results', views.search_results, name='search_results'),
+    url('^fda_login/(?P<username>.+)/(?P<password>.+)', views.fda_login, name='fda_login'),
+    url('^fda_report_files/(?P<report_id>[0-9]+)$', views.fda_report_files, name='fda_report_files'),
 ]

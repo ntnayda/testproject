@@ -29,6 +29,9 @@ import base64
 import os
 import binascii
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 
 # Create your views here.
@@ -68,6 +71,43 @@ def HexToByte(hexStr):
         bytes.append(chr(int(hexStr[i:i + 2], 16)))
 
     return ''.join(bytes)
+
+@csrf_exempt
+def fda_login(request,username,password):
+    print("username: " + username)
+#     print("password: " + password)
+    user = authenticate(username = username, password = password)
+    if user is not None:
+        login(request, user)
+        your_reports = models.Report.objects.filter(owned_by=user)
+        other_reports = models.Report.objects.filter(private=False).exclude(owned_by=user)
+        viewable_reports = []
+        for your_report in your_reports:
+            num_attachments = len(your_report.files.all())
+            report_data = {"report_id":your_report.id, "title":your_report.short_desc, "attachments":num_attachments}
+            viewable_reports.append(report_data)
+        for other_report in other_reports:
+            num_attachments = len(other_report.files.all())
+            report_data = {"report_id":other_report.id, "title":other_report.short_desc, "attachments":num_attachments}
+            viewable_reports.append(report_data)
+        
+        return HttpResponse(json.dumps(viewable_reports))
+        
+    return HttpResponse('Login Failed!')
+
+@csrf_exempt
+def fda_report_files(request,report_id):
+    user = request.user
+    if user is not None:
+        report = models.Report.objects.filter(pk=report_id)[0]
+        downloadable_files = []
+        for file in report.files.all():
+            filedata = {"id":file.id, "file_name":file.file_attached.name, "is_encrypted":file.is_encrypted, "file_hash":file.file_hash}
+            downloadable_files.append(filedata)
+        
+        return HttpResponse(json.dumps(downloadable_files))
+    
+    return HttpResponse('Login Failed!')
 
 def register_success(request):
     return render(request, 'fileshare/register_success.html')
@@ -118,11 +158,17 @@ def create_report(request):
                 last_modified_by=request.user.username,
                 short_desc=report_form.cleaned_data['short_desc'],
                 long_desc=report_form.cleaned_data['long_desc'],
-                private=report_form.cleaned_data['private']
+                private=report_form.cleaned_data['private'],
+                is_encrypted=report_form.cleaned_data['is_encrypted']
             )
-            newdoc.save()
+#             newdoc.save()
+            json_data = request.POST.get('file_hash')
+            if json_data != "":
+                file_hashes = json.loads(json_data)
+            print("file_hash: " + json_data)
             for f in request.FILES.getlist('files'):
-                d = models.Documents.objects.create(file_attached=f)
+                fHash = getFileHashFromData(file_hashes, f.name)
+                d = models.Documents.objects.create(file_attached=f, is_encrypted=is_encrypted, file_hash=fHash)
                 newdoc.files.add(d)
             newdoc.save()
 
@@ -153,6 +199,10 @@ def view_report(request, report_id):
             report.last_modified = datetime.datetime.now()
             report.last_modified_by = request.user.username
             d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
+            # remove document from the file system
+            fs = FileSystemStorage()
+            fs.delete(d.file_attached)
+            # remove document from database
             d.delete()
             report.save()
 
@@ -171,8 +221,14 @@ def view_report(request, report_id):
             if request.POST.get('action') == "Save Changes":
                 report.last_modified = datetime.datetime.now()
                 report.last_modified_by = request.user.username
+                is_encrypted = not request.POST.get('is_encrypted', None) == None
+                json_data = request.POST.get('file_hash')
+                if json_data != "":
+                    file_hashes = json.loads(json_data)
+                print("file_hash: " + json_data)
                 for f in request.FILES.getlist('files'):
-                    d = models.Documents.objects.create(file_attached=f)
+                    fHash = getFileHashFromData(file_hashes, f.name)
+                    d = models.Documents.objects.create(file_attached=f, is_encrypted=is_encrypted, file_hash=fHash)
                     report.files.add(d)
                 report.save()
                 update_form.save()
@@ -194,6 +250,12 @@ def view_report(request, report_id):
 
     return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count(), 'encrypted': encrypted, 'comment_form': comment_form, 'report_comments': report_comments})
 
+def getFileHashFromData(data, filename):
+    for file in data:
+        if file["filename"] == filename:
+            return file["file_hash"]
+
+
 @login_required(login_url='login')
 def view_group_report(request, report_id, profilegroup_id):
     report = get_object_or_404(models.Report, pk=report_id)
@@ -209,6 +271,13 @@ def view_group_report(request, report_id, profilegroup_id):
 @login_required(login_url='login')
 def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
+    # remove all file attachments from the file system
+    fs = FileSystemStorage()
+    files = report.files.all()
+    for file in files:
+        fs.delete(file.file_attached)
+        file.delete()
+    # remove report from database
     report.delete()
     return HttpResponseRedirect('/main')
 

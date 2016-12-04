@@ -46,7 +46,9 @@ class Report(models.Model):
 class Documents(models.Model):
     datetime = '%Y/%m/%d'
     file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
-
+    is_encrypted = models.BooleanField(default=False)
+    file_hash = models.CharField(max_length=128, blank=True, null=True)
+    
     def __str__(self):
         return str(self.file_attached)
 

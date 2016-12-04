@@ -108,27 +108,47 @@
 
 						<form method="POST" action="{% url 'fileshare:view_report' report.id %}" enctype="multipart/form-data">
 							{% csrf_token %}
-							<div class="form-group">
-								<div class="input-group"> 
-									<strong>Title: </strong>
-									{{ update_form.short_desc }}
-								</div><br>
-								<div class="input-group">
-									<strong>Description: </strong><br>
-									{{ update_form.long_desc }}
-								</div>
-								<div class="input-group">
-									<strong>Restict access? </strong>
-									{{ update_form.private }}
-								</div>
-								<div class="input-group">
-									<strong>Files encrypted? </strong>
-									{{ update_form.is_encrypted }}
-								</div>
+							<!-- The following commented out section does not set the current values.
+								 You can't click save changes without setting the required fields. -->
+							<!-- <div class="form-group">
+								<label><strong>Title: </strong></label>
+								{{ update_form.short_desc }}
+								<label><strong>Description: </strong></label>
+								{{ update_form.long_desc }}
 							</div>
+							<div class="form-group">
+								<label><strong>Restict access? </strong></label>
+								{{ update_form.private }}
+							</div>
+							<div class="form-group">
+								<label><strong>Files encrypted? </strong></label>
+								{{ update_form.is_encrypted }}
+							</div> -->
+							<div class="form-group">
+								<label for="id_short_desc">Title:</label>
+								<input id="id_short_desc" maxlength="128" name="short_desc" type="text" value="{{ report.short_desc }}" class="form-control" />
+								<label for="id_long_desc">Description:</label> 
+								<textarea cols="40" id="id_long_desc" name="long_desc" rows="5" class="form-control">{{report.long_desc}}</textarea>
+							</div>
+							<div class="form-group">
+								<label for="id_private">Restrict access to this file?</label>
+								{% if report.private %}
+								<input id="id_private" name="private" type="checkbox" checked/>
+								{% else %}
+								<input id="id_private" name="private" type="checkbox"/>
+								{% endif %}
+							</div>	
+							<div class="form-group">
+								<label for="id_is_encrypted">Files encrypted?</label>
+								{% if report.is_encrypted %}
+								<input id="id_is_encrypted" name="is_encrypted" type="checkbox" checked/>
+								{% else %}
+								<input id="id_is_encrypted" name="is_encrypted" type="checkbox"/>
+								{% endif %}
+							</div>	
 
-
-							<input type="file" name="files" multiple><br>
+							<input type="file" name="files" multiple id="files" onchange="getFileHash('files');"><br>
+							<input type="hidden" id="fileHash" name="file_hash"/>
 							<h4><b>Attached files:</b></h4>
 							<div class="panel panel-default">
 								<table id="t01" width="20%" class="table table-hover">
