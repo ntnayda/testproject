@@ -151,3 +151,10 @@ class SearchForm(forms.Form):
         )
     parameter = forms.CharField(widget=forms.Select(choices=SEARCH_OPTIONS))
 
+class ReportCommentsForm(forms.ModelForm):
+    comment = forms.CharField(required=True, max_length="1000", widget=forms.TextInput(attrs={'cols': 75, 'rows': 2, 'placeholder': "Leave a comment"}))
+
+    class Meta:
+        model = ReportComments
+        fields = ['comment']
+

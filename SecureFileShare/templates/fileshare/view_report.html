@@ -4,7 +4,6 @@
 
 <div class="container">
 	<div class="jumbotron">
-		<h2><strong>This Report</strong></h2>
 		
 		<div class="panel panel-default">
 			<table class="table table-hover">
@@ -66,9 +65,36 @@
 				</table>
 			</div>
 			{% else %}
-			<h4>There are no files attached to this report.</h4>
+			<i>There are no files attached to this report.</i>
 			{% endif %}
 
+		<div class="panel panel-default">
+				<div class="panel-heading"><h4><strong>Comments</strong></h4></div>
+				<ul class="list-group">
+					{% for c in report_comments.all %}
+					<li class="list-group-item">
+						<div align="right">{{ c.timestamp }}</div><br>
+						<i><strong>{{ c.creator }}</strong> said</i><br>
+						<p style="padding-left:15pt">{{ c.comment }}<p>
+					</li>
+					{% endfor %}
+
+					<li class="list-group-item">
+						<div class="form-group">
+						<form id="c01" class="form-inline" action="{% url 'fileshare:view_report' report.id %}" method="POST">
+							{% csrf_token %}
+							<div class="input-group">
+								{{ comment_form.comment }}
+							</div>
+								<button class="btn btn-default" type="submit" form="c01" name="action" value="c">  
+									<span class="glyphicon glyphicon-comment"></span>
+								</button>
+						</form>
+					</div>
+					</li>
+
+				</ul>
+		</div>
 
 		</div>
 
@@ -155,7 +181,7 @@
 								</div>
 							</form>
 							{% else %}
-							<font size="3">*You cannot edit this report.</font>
+							<i><font size="3">*You cannot edit this report.</font></i>
 							{% endif %}
 						</div>
 					</div>

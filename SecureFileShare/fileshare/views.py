@@ -139,6 +139,7 @@ def view_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     files = report.files
     encrypted = report.is_encrypted
+    report_comments = report.comments
 
     # if(request.user.is_staff == False):
     if report.private and request.user != report.owned_by and request.user.is_staff is False:
@@ -146,13 +147,24 @@ def view_report(request, report_id):
 
     elif request.method == "POST":
         update_form = ReportForm(request.POST, request.FILES, instance=report)
-
+        comment_form = ReportCommentsForm(request.POST)
+        
         if request.POST.get('action')[0] == "f":
             report.last_modified = datetime.datetime.now()
             report.last_modified_by = request.user.username
             d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
             d.delete()
             report.save()
+
+        elif comment_form.is_valid():
+            c = models.ReportComments.objects.create(
+                creator = request.user.profile,
+                timestamp = datetime.datetime.now(),
+                comment = request.POST.get('comment')
+                )
+            report.comments.add(c)
+            report.save()
+            c.save()
 
         elif update_form.is_valid():
 
@@ -178,8 +190,9 @@ def view_report(request, report_id):
                 return redirect('main')
     else:
         update_form = ReportForm(instance=report)
+        comment_form = ReportCommentsForm()
 
-    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count(), 'encrypted': encrypted})
+    return render(request, 'fileshare/view_report.html', {'report': report, 'update_form': update_form, 'files': files, 'num_files': files.count(), 'encrypted': encrypted, 'comment_form': comment_form, 'report_comments': report_comments})
 
 @login_required(login_url='login')
 def view_group_report(request, report_id, profilegroup_id):

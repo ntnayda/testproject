@@ -37,6 +37,7 @@ class Report(models.Model):
 	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
 	in_folder = models.BooleanField(default=False)
 	group_in = models.ManyToManyField('ProfileGroup', blank=True)
+	comments = models.ManyToManyField('ReportComments', blank=True)
 	
 	def __str__(self):
 		return self.short_desc
@@ -87,3 +88,14 @@ class Message(models.Model):
 
     def __str__(self):
         return self.messagecontent
+
+class ReportComments(models.Model):
+	creator = models.ForeignKey('Profile')
+	comment = models.TextField(max_length=1000, blank=False)
+	timestamp = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return self.comment
+
+
+
