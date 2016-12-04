@@ -192,7 +192,7 @@ def view_group_report(request, report_id, profilegroup_id):
 
 
     return render(request, 'fileshare/view_group_report.html', {'report': report, 'group': group})
-
+@login_required(login_url='login')
 def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     report.delete()
@@ -209,7 +209,7 @@ def account_update_success(request):
 def account(request):
     return render(request, 'fileshare/account.html')
 
-
+@login_required(login_url='login')
 def messages(request):
     user = request.user
     user.profile.unreadmessages = "false"
@@ -337,7 +337,7 @@ def messages(request):
                    'form': form})
 
 
-
+@login_required(login_url='login')
 def update_profile(request):
     user = request.user
     form = forms.UpdateProfile(request.POST or None,
@@ -358,7 +358,7 @@ def update_profile(request):
 
     return render(request, "fileshare/account_update.html", context)
 
-
+@login_required(login_url='login')
 def password_change(request):
     form = auth_forms.PasswordChangeForm(user=request.user, data=request.POST)
     if request.method == 'POST':
@@ -373,6 +373,7 @@ def password_change(request):
     return render(request, "fileshare/changepassword.html", context)
 
 
+@login_required(login_url='login')
 def deletemessage(request, message_pk):
     query = models.Message.objects.get(pk=message_pk)
     query.delete()
@@ -529,35 +530,36 @@ def register(request):
     return render(request, 'fileshare/register.html', {'form': signup_form()})
 
 # site manager views
+@login_required(login_url='login')
 def sitemanager(request):
     if (request.user.is_staff):
         return render(request, 'fileshare/sitemanager.html')
 
-
+@login_required(login_url='login')
 def manage_users(request):
     if (request.user.is_staff):
         all_users = models.User.objects.all()
         return render(request, 'fileshare/manage_users.html', {'all_users': all_users})
 
-
+@login_required(login_url='login')
 def manage_reports(request):
     if (request.user.is_staff):
         all_reports = models.Report.objects.all()
         return render(request, 'fileshare/manage_reports.html', {'all_reports': all_reports})
 
-
+@login_required(login_url='login')
 def manage_groups(request):
     if (request.user.is_staff):
         all_groups = models.ProfileGroup.objects.all()
         return render(request, 'fileshare/manage_groups.html', {'all_groups': all_groups})
 
-
+@login_required(login_url='login')
 def edit_user(request, user_id):
     profile = models.Profile.objects.filter(user_id=user_id)
     # print(profile[0].user.username)
     return render(request, 'fileshare/edit_user.html', {'profile': profile[0]})
 
-
+@login_required(login_url='login')
 def sm_update_user(request):
     profile = models.Profile.objects.filter(pk=request.POST['profile_id'])[0]
     user = profile.user
@@ -570,7 +572,7 @@ def sm_update_user(request):
     user.save()
     return render(request, 'fileshare/user_update_success.html', {'profile': profile})
 
-
+@login_required(login_url='login')
 def delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     report.delete()
@@ -586,7 +588,7 @@ def delete_report(request, report_id):
 def test(request):
     return HttpResponse("test")
 
-
+@login_required(login_url='login')
 def decrypt_message(request, message_pk):
     query = models.Message.objects.get(pk=message_pk)
 
@@ -614,6 +616,7 @@ def decrypt_message(request, message_pk):
 
     return render(request, 'fileshare/decrypt_message.html', {'form': decrypt_form})
 
+@login_required(login_url='login')
 def updateunread(request, message_pk):
     query = models.Conversation.objects.get(pk=message_pk)
     currentcount = query.unreadmessages
