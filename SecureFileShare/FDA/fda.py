@@ -94,7 +94,7 @@ def display_report_files(report_id):
 
 			print("")
 			#print(file_url)
-			print("downloading " + file_name)
+			#print("downloading " + file_name)
 			break
 
 	with closing(urlopen(file_url)) as response:
@@ -111,7 +111,10 @@ def display_report_files(report_id):
 	if file_hash == file_hash_db:
 		print("")
 		print("File validated! File hash matches!")
+	else:
+		print("File hash does not match. Please try to download again.")
 	print("-------------------------------------------------------------------")
+	print("downloading " + file_name)
 	with open(file_name + ".sha256", 'w') as f:
 		f.write(file_hash)
 	
