@@ -372,7 +372,7 @@ def messages(request):
             print(otheruser.profile.unreadmessages)
 
             if (request.POST['thekey'] == "True"):
-                thekey = RSA.importKey(newconvo.sender.profile.publickey)
+                thekey = RSA.importKey(newconvo2.sender.profile.publickey)
                 messagetoencrypt = str(request.POST['messagecontent'])
                 encryptedmessage = thekey.encrypt(messagetoencrypt.encode(), 1)
                 encryptedmessage = encryptedmessage[0];
