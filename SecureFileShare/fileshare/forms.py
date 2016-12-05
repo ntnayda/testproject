@@ -84,12 +84,19 @@ class signup_form(forms.ModelForm):
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
+        """
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError(
                 self.error_messages['password_mismatch'],
                 code='password_mismatch',
             )
-        return password2
+            """
+        return (password1 and password2 and password1 != password2)
+    def raiseerror(self):
+        raise forms.ValidationError(
+            self.error_messages['password_mismatch'],
+            code='password_mismatch',
+        )
 
 
 class ReportForm(forms.ModelForm):
@@ -101,7 +108,7 @@ class UpdateProfile(forms.ModelForm):
 
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = User
