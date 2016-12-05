@@ -14,14 +14,10 @@ class Profile(models.Model):
     publickey = models.CharField(null=True, max_length=10000)
     unreadmessages = models.CharField(max_length=10,default="false")
 
-
-
-def get_reports(self):
-    return "\n".join([report.short_desc for report in self.reports_owned.all()])
-
-
-def __str__(self):
-    return self.user.username
+    def get_reports(self):
+        return "\n".join([report.short_desc for report in self.reports_owned.all()])
+    def __str__(self):
+        return self.user.username
 
 
 def create_user_profile(sender, instance, created, **kwargs):
@@ -93,3 +89,10 @@ class Message(models.Model):
 
     def __str__(self):
         return self.messagecontent
+
+
+class Activity(models.Model):
+    owned_by = models.ForeignKey(User)
+    time = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=10000)
+

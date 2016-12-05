@@ -141,6 +141,7 @@ class DecryptMessageForm(forms.ModelForm):
         model = Message
         fields = ['password']
 
+
 class SearchForm(forms.Form):
     search = forms.CharField(max_length='128', widget=forms.TextInput(attrs={'cols': 50, 'rows': 1, 'placeholder': "Search for a report"}))
     SEARCH_OPTIONS = (
