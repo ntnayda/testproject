@@ -11,11 +11,14 @@
             <div class="col-lg-8">
 
                 <div class="panel-body">
-                    <div class="panel-heading"><h3><b>Reports in this group</b></h3></div><br>
+                    {% if group.reports.count == 0 %}
+                    <i>No reports to show. Add a report!</i>
+                    {% else %}
+                    <div class="panel-heading"><h4><b>Reports in this group</b></h4></div><br>
                     <ul class="list-group">
                         {% for r in group.reports.all %}
                         <li class="list-group-item">
-                            <a href="http://127.0.0.1:8000/fileshare/view_group_report/{{ r.id }}/{{ group.id }}" >{{ r }}</a>
+                            <a href="/fileshare/view_group_report/{{ r.id }}/{{ group.id }}" >{{ r }}</a>
                             <form id="remove_{{ r.short_desc }}" method="POST" action=".">
                                 {% csrf_token %}
                                 <div align="right"><button class="btn btn-danger btn-sm"  type="submit" form="remove_{{ r.short_desc }}" name="action" value="r{{ r.id }}"><span class="glyphicon glyphicon-remove"></span></button></div>
@@ -23,6 +26,7 @@
                         </li>
                         {% endfor %}
                     </ul>
+                    {% endif %}
                 </div>
 
 
@@ -30,10 +34,11 @@
             </div>
 
             <div class="col-lg-4">
+                {% if group.creator == user or user.is_staff %}
                 <div class="panel panel-default">
                     <div class="panel-heading"><strong>Rename</strong></div>
                     <div class="panel-body">
-                        {% if group.creator == user or user.is_staff %}
+                        
                         <div class="form-group">
                             <form class="form-inline" method="POST" action=".">
                                 {% csrf_token %}
@@ -43,9 +48,9 @@
                                 <input type="submit"  class="btn btn-default btn-sm" name="action" value="Save Changes"/>
                             </form>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
+                {% endif %}
 
                 <div class="panel panel-default">
                     <div class="panel-heading"><strong>Group Members</strong></div>
@@ -101,6 +106,9 @@
                 <div class="panel panel-default">
                     <div class="panel-heading"><strong>Add private reports to this group</strong></div>
                     <div class="panel-body">
+                        {% if private_reports.count == 0 %}
+                        <i>There are no reports to be added to this group.</i>
+                        {% else %}
                         <ul class="list-group">
                             {% for r in private_reports %}
                             <li class="list-group-item">
@@ -112,6 +120,7 @@
                             </li>
                             {% endfor %}
                         </ul>
+                        {% endif %}
                     </div>
                 </div>
                 <div align="right">
@@ -119,7 +128,7 @@
                         {% csrf_token %}
 
                         {% if user == group.creator %}
-                        <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l" disabled><span>Leave group</button>
+                        <button class="btn btn-danger" type="submit" form="leave_{{ group.name }}" name="action" value="e"><span>End group</button>
                         {% else %}
                         <button class="btn btn-warning" type="submit" form="leave_{{ group.name }}" name="action" value="l" ><span>Leave group</button>
                         {% endif %}

@@ -525,6 +525,10 @@ def view_group(request, group_id):
                 group.save()
                 return redirect('main')
 
+            elif action == 'e':
+                group.delete()
+                return redirect('main')
+
             else:
                 m = get_object_or_404(models.Profile, pk=action)
                 m.groups_in.remove(group)
