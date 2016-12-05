@@ -115,7 +115,7 @@
                     </div>
                 </div>
                 <div align="right">
-                    <form id="leave_{{ group.name }}" action="{% url 'fileshare:main' %}" method="POST">
+                    <form id="leave_{{ group.name }}" action="{% url 'fileshare:view_group' group.id %}" method="POST">
                         {% csrf_token %}
 
                         {% if user == group.creator %}

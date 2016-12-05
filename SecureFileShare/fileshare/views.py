@@ -500,7 +500,7 @@ def view_group(request, group_id):
     if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
     elif request.method == "POST":
-        update_form = GroupForm(request.POST, instance=group)
+        update_form = UpdateGroupForm(request.POST, instance=group)
         action = request.POST.get('action')
         
         if action != "Save Changes":
@@ -523,7 +523,7 @@ def view_group(request, group_id):
                 request.user.profile.groups_in.remove(group)
                 group.members.remove(request.user.profile)
                 group.save()
-
+                return redirect('main')
 
             else:
                 m = get_object_or_404(models.Profile, pk=action)
@@ -531,7 +531,7 @@ def view_group(request, group_id):
                 group.members.remove(m)
                 group.save()
 
-        if update_form.is_valid():
+        elif update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
                 update_form.save()
@@ -539,7 +539,7 @@ def view_group(request, group_id):
                 group.delete()
                 return redirect('main')
     else:
-        update_form = GroupForm(instance=group)
+        update_form = UpdateGroupForm(instance=group)
 
     return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users})
 

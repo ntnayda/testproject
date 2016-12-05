@@ -122,6 +122,11 @@ class GroupForm(forms.ModelForm):
         model = ProfileGroup
         fields = ['name', 'members']
 
+class UpdateGroupForm(forms.ModelForm):
+    class Meta:
+        model = ProfileGroup
+        fields = ['name']
+
 class FolderForm(forms.ModelForm):
     class Meta:
         model = Folder
