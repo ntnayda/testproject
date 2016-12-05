@@ -69,7 +69,16 @@
 				{% endif %}
 			</div>
 		</div>
-
+						<div class="panel panel-default">
+					<div class="panel-heading"><strong>Create a New Folder</strong></div>
+					<div class="panel-body">
+						<form method="POST" action="{% url 'fileshare:main' %}">
+							{% csrf_token %}
+							{{ folder_form.as_p }}
+							<input class="btn btn-primary" type="submit" value="Create Folder">
+						</form>
+					</div>
+				</div>
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Your Reports</strong></div>
 			<div class="panel-body">
@@ -116,7 +125,7 @@
 						{% endif %}
 					</div>
 				</div>
-				<div class="panel panel-default">
+<!-- 				<div class="panel panel-default">
 					<div class="panel-heading"><strong>Create a New Folder</strong></div>
 					<div class="panel-body">
 						<form method="POST" action="{% url 'fileshare:main' %}">
@@ -125,7 +134,7 @@
 							<input class="btn btn-primary" type="submit" value="Create Folder">
 						</form>
 					</div>
-				</div>
+				</div> -->
 			</div>
 
 			<div class="panel panel-default">
