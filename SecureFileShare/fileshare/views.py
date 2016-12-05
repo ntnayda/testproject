@@ -373,7 +373,7 @@ def messages(request):
 
             if (request.POST['thekey'] == "True"):
                 thekey = RSA.importKey(newconvo.sender.profile.publickey)
-                messagetoencrypt = request.POST['messagecontent']
+                messagetoencrypt = str(request.POST['messagecontent'])
                 encryptedmessage = thekey.encrypt(messagetoencrypt.encode(), 1)
                 encryptedmessage = encryptedmessage[0];
                 encryptedmessage = base64.b16encode(encryptedmessage)
@@ -387,7 +387,7 @@ def messages(request):
             else:
                 newmessage2 = models.Message.objects.create(owned_by=newconvo2,
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage2.save()
 
@@ -400,7 +400,7 @@ def messages(request):
             if (request.POST['thekey'] != "True"):
                 newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage.save()
                 convo = form.cleaned_data['owned_by']
@@ -413,7 +413,7 @@ def messages(request):
             if (request.POST['thekey'] == "True"):
                 thekey = RSA.importKey(convo2.sender.profile.publickey)
 
-                messagetoencrypt = request.POST['messagecontent']
+                messagetoencrypt = str(request.POST['messagecontent'])
                 encryptedmessage = thekey.encrypt(messagetoencrypt.encode(),1)
                 encryptedmessage = encryptedmessage[0];
                 encryptedmessage = base64.b16encode(encryptedmessage)
@@ -426,7 +426,7 @@ def messages(request):
             else:
                 newmessage2 = models.Message.objects.create(owned_by=convo2,
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage2.save()
 
