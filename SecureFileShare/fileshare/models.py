@@ -91,6 +91,14 @@ class Message(models.Model):
     def __str__(self):
         return self.messagecontent
 
+
+
+class Activity(models.Model):
+    owned_by = models.ForeignKey(User)
+    time = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=10000)
+
+
 class ReportComments(models.Model):
 	creator = models.ForeignKey('Profile')
 	comment = models.TextField(max_length=1000, blank=False)
@@ -98,6 +106,7 @@ class ReportComments(models.Model):
 
 	def __str__(self):
 		return self.comment
+
 
 
 

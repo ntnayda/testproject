@@ -2,7 +2,22 @@
 
 {% block content %}
 
-<div class="container">
+<div style="padding-left:40px">
+	<div style="float: right;width: 15%;overflow:scroll;height:1200px;background-color: #87CEFA">
+		<div><h3>User Activity Feed</h3></div>
+		<table class="table table-hover">
+			{% if activity %}
+                    {% for a in activity %}
+			<tr>
+					<div style="float:left"><strong class="primary-font">{{a.description}}</strong></div>
+
+					<div style="float:right">{{a.time}}</div>
+				{% endfor %}
+				{% endif %}
+		</table>
+	</div>
+
+	<div style="float:left;width:85%;padding-right: 5px">
 	<h1>Hello, {{ user.username }}!<br><small>You are on your Dashboard</small></h1>
 
 	
@@ -177,5 +192,5 @@
 				</div>
 			</div>
 		</div>
-
+</div>
 		{% endblock %}

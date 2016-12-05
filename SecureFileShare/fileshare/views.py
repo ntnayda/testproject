@@ -118,7 +118,7 @@ def main(request):
     num_reports = len(your_reports)
     other_reports = models.Report.objects.filter(private=False).exclude(owned_by=request.user)
     folders = models.Folder.objects.filter(owned_by=request.user)
-
+    activity = models.Activity.objects.filter(owned_by=request.user).order_by('time').reverse()
     if request.method == 'POST':
         folder_form = FolderForm(request.POST)
         search_form = SearchForm(request.POST)
@@ -136,13 +136,16 @@ def main(request):
                 created=datetime.datetime.now()
             )
             folder.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Created " + str(folder.name))
+            newactivity.save()
     else:
         folder_form = FolderForm()
         search_form = SearchForm()
 
     return render(request, 'fileshare/main.html',
                   {'your_reports': your_reports, 'num_reports': num_reports, 'other_reports': other_reports,
-                   'folder_form': folder_form, 'folders': folders, 'search_form': search_form})
+                   'folder_form': folder_form, 'folders': folders, 'search_form': search_form,'activity':activity})
 
 
 @login_required(login_url='login')
@@ -171,6 +174,8 @@ def create_report(request):
                 d = models.Documents.objects.create(file_attached=f, is_encrypted=is_encrypted, file_hash=fHash)
                 newdoc.files.add(d)
             newdoc.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user,time=datetime.datetime.now(),description="Created " + newdoc.short_desc)
+            newactivity.save()
 
             return redirect('main')
 
@@ -192,10 +197,12 @@ def view_report(request, report_id):
         return redirect('main')
 
     elif request.method == "POST":
+        print("here1")
         update_form = ReportForm(request.POST, request.FILES, instance=report)
         comment_form = ReportCommentsForm(request.POST)
-        
+
         if request.POST.get('action')[0] == "f":
+            print("here2")
             report.last_modified = datetime.datetime.now()
             report.last_modified_by = request.user.username
             d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
@@ -205,6 +212,10 @@ def view_report(request, report_id):
             # remove document from database
             d.delete()
             report.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Modified " +
+                                                                     str(report.short_desc))
+            newactivity.save()
 
         elif comment_form.is_valid():
             c = models.ReportComments.objects.create(
@@ -215,10 +226,20 @@ def view_report(request, report_id):
             report.comments.add(c)
             report.save()
             c.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="You commented on " +
+                                                                     str(report.short_desc))
+            newactivity.save()
+            if (report.owned_by != request.user):
+                newactivity = models.Activity.objects.create(owned_by=report.owned_by, time=datetime.datetime.now(),
+                                                         description= str(request.user.username) + " commented on " +
+                                                                     str(report.short_desc))
+                newactivity.save()
 
         elif update_form.is_valid():
-
+            print("here3")
             if request.POST.get('action') == "Save Changes":
+                print("here4")
                 report.last_modified = datetime.datetime.now()
                 report.last_modified_by = request.user.username
                 is_encrypted = not request.POST.get('is_encrypted', None) == None
@@ -232,16 +253,26 @@ def view_report(request, report_id):
                     report.files.add(d)
                 report.save()
                 update_form.save()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Modified " +
+                                                                         str(report.short_desc))
+                newactivity.save()
                 return redirect('main')
             
             if request.POST.get('action')[0] == "f":
+                print("here5")
                 report.last_modified = datetime.datetime.now()
                 report.last_modified_by = request.user.username
                 d = get_object_or_404(models.Documents, pk=request.POST.get('action')[1:])
                 d.delete()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Modified " +
+                                                                         str(report.short_desc))
+                newactivity.save()
                 return redirect('main')
 
             else:
+                print("here6")
                 report.delete()
                 return redirect('main')
     else:
@@ -254,6 +285,7 @@ def getFileHashFromData(data, filename):
     for file in data:
         if file["filename"] == filename:
             return file["file_hash"]
+
 
 
 @login_required(login_url='login')
@@ -271,6 +303,9 @@ def view_group_report(request, report_id, profilegroup_id):
 @login_required(login_url='login')
 def user_delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
+    newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                 description="Deleted " + report.short_desc)
+    newactivity.save()
     # remove all file attachments from the file system
     fs = FileSystemStorage()
     files = report.files.all()
@@ -433,6 +468,9 @@ def update_profile(request):
             user.email = request.POST['email']
 
             user.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Updated profile.")
+            newactivity.save()
             return HttpResponseRedirect('/account/view')
 
     context = {
@@ -449,6 +487,9 @@ def password_change(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Changed password.")
+            newactivity.save()
             return HttpResponseRedirect('/logout')
     context = {
         "form": form
@@ -477,11 +518,16 @@ def create_group(request):
                 m = get_object_or_404(models.Profile, pk=m)
                 m.groups_in.add(instance)
                 instance.members.add(m)
+                newactivity = models.Activity.objects.create(owned_by=m.user, time=datetime.datetime.now(),
+                                                             description=str(request.user.username) +" added you to " + str(instance.name))
+                newactivity.save()
 
             instance.creator = request.user
             instance.save()
             m.save()
-
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Created " + str(instance.name))
+            newactivity.save()
             return redirect('main')  # group made successfully
     else:
         # group_form=GroupForm()
@@ -502,25 +548,45 @@ def view_group(request, group_id):
     elif request.method == "POST":
         update_form = UpdateGroupForm(request.POST, instance=group)
         action = request.POST.get('action')
-        
         if action != "Save Changes":
             if action[0] == 'a':
                 report = get_object_or_404(models.Report, pk=action[1:])
                 group.reports.add(report)
                 group.save()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Added " +
+                                                                         str(report.short_desc) + " to " + str(group.name))
+                newactivity.save()
             elif action[0] == 'r':
                 report = get_object_or_404(models.Report, pk=action[1:])
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Removed " +
+                                                                         str(report.short_desc) + " from " + str(group.name))
+                newactivity.save()
                 group.reports.remove(report)
                 group.save()
+
             
             elif action[0] == 'p':
                 m = get_object_or_404(models.Profile, pk=action[1:])
                 m.groups_in.add(group)
                 group.members.add(m)
                 group.save()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Added " +
+                                                                         str(m.user.username) + " to " + str(group.name))
+                newactivity.save()
+                newactivity = models.Activity.objects.create(owned_by=m.user, time=datetime.datetime.now(),
+                                                             description=str(request.user) + " added you to " + str(
+                                                                 group.name))
+                newactivity.save()
 
             elif action == 'l':
                 request.user.profile.groups_in.remove(group)
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="You left " +
+                                                                         str(group.name))
+                newactivity.save()
                 group.members.remove(request.user.profile)
                 group.save()
                 return redirect('main')
@@ -534,12 +600,32 @@ def view_group(request, group_id):
                 m.groups_in.remove(group)
                 group.members.remove(m)
                 group.save()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Removed " +
+                                                                         str(m.user.username) + " from " + str(group.name))
+                newactivity.save()
+                newactivity = models.Activity.objects.create(owned_by=m.user, time=datetime.datetime.now(),
+                                                             description=str(request.user) + " removed you from " + str(
+                                                                 group.name))
+                newactivity.save()
 
         elif update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Edited " +
+                                                                         str(group.name))
+                newactivity.save()
                 update_form.save()
                 
+            else:
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Removed yourself from " +
+                                                                         str(group.name))
+                newactivity.save()
+                group.delete()
+                return redirect('main')
+
     else:
         update_form = UpdateGroupForm(instance=group)
 
@@ -564,16 +650,32 @@ def view_folder(request, folder_id):
             if action[0] == 'a':
                 folder.reports.add(report)
                 report.in_folder = True
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Added " +
+                                                                         str(report.short_desc) + " to " + str(folder.name))
+                newactivity.save()
             else:
                 folder.reports.remove(report)
                 report.in_folder = False
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Removed " +
+                                                                         str(report.short_desc) + " from " + str(
+                                                                 folder.name))
+                newactivity.save()
             folder.save()
 
         elif update_form.is_valid():
             if action == "Update":
                 update_form.save()
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Updated " + str(folder.name))
+                newactivity.save()
                 return redirect('main')
             else:
+                newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                             description="Deleted " +
+                                                                         str(folder.name))
+                newactivity.save()
                 folder.delete()
                 return redirect('main')
 
@@ -603,7 +705,9 @@ def register(request):
             pubkey = key.publickey()
             newuser.profile.publickey = pubkey.exportKey()
             newuser.profile.save()
-
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="Account created.")
+            newactivity.save()
 
             # return HttpResponseRedirect('/register/success/'+str(newuser.id))
             # return(register_success(request,newuser.id))
@@ -642,6 +746,7 @@ def manage_groups(request):
 def edit_user(request, user_id):
     profile = models.Profile.objects.filter(user_id=user_id)
     # print(profile[0].user.username)
+
     return render(request, 'fileshare/edit_user.html', {'profile': profile[0]})
 
 @login_required(login_url='login')
@@ -655,11 +760,17 @@ def sm_update_user(request):
     user.is_active = not request.POST.get('is_active', None) == None
     user.is_staff = not request.POST.get('is_staff', None) == None
     user.save()
+    newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                 description="Updated " + user.username)
+    newactivity.save()
     return render(request, 'fileshare/user_update_success.html', {'profile': profile})
 
 @login_required(login_url='login')
 def delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
+    newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                 description="Deleted " + report.short_desc)
+    newactivity.save()
     report.delete()
     return HttpResponseRedirect('/manage_reports.html')
     # return render(request, 'fileshare/manage_reports.html')
