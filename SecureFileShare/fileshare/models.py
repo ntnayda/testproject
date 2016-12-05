@@ -65,6 +65,8 @@ class ProfileGroup(models.Model):
     name = models.CharField(max_length=128, unique=True)
     members = models.ManyToManyField('Profile', related_name='group_members', blank=True)
     reports = models.ManyToManyField('Report', blank=True)
+    comments = models.ManyToManyField('ReportComments', blank=True)
+
     def __str__(self):
         return self.name
 
@@ -106,6 +108,7 @@ class ReportComments(models.Model):
 
 	def __str__(self):
 		return self.comment
+
 
 
 

@@ -171,7 +171,7 @@ def create_report(request):
             print("file_hash: " + json_data)
             for f in request.FILES.getlist('files'):
                 fHash = getFileHashFromData(file_hashes, f.name)
-                d = models.Documents.objects.create(file_attached=f, is_encrypted=is_encrypted, file_hash=fHash)
+                d = models.Documents.objects.create(file_attached=f, is_encrypted=report_form.cleaned_data['is_encrypted'], file_hash=fHash)
                 newdoc.files.add(d)
             newdoc.save()
             newactivity = models.Activity.objects.create(owned_by=request.user,time=datetime.datetime.now(),description="Created " + newdoc.short_desc)
@@ -508,11 +508,14 @@ def deletemessage(request, message_pk):
 def create_group(request):
     if request.method == 'POST':
         group_form = GroupForm(request.POST)
+
         if group_form.is_valid():
 
             group_form.save()
             instance = models.ProfileGroup.objects.get(name=request.POST.get('name'))
 
+            instance.members.add(request.user.profile)
+            request.user.profile.groups_in.add(instance)
             members_added = request.POST.getlist('members')
             for m in members_added:
                 m = get_object_or_404(models.Profile, pk=m)
@@ -521,17 +524,19 @@ def create_group(request):
                 newactivity = models.Activity.objects.create(owned_by=m.user, time=datetime.datetime.now(),
                                                              description=str(request.user.username) +" added you to " + str(instance.name))
                 newactivity.save()
+                m.save()
 
             instance.creator = request.user
             instance.save()
-            m.save()
+            request.user.profile.save()
+            
             newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
                                                          description="Created " + str(instance.name))
             newactivity.save()
             return redirect('main')  # group made successfully
     else:
         # group_form=GroupForm()
-        members = models.Profile.objects.all()
+        members = models.Profile.objects.all().exclude(user=request.user)
 
     return render(request, 'fileshare/create_group.html', {'members': members})
 
@@ -542,11 +547,14 @@ def view_group(request, group_id):
     #private_reports = request.user.profile.reports_owned.filter(private=True)
     private_reports = models.Report.objects.filter(owned_by=request.user, private=True).exclude(id__in=group.reports.all())
     all_users = models.User.objects.all()
+    group_comments = group.comments
 
     if request.user.profile not in group.members.all() and not request.user.is_staff:
         return redirect('main')
     elif request.method == "POST":
         update_form = UpdateGroupForm(request.POST, instance=group)
+        comment_form = ReportCommentsForm(request.POST)
+        
         action = request.POST.get('action')
         if action != "Save Changes":
             if action[0] == 'a':
@@ -595,6 +603,16 @@ def view_group(request, group_id):
                 group.delete()
                 return redirect('main')
 
+            elif action == 'c':
+                c = models.ReportComments.objects.create(
+                    creator = request.user.profile,
+                    timestamp = datetime.datetime.now(),
+                    comment = request.POST.get('comment')
+                    )
+                group.comments.add(c)
+                group.save()
+                c.save()
+
             else:
                 m = get_object_or_404(models.Profile, pk=action)
                 m.groups_in.remove(group)
@@ -628,8 +646,9 @@ def view_group(request, group_id):
 
     else:
         update_form = UpdateGroupForm(instance=group)
+        comment_form = ReportCommentsForm()
 
-    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users})
+    return render(request, 'fileshare/view_group.html', {'group': group, 'update_form': update_form, 'private_reports': private_reports, 'all_users': all_users, 'comment_form': comment_form, 'group_comments': group_comments})
 
 
 
