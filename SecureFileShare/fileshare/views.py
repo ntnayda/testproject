@@ -848,9 +848,11 @@ def search_results(request):
 
     query = request.POST.get('search')
     param = request.POST.get('parameter')
+    search_form = SearchForm(request.POST)
+    day = None
 
-    if query is None or query == "":
-        return redirect('main')
+    if query == "" and param in ["desc", "owner", "modified_by"]:
+        return redirect ('main')
 
     usernames = []
     if param == "desc":
@@ -860,9 +862,38 @@ def search_results(request):
     elif param == "owner":
         usernames = models.User.objects.filter(username__icontains=query)
         results = models.Report.objects.filter(Q(owned_by__in=usernames)).exclude(~Q(owned_by=request.user ), Q(private=True))
+    
+    elif param == "modified_by":
+        results = models.Report.objects.filter(Q(last_modified_by__icontains=query)).exclude(~Q(owned_by=request.user ), Q(private=True))
+
+    elif param == "created":
+        datefield = search_form.fields['datepicker']
+        m = request.POST.get('datepicker_month')
+        d = request.POST.get('datepicker_day')
+        y = request.POST.get('datepicker_year')
+
+        day = datetime.date(int(y), int(m), int(d))
+        new_end = day + datetime.timedelta(days=1)
+        results = models.Report.objects.filter(
+            Q(created__range=[day, new_end])
+            ).exclude(~Q(owned_by=request.user), Q(private=True))
+
+    elif param == "modified":
+        datefield = search_form.fields['datepicker']
+        m = request.POST.get('datepicker_month')
+        d = request.POST.get('datepicker_day')
+        y = request.POST.get('datepicker_year')
+
+        day = datetime.date(int(y), int(m), int(d))
+        new_end = day + datetime.timedelta(days=1)
+        results = models.Report.objects.filter(
+            Q(last_modfied__range=[day, new_end])
+            ).exclude(~Q(owned_by=request.user), Q(private=True))
+
+
     else: 
-        results = []
+        results = Q()
 
         # Add support for searching by date created and date modified??
 
-    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results, 'usernames': usernames, 'param': param})
+    return render(request, 'fileshare/search_results.html', {'query': query, 'results': results, 'usernames': usernames, 'param': param, 'date': day})

@@ -5,7 +5,7 @@
 <div class="container">
 
 	<div class="panel panel-default">
-		<div class="panel-heading"><h2><strong>{{ group.name }}</strong></h2></div>
+		<div class="panel-heading"><h2><strong>{{ group.name }}</strong> <small>created by <strong>{{ group.creator }}</strong></small></h2></div>
 		<div class="panel-body">
            <div class="row">
             <div class="col-lg-8">
@@ -90,7 +90,7 @@
                                 <tr>
                                     <td> {{ m }} </td>
                                     <td>
-                                        {% if m != user.profile %}
+                                        {% if m != user.profile and user.profile == group.creator %}
 
                                         <form id="remove_{{ m }}" method="POST" action=".">
                                             {% csrf_token %}
