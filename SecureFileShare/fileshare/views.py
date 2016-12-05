@@ -539,9 +539,7 @@ def view_group(request, group_id):
 
             if request.POST.get('action') == "Save Changes":
                 update_form.save()
-            else:
-                group.delete()
-                return redirect('main')
+                
     else:
         update_form = UpdateGroupForm(instance=group)
 
