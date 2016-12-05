@@ -11,6 +11,10 @@
                         <h3 class="panel-title">Sign up for an account!</h3>
                     </div>
                     <div class="panel-body">
+                        {% if errormessage %}
+                        <div style="color:red;">{{errormessage}}</div>
+
+                        {% endif %}
 <form id="signup_form" method="post" action="/fileshare/register/signup"
                 enctype="multipart/form-data">
 

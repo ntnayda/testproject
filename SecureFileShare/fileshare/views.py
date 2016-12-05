@@ -709,28 +709,40 @@ def view_folder(request, folder_id):
 def register(request):
     if request.method == 'POST':
         register_form = signup_form(request.POST)
+        try:
+            theuser = authmodels.User.objects.get(username=request.POST['username'])
+            print("here")
+            return render(request, 'fileshare/register.html',
+                          {'form': register_form, 'errormessage': "Username already exists!"})
+        except:
+            if register_form.is_valid():
+                #print(register_form.clean_password2())
 
-        if register_form.is_valid():
-            newuser = authmodels.User.objects.create(username=request.POST['username'],
-                                                     first_name=request.POST['first_name'],
-                                                     last_name=request.POST['last_name'],
-                                                     email=request.POST['email']
-                                                     )
-            newuser.set_password(register_form.cleaned_data["password1"])
-            newuser.save()
+                print("here2")
+                if (register_form.clean_password2()):
+                    return render(request, 'fileshare/register.html', {'form': register_form,'errormessage':"Passwords do not match."})
 
-            random_generator = Random.new().read
-            key = RSA.generate(1024, random_generator)
-            pubkey = key.publickey()
-            newuser.profile.publickey = pubkey.exportKey()
-            newuser.profile.save()
-            newactivity = models.Activity.objects.create(owned_by=newuser, time=datetime.datetime.now(),
-                                                         description="Account created.")
-            newactivity.save()
+                else:
+                    newuser = authmodels.User.objects.create(username=request.POST['username'],
+                                                             first_name=request.POST['first_name'],
+                                                             last_name=request.POST['last_name'],
+                                                             email=request.POST['email']
+                                                             )
+                    newuser.set_password(register_form.cleaned_data['password1'])
+                    newuser.save()
 
-            # return HttpResponseRedirect('/register/success/'+str(newuser.id))
-            # return(register_success(request,newuser.id))
-            return render(request,'fileshare/register_success.html',{'key':str(key.exportKey())})
+                    random_generator = Random.new().read
+                    key = RSA.generate(1024, random_generator)
+                    pubkey = key.publickey()
+                    newuser.profile.publickey = pubkey.exportKey()
+                    newuser.profile.save()
+                    newactivity = models.Activity.objects.create(owned_by=newuser, time=datetime.datetime.now(),
+                                                                 description="Account created.")
+                    newactivity.save()
+
+                    # return HttpResponseRedirect('/register/success/'+str(newuser.id))
+                    # return(register_success(request,newuser.id))
+                    return render(request,'fileshare/register_success.html',{'key':str(key.exportKey())})
 
     else:
         register_form = signup_form()

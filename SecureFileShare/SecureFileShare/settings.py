@@ -86,8 +86,12 @@ DATABASES = {
     }
 }
 
+#added as per Nate's instructions, although above not modified (?)
 
-
+if os.environ.get('DATABASE_URL'):
+	import dj_database_url
+	db_from_env = dj_database_url.config(conn_max_age=500)
+	DATABASES['default'].update(db_from_env)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -106,9 +110,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_ROOT = 'static/'
-
-STATIC_URL = '/fileshare/static/'
+#STATIC_ROOT = 'static/'
+#STATIC_URL = '/fileshare/static/'
+#as per Nate's instructions and https://devcenter.heroku.com/articles/django-assets :
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_URL = 'static/'
 
 LOGIN_REDIRECT_URL = 'main'
 
