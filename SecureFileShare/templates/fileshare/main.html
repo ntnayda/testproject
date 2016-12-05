@@ -3,7 +3,7 @@
 {% block content %}
 
 <div style="padding-left:40px">
-	<div style="float: right;width: 15%;overflow:scroll;height:1200px;background-color: #87CEFA">
+	<div style="float: right;width: 15%;overflow:scroll;height:1200px;background-color: #87CEFA;padding-right: 3px;padding-left: 3px;">
 		<div><h3>User Activity Feed</h3></div>
 		<table class="table table-hover">
 			{% if activity %}
@@ -29,10 +29,13 @@
 						<div class="form-group">
 							<form id="s01" class="form-inline" method="POST" action="{% url 'fileshare:search_results' %}">
 								{% csrf_token %}
-								<div class="input-group">
+								<div class="input-group" id="searchfield">
 									{{ search_form.search }}
 								</div>
-								<div class="input-group">
+								<div class="input-group" id="datepickerfield">
+									{{ search_form.datepicker }}
+								</div>
+								<div class="input-group" id="parameterfield">
 									{{ search_form.parameter }}
 								</div>
 								<button type="submit" class="btn btn-default btn-sm" name="a" value="Search"><span class="glyphicon glyphicon-search"></span></button>
@@ -66,7 +69,16 @@
 				{% endif %}
 			</div>
 		</div>
-
+						<div class="panel panel-default">
+					<div class="panel-heading"><strong>Create a New Folder</strong></div>
+					<div class="panel-body">
+						<form method="POST" action="{% url 'fileshare:main' %}">
+							{% csrf_token %}
+							{{ folder_form.as_p }}
+							<input class="btn btn-primary" type="submit" value="Create Folder">
+						</form>
+					</div>
+				</div>
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Your Reports</strong></div>
 			<div class="panel-body">
@@ -113,7 +125,7 @@
 						{% endif %}
 					</div>
 				</div>
-				<div class="panel panel-default">
+<!-- 				<div class="panel panel-default">
 					<div class="panel-heading"><strong>Create a New Folder</strong></div>
 					<div class="panel-body">
 						<form method="POST" action="{% url 'fileshare:main' %}">
@@ -122,7 +134,7 @@
 							<input class="btn btn-primary" type="submit" value="Create Folder">
 						</form>
 					</div>
-				</div>
+				</div> -->
 			</div>
 
 			<div class="panel panel-default">
@@ -193,4 +205,45 @@
 			</div>
 		</div>
 </div>
+
+<script>
+
+	function assignjavafunction() {
+		var selector = document.getElementById("id_parameter");
+		selector.setAttribute("onchange","selectchange()")
+		var monthbox = document.getElementById("id_datepicker_month");
+		var daybox = document.getElementById("id_datepicker_day");
+		var yearbox = document.getElementById("id_datepicker_year");
+		monthbox.setAttribute("class","hidden");
+			daybox.setAttribute("class","hidden");
+			yearbox.setAttribute("class","hidden");
+	}
+
+	function selectchange() {
+		var selector = document.getElementById("id_parameter");
+		var selectedval = selector.value;
+		var searchbox = document.getElementById("id_search");
+		var monthbox = document.getElementById("id_datepicker_month");
+		var daybox = document.getElementById("id_datepicker_day");
+		var yearbox = document.getElementById("id_datepicker_year");
+		if (selectedval == "desc" || selectedval=="owner") {
+			searchbox.setAttribute("class","input-group");
+			monthbox.setAttribute("class","hidden");
+			daybox.setAttribute("class","hidden");
+			yearbox.setAttribute("class","hidden");
+
+		}
+		else {
+			searchbox.setAttribute("class","hidden");
+			monthbox.setAttribute("class","");
+			daybox.setAttribute("class","");
+			yearbox.setAttribute("class","");
+
+		}
+
+	}
+
+
+	document.onload = assignjavafunction();
+</script>
 		{% endblock %}

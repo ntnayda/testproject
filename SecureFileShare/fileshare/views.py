@@ -372,8 +372,8 @@ def messages(request):
             print(otheruser.profile.unreadmessages)
 
             if (request.POST['thekey'] == "True"):
-                thekey = RSA.importKey(newconvo.sender.profile.publickey)
-                messagetoencrypt = request.POST['messagecontent']
+                thekey = RSA.importKey(newconvo2.sender.profile.publickey)
+                messagetoencrypt = str(request.POST['messagecontent'])
                 encryptedmessage = thekey.encrypt(messagetoencrypt.encode(), 1)
                 encryptedmessage = encryptedmessage[0];
                 encryptedmessage = base64.b16encode(encryptedmessage)
@@ -387,7 +387,7 @@ def messages(request):
             else:
                 newmessage2 = models.Message.objects.create(owned_by=newconvo2,
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage2.save()
 
@@ -400,7 +400,7 @@ def messages(request):
             if (request.POST['thekey'] != "True"):
                 newmessage = models.Message.objects.create(owned_by=form.cleaned_data['owned_by'],
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage.save()
                 convo = form.cleaned_data['owned_by']
@@ -413,7 +413,7 @@ def messages(request):
             if (request.POST['thekey'] == "True"):
                 thekey = RSA.importKey(convo2.sender.profile.publickey)
 
-                messagetoencrypt = request.POST['messagecontent']
+                messagetoencrypt = str(request.POST['messagecontent'])
                 encryptedmessage = thekey.encrypt(messagetoencrypt.encode(),1)
                 encryptedmessage = encryptedmessage[0];
                 encryptedmessage = base64.b16encode(encryptedmessage)
@@ -426,7 +426,7 @@ def messages(request):
             else:
                 newmessage2 = models.Message.objects.create(owned_by=convo2,
                                                            sender=user,
-                                                           messagecontent=request.POST['messagecontent'],
+                                                           messagecontent=str(request.POST['messagecontent']),
                                                            time=datetime.datetime.now(), key=request.POST['thekey'])
                 newmessage2.save()
 
@@ -780,7 +780,7 @@ def sm_update_user(request):
     user.is_staff = not request.POST.get('is_staff', None) == None
     user.save()
     newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
-                                                 description="Updated " + user.username)
+                                                 description="Updated " + str(user.username))
     newactivity.save()
     return render(request, 'fileshare/user_update_success.html', {'profile': profile})
 
@@ -788,7 +788,7 @@ def sm_update_user(request):
 def delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
-                                                 description="Deleted " + report.short_desc)
+                                                 description="Deleted " + str(report.short_desc))
     newactivity.save()
     report.delete()
     return HttpResponseRedirect('/manage_reports.html')

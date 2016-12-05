@@ -77,12 +77,7 @@
 
 		 <div class="chat_area" id="themessagearea">
 		 <ul class="list-unstyled" id="messagelist">
-<li class="left clearfix">
-                     <div class="chat-body1 clearfix">
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia.</p>
-						<div class="chat_time pull-right">09:40PM</div>
-                     </div>
-                  </li>
+
 
 		 </ul>
 		 </div><!--chat_area-->
@@ -118,7 +113,8 @@
       {% for m in message_list %}
         var currentconvo = [];
           {% for cm in m %}
-              var currentmessage = ["{{cm.messagecontent}}","{{cm.time}}",false,"{{cm.key}}","{{cm.id}}"];
+                var currentmessagetext = decodeHTMLEntities("{{cm.messagecontent}}");
+              var currentmessage = [currentmessagetext,"{{cm.time}}",false,"{{cm.key}}","{{cm.id}}"];
               {% if cm.sender == user %}
                 currentmessage[2]=true;
               {% endif %}
@@ -397,6 +393,27 @@
       read.send();
       //alert("worked");
   }
+
+  function decodeHTMLEntities(text) {
+    var entities = [
+        ['amp', '&'],
+        ['apos', '\''],
+        ['#x27', '\''],
+        ['#x2F', '/'],
+        ['#39', '\''],
+        ['#47', '/'],
+        ['lt', '<'],
+        ['gt', '>'],
+        ['nbsp', ' '],
+        ['quot', '"']
+    ];
+
+    for (var i = 0, max = entities.length; i < max; ++i)
+        text = text.replace(new RegExp('&'+entities[i][0]+';', 'g'), entities[i][1]);
+
+    return text;
+    }
+
     document.onload = pageload();
 
 
@@ -408,6 +425,3 @@
 
 {% endblock %}
 
-{% block javascript %}
-
-{% endblock %}

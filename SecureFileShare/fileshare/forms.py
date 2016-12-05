@@ -155,6 +155,7 @@ class SearchForm(forms.Form):
             ('modified', "Last Modified"),
         )
     parameter = forms.CharField(widget=forms.Select(choices=SEARCH_OPTIONS))
+    datepicker = forms.DateField(widget=forms.SelectDateWidget())
 
 class ReportCommentsForm(forms.ModelForm):
     comment = forms.CharField(required=True, max_length="1000", widget=forms.TextInput(attrs={'cols': 75, 'rows': 2, 'placeholder': "Leave a comment"}))
