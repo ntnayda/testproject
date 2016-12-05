@@ -226,6 +226,15 @@ def view_report(request, report_id):
             report.comments.add(c)
             report.save()
             c.save()
+            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+                                                         description="You commented on " +
+                                                                     str(report.short_desc))
+            newactivity.save()
+            if (report.owned_by != request.user):
+                newactivity = models.Activity.objects.create(owned_by=report.owned_by, time=datetime.datetime.now(),
+                                                         description= str(request.user.username) + " commented on " +
+                                                                     str(report.short_desc))
+                newactivity.save()
 
         elif update_form.is_valid():
             print("here3")
