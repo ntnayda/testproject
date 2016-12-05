@@ -14,8 +14,6 @@ class Profile(models.Model):
     publickey = models.CharField(null=True, max_length=10000)
     unreadmessages = models.CharField(max_length=10,default="false")
 
-    def get_reports(self):
-        return "\n".join([report.short_desc for report in self.reports_owned.all()])
     def __str__(self):
         return self.user.username
 
@@ -39,6 +37,7 @@ class Report(models.Model):
 	is_encrypted = models.BooleanField("Is the attached file encrypted?", default=False, help_text="Leave blank if no file is attached.")
 	in_folder = models.BooleanField(default=False)
 	group_in = models.ManyToManyField('ProfileGroup', blank=True)
+	comments = models.ManyToManyField('ReportComments', blank=True)
 	
 	def __str__(self):
 		return self.short_desc
@@ -47,7 +46,9 @@ class Report(models.Model):
 class Documents(models.Model):
     datetime = '%Y/%m/%d'
     file_attached = models.FileField("Upload a file", upload_to='reports/' + datetime, blank=True, null=True)
-
+    is_encrypted = models.BooleanField(default=False)
+    file_hash = models.CharField(max_length=128, blank=True, null=True)
+    
     def __str__(self):
         return str(self.file_attached)
 
@@ -91,8 +92,21 @@ class Message(models.Model):
         return self.messagecontent
 
 
+
 class Activity(models.Model):
     owned_by = models.ForeignKey(User)
     time = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=10000)
+
+
+class ReportComments(models.Model):
+	creator = models.ForeignKey('Profile')
+	comment = models.TextField(max_length=1000, blank=False)
+	timestamp = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return self.comment
+
+
+
 

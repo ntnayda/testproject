@@ -5,54 +5,71 @@
 <div class="container">
 	<div class="jumbotron">
 		<h2><strong>This Report</strong></h2>
-		{{ group.name }}
 		
 		<div class="panel panel-default">
-		<table class="table table-hover">
-					<tr>
-						<th></th>
-						<th>Title</th>
-						<th>Type</th>
-						<th>Last Modified By</th>
-						<th>Last Modified</th>
-						<th>Created</th>
-					</tr>
-					<tr>
-						<td>
-							{% if report.is_encrypted %}
-							<div align="right"><span class="glyphicon glyphicon-lock" style="color:blue"></span></div>
-							{% else %}
-							{% endif %}
-						</td>
-						<td>{{ report.short_desc }}</td>
-						<td>
-							{% if report.private %}
-							<font color="red">Private</font>
-							{% else %}
-							<font color="green">Public</font>
-							{% endif %}
-						</td>
+			<table class="table table-hover">
+				<tr>
+					<th></th>
+					<th>Title</th>
+					<th>Type</th>
+					<th>Owner</th>
+					<th>Last Modified By</th>
+					<th>Last Modified</th>
+					<th>Created</th>
+				</tr>
+				<tr>
+					<td>
+						{% if encrypted == True %}
+						<div align="right"><span class="glyphicon glyphicon-lock" style="color:#50aeed"></span></div>
+						{% endif %}
+					</td>
+					<td>{{ report.short_desc }}</td>
+					<td>
+						{% if report.private %}
+						<font color="red">Private</font>
+						{% else %}
+						<font color="green">Public</font>
+						{% endif %}
+					</td>
+					<th>{{ report.owned_by }}</td>
 						<td>{{ report.last_modified_by }}</td>
 						<td>{{ report.last_modified }}</td>
 						<td>{{ report.created }}</td>
-						</tr>
-					</table>
+					</tr>
+				</table>
+				<br>
+				<div class="row">
+					<div class="col-lg-8">
+						<div class="panel-body">
+							<h5><strong>Description</strong></h5>
+							<div align="left">{{ report.long_desc }}</div>
+						</div>
+					</div>
 				</div>
+			</div>
 
-		{% if num_files != 0 %}
-		<h4><b>Attached files:</b></h4>
-			<table id="t01" width="60%">
-				{% for f in files.all %}
-				<tr>
-					<td><a href="{{ f.file_attached.url }}">{{ f.file_attached.url }}</a></td>
-				</tr>
-				{% endfor %}
-			</table>
-		{% else %}
-		<h4>There are no files attached to this report.</h4>
-		{% endif %}
+			{% if num_files != 0 %}
+			<h4><b>Attached files:</b></h4>
+			<div class="panel panel-default">
+				<table id="t01" width="60%" class="table table-hover">
+					{% for f in files.all %}
+					<tr>
+						<td>
+							{% if not encrypted %}
+							<a href="{{ f.file_attached.url }}" download>{{ f.file_attached.url }}</a>
+							{% else %}
+							{{ f.file_attached.url }}
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			{% else %}
+			<i>There are no files attached to this report.</i>
+			{% endif %}
 
 
-	</div>
+		</div>
 </div>
 {% endblock %}

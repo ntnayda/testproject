@@ -122,6 +122,11 @@ class GroupForm(forms.ModelForm):
         model = ProfileGroup
         fields = ['name', 'members']
 
+class UpdateGroupForm(forms.ModelForm):
+    class Meta:
+        model = ProfileGroup
+        fields = ['name']
+
 class FolderForm(forms.ModelForm):
     class Meta:
         model = Folder
@@ -151,4 +156,11 @@ class SearchForm(forms.Form):
             ('modified', "Last Modified"),
         )
     parameter = forms.CharField(widget=forms.Select(choices=SEARCH_OPTIONS))
+
+class ReportCommentsForm(forms.ModelForm):
+    comment = forms.CharField(required=True, max_length="1000", widget=forms.TextInput(attrs={'cols': 75, 'rows': 2, 'placeholder': "Leave a comment"}))
+
+    class Meta:
+        model = ReportComments
+        fields = ['comment']
 

@@ -70,13 +70,19 @@
     {% block javascript %}
     <!-- Core Scripts - Include with every page -->
     <script src = "{% static 'dist/js/jquery.min.js' %}"></script>
-
-
-	    <script src = "{% static 'dist/js/bootstrap.min.js' %}"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src = "{% static 'dist/js/bootstrap.min.js' %}"></script>
+    
+    <!-- SHA256 file hash javascript files -->
+    <script src = "{% static 'dist/js/core.js' %}"></script>
+    <script src = "{% static 'dist/js/lib-typedarrays.js' %}"></script>
+    <script src = "{% static 'dist/js/sha256.js' %}"></script>
+    <script src = "{% static 'dist/js/sha2hash.js' %}"></script>
+    
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/cryptico/0.0.1343522940/cryptico.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/cryptico/0.0.1343522940/cryptico.min.js"></script>
-	    {% endblock %}
+	
+	{% endblock %}
 
 </body>
 

@@ -67,7 +67,7 @@
 			<div class="panel-heading"><strong>Your Reports</strong></div>
 			<div class="panel-body">
 				{% if num_reports == 0 %}
-				You have no reports.
+				<i>You have no reports.</i>
 				{% else %}
 				<table class="table table-hover">
 					<tr>
@@ -97,7 +97,7 @@
 							<td>{{ r.last_modified }}</td>
 							<td>{{ r.created }}</td>
 							<td>
-								<form id="{{ r.short_desc }}" action="view_report/{{r.id}}" method="POST">
+								<form id="{{ r.short_desc }}" action="{% url 'fileshare:view_report' r.id %}" method="POST">
 									{% csrf_token %}
 									<button class="btn btn-default btn-sm" type="submit" form="{{ r.short_desc }}" name="action" value="view">
 										<span class="glyphicon glyphicon-pencil"></span></button>
@@ -124,6 +124,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading"><strong>Other Public Reports</strong></div>
 				<div class="panel-body">
+					{% if other_reports.count != 0 %}
 					<table class="table table-striped">
 						<tr>
 							<th></th>
@@ -156,12 +157,19 @@
 						</tr>
 						{% endfor %}
 					</table>
+					{% else %}
+				<i>There are no other reports to view.</i>
+				{% endif %}
 				</div>
+				
 			</div>
 
 			<div class="panel panel-default">
 				<div class="panel-heading"><strong>Your Groups</strong></div>
 				<div class="panel-body">
+					{% if user.profile.groups_in.count == 0 %}
+					<i>No groups to show</i>
+					{% else %}
 					<table class="table table-striped">
 						<tr>
 							<th> Name </th>
@@ -170,12 +178,13 @@
 						</tr>
 						{% for g in user.profile.groups_in.all %}
 						<tr>
-							<td> <a href="{{ g.id }}/view_group">{{ g.name }}</a> </td>
+							<td> <a href="{% url 'fileshare:view_group' g.id %}">{{ g.name }}</a> </td>
 							<td>{{ g.creator }}</td>
 							<td>{{ g.members.count }}</td>
 						</tr>
 						{% endfor %}
 					</table>
+					{% endif %}
 				</div>
 			</div>
 		</div>
