@@ -760,7 +760,7 @@ def sm_update_user(request):
     user.is_staff = not request.POST.get('is_staff', None) == None
     user.save()
     newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
-                                                 description="Updated " + user.username)
+                                                 description="Updated " + str(user.username))
     newactivity.save()
     return render(request, 'fileshare/user_update_success.html', {'profile': profile})
 
@@ -768,7 +768,7 @@ def sm_update_user(request):
 def delete_report(request, report_id):
     report = get_object_or_404(models.Report, pk=report_id)
     newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
-                                                 description="Deleted " + report.short_desc)
+                                                 description="Deleted " + str(report.short_desc))
     newactivity.save()
     report.delete()
     return HttpResponseRedirect('/manage_reports.html')
