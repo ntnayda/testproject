@@ -1,0 +1,47 @@
+Models:
+
+Profile class
+Contains attributes user (a single User associated with that instance of the Profile class),
+    reports_owned (a Report), groups_in (a ProfileGroup)
+Defines methods get_reports() and __str__().
+    get_reports() returns a string representation of all reports owned by that user,
+    each separated by new lines,
+    combined with a short description specified by the file owner.
+    __str__() returns a string representation of username
+
+Reports class
+Contains attributes owned_by (a User), created (a time), last_modified, last_modified_by (a User, default Owner),
+    short_desc, private (a boolean, default False), is_encrypted (a boolean, default False),
+    and files (all documents in the Report)
+Defines method __str__() which returns the short_desc
+
+Documents class
+Contains attributes datetime (a date), and files_attached
+Defines method __str__() which returns a string listing of files_attached
+    Note: this is just a cast, might be messy - should test
+Folder class
+Contains attributes name, owned_by (a User), created (a time), reports
+No methods defined for this class, not even __str__()
+
+ProfileGroup class
+Contains attributes name, creator (a User), members (Users within the ProfileGroup), reports (viewable Reports)
+No methods defined for this class, not even __str__()
+
+Conversation class
+Note: Is this class still relevant/in use? Get rid of?
+Contains attributes sender (a User), receiver (a User), receiver_name, recently_used, messages
+    Note: unclear what recently_used serves
+    Note: messages supposed to contain multiple instances of class Message?
+Defines method __str__() which returns receiver_name
+
+Message class
+Contains attributes owned_by (a Conversation), sender (a User), time, messagecontent, and key
+    Note: messagecontent has max_length = 10000, expand? Find another way to implement?
+    Note: key for encryption, have yet to implement?
+Defines method __str__() which returns messagecontent
+
+Forms
+
+LoginForm class
+
+signup_form class: Given a username and password, creates a new unprivileged user
