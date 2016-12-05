@@ -705,7 +705,7 @@ def register(request):
             pubkey = key.publickey()
             newuser.profile.publickey = pubkey.exportKey()
             newuser.profile.save()
-            newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
+            newactivity = models.Activity.objects.create(owned_by=newuser, time=datetime.datetime.now(),
                                                          description="Account created.")
             newactivity.save()
 

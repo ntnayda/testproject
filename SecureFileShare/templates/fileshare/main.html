@@ -29,10 +29,13 @@
 						<div class="form-group">
 							<form id="s01" class="form-inline" method="POST" action="{% url 'fileshare:search_results' %}">
 								{% csrf_token %}
-								<div class="input-group">
+								<div class="input-group" id="searchfield">
 									{{ search_form.search }}
 								</div>
-								<div class="input-group">
+								<div class="input-group" id="datepickerfield">
+									{{ search_form.datepicker }}
+								</div>
+								<div class="input-group" id="parameterfield">
 									{{ search_form.parameter }}
 								</div>
 								<button type="submit" class="btn btn-default btn-sm" name="a" value="Search"><span class="glyphicon glyphicon-search"></span></button>
@@ -193,4 +196,45 @@
 			</div>
 		</div>
 </div>
+
+<script>
+
+	function assignjavafunction() {
+		var selector = document.getElementById("id_parameter");
+		selector.setAttribute("onchange","selectchange()")
+		var monthbox = document.getElementById("id_datepicker_month");
+		var daybox = document.getElementById("id_datepicker_day");
+		var yearbox = document.getElementById("id_datepicker_year");
+		monthbox.setAttribute("class","hidden");
+			daybox.setAttribute("class","hidden");
+			yearbox.setAttribute("class","hidden");
+	}
+
+	function selectchange() {
+		var selector = document.getElementById("id_parameter");
+		var selectedval = selector.value;
+		var searchbox = document.getElementById("id_search");
+		var monthbox = document.getElementById("id_datepicker_month");
+		var daybox = document.getElementById("id_datepicker_day");
+		var yearbox = document.getElementById("id_datepicker_year");
+		if (selectedval == "desc" || selectedval=="owner") {
+			searchbox.setAttribute("class","input-group");
+			monthbox.setAttribute("class","hidden");
+			daybox.setAttribute("class","hidden");
+			yearbox.setAttribute("class","hidden");
+
+		}
+		else {
+			searchbox.setAttribute("class","hidden");
+			monthbox.setAttribute("class","");
+			daybox.setAttribute("class","");
+			yearbox.setAttribute("class","");
+
+		}
+
+	}
+
+
+	document.onload = assignjavafunction();
+</script>
 		{% endblock %}
