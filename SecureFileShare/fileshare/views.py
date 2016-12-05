@@ -542,14 +542,12 @@ def view_group(request, group_id):
     #private_reports = request.user.profile.reports_owned.filter(private=True)
     private_reports = models.Report.objects.filter(owned_by=request.user, private=True).exclude(id__in=group.reports.all())
     all_users = models.User.objects.all()
-    print("here1")
+
     if request.user.profile not in group.members.all() and not request.user.is_staff:
-        print("here2")
         return redirect('main')
     elif request.method == "POST":
         update_form = UpdateGroupForm(request.POST, instance=group)
         action = request.POST.get('action')
-        print("here3")
         if action != "Save Changes":
             if action[0] == 'a':
                 report = get_object_or_404(models.Report, pk=action[1:])
@@ -584,7 +582,6 @@ def view_group(request, group_id):
                 newactivity.save()
 
             elif action == 'l':
-                print("made it here")
                 request.user.profile.groups_in.remove(group)
                 newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
                                                              description="You left " +
@@ -592,6 +589,10 @@ def view_group(request, group_id):
                 newactivity.save()
                 group.members.remove(request.user.profile)
                 group.save()
+                return redirect('main')
+
+            elif action == 'e':
+                group.delete()
                 return redirect('main')
 
             else:
@@ -611,20 +612,20 @@ def view_group(request, group_id):
         elif update_form.is_valid():
 
             if request.POST.get('action') == "Save Changes":
-                print("here3")
                 newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
                                                              description="Edited " +
                                                                          str(group.name))
                 newactivity.save()
                 update_form.save()
+                
             else:
-                print("or made it here")
                 newactivity = models.Activity.objects.create(owned_by=request.user, time=datetime.datetime.now(),
                                                              description="Removed yourself from " +
                                                                          str(group.name))
                 newactivity.save()
                 group.delete()
                 return redirect('main')
+
     else:
         update_form = UpdateGroupForm(instance=group)
 

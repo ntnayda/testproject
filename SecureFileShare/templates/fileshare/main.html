@@ -49,6 +49,9 @@
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Your Folders</strong></div>
 			<div class="panel-body">
+				{% if folders.count == 0 %}
+				<i>You have no folders.</i>
+				{% else %}
 				<table class="table table-hover">
 					<tr>
 						<th>Name</th>
@@ -60,6 +63,7 @@
 					</tr>
 					{% endfor %}
 				</table>
+				{% endif %}
 			</div>
 		</div>
 
